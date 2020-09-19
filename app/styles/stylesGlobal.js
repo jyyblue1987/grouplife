@@ -20,6 +20,15 @@ export const stylesGlobal = {
         },        
     },
 
+    inputStyle: {
+        width: '100%',
+        marginBottom: 15,
+        paddingBottom: 15,
+        alignSelf: "center",
+        borderColor: "#ccc",
+        borderBottomWidth: 1
+    },
+
     button_style: {
         color: '#fff',
         backgroundColor: BACK_COLOR,

@@ -68,21 +68,21 @@ export default class SignUpScreen extends Component {
                     </View>
                 }
                 <TextInput
-                    style={styles.inputStyle}
+                    style={stylesGlobal.inputStyle}
                     placeholder="Name"
                     autoCapitalize = 'none'
                     value={this.state.displayName}
                     onChangeText={(val) => this.updateInputVal(val, 'displayName')}
                     />      
                 <TextInput
-                    style={styles.inputStyle}
+                    style={stylesGlobal.inputStyle}
                     placeholder="Email"
                     autoCapitalize = 'none'
                     value={this.state.email}
                     onChangeText={(val) => this.updateInputVal(val, 'email')}
                 />
                 <TextInput
-                    style={styles.inputStyle}
+                    style={stylesGlobal.inputStyle}
                     placeholder="Password"
                     autoCapitalize = 'none'
                     value={this.state.password}
@@ -116,15 +116,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         padding: 35,
         backgroundColor: '#fff'
-    },
-    inputStyle: {
-        width: '100%',
-        marginBottom: 15,
-        paddingBottom: 15,
-        alignSelf: "center",
-        borderColor: "#ccc",
-        borderBottomWidth: 1
-    },
+    },   
     loginText: {
         color: stylesGlobal.back_color,
         marginTop: 25,

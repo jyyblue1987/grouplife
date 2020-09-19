@@ -17,6 +17,7 @@ import {stylesGlobal} from './app/styles/stylesGlobal';
 import SignInScreen from  './app/screens/SignInScreen';
 import SignUpScreen from  './app/screens/SignUpScreen';
 import MainPage from  './app/screens/MainPage';
+import GroupCreatePage from  './app/screens/groups/GroupCreatePage';
 
 const Stack = createStackNavigator();
 
@@ -45,12 +46,15 @@ export default class App extends Component {
                     <Stack.Screen name="Signin" component={SignInScreen} options={{title: 'Login'}} />
 					<Stack.Screen name="Signup" component={SignUpScreen} options={{title: 'Signup'}} />                   
 					<Stack.Screen name="Main" component={MainPage} 
-						options={{
-							title: 'Main',
-							headerLeft: null,
+						options={{							
 							headerShown: false
 						}} 
-					/>                   
+					/>            
+					<Stack.Screen name="GroupCreate" component={GroupCreatePage} 
+						options={{
+							title: 'Create Group',							
+						}} 
+					/>       
                 </Stack.Navigator>
             </NavigationContainer>
 
