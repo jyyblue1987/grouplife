@@ -32,13 +32,23 @@ export default class App extends Component {
         return(
             <NavigationContainer>
                 <Stack.Navigator 
-                    initialRouteName = "SignInScreen"
-                    screenOptions={({ route }) => ({
-                        headerShown: false
-                    })}
-                    headerMode="none"
+                    initialRouteName = "Signin"
+                    screenOptions={
+						({ route }) => (
+							{
+								headerTitleAlign: 'center',
+								headerStyle: {
+									backgroundColor: '#3476cb',
+								},
+								headerTintColor: '#fff',
+								headerTitleStyle: {
+									fontWeight: 'bold',
+								},
+							}
+						)
+					}                    
                 >
-                    <Stack.Screen name="SignInScreen" component={SignInScreen} />                   
+                    <Stack.Screen name="Signin" component={SignInScreen} />                   
                 </Stack.Navigator>
             </NavigationContainer>
 
