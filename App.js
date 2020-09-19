@@ -47,7 +47,8 @@ export default class App extends Component {
 					<Stack.Screen name="Main" component={MainPage} 
 						options={{
 							title: 'Main',
-							headerLeft: null
+							headerLeft: null,
+							headerShown: false
 						}} 
 					/>                   
                 </Stack.Navigator>
