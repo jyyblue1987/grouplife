@@ -131,8 +131,26 @@ export default class GroupCreatePage extends Component {
                         </Text>              
                         <Button raised primary text="Upload" onPress = {() => this.showImagePicker()} />
                     </View>
+                    {
+                        this.state.image_uri != "" && 
+                        <Image style = {{width: '100%', height: 300, resizeMode: 'contain', marginTop: 20}} source={this.state.image_uri != "" ? {uri: this.state.image_uri} : {}}></Image>
+                    }
 
-                    <Image style = {{width: '100%', height: '100%', resizeMode: 'contain'}} source={this.state.image_uri != "" ? {uri: this.state.image_uri} : {}}></Image>
+                    <Text
+                        style={styles.paraText}
+                        >
+                        Mettings
+                    </Text>         
+                    <Text
+                        style={styles.paraText2}
+                        >
+                        Add in the information about when and where you meet.
+                    </Text>
+                    <Text
+                        style={styles.paraText3}
+                        >
+                        Metting Day(s)
+                    </Text>
                 </ScrollView>                
             </View>
             </ThemeContext.Provider>
@@ -152,6 +170,23 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 30,
         fontWeight: 'bold'
-    }
+    },
+    paraText: {
+        color: stylesGlobal.back_color,
+        marginTop: 25,
+        fontSize: 20,
+        
+    },
+
+    paraText2: {
+        color: '#383838B2',        
+        fontSize: 17,        
+    },
+
+    paraText3: {
+        color: '#383838',        
+        marginTop: 20,
+        fontSize: 17,        
+    },
     
 });

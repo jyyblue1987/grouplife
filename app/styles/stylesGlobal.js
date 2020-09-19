@@ -7,7 +7,7 @@ const { width, height } = Dimensions.get("window");
 const isIos = Platform.OS === 'ios'
 const isIphoneX = isIos && (Dimensions.get('window').height === 812 || Dimensions.get('window').height === 896);
 
-export const BACK_COLOR = '#3476cb';
+export const BACK_COLOR = '#327FEB';
 export const stylesGlobal = {
     header_bar: {
         headerTitleAlign: 'center',
@@ -42,7 +42,7 @@ export const stylesGlobal = {
         position: 'absolute',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#DDFFFFFF'        
+        backgroundColor: '#FFFFFFDD'        
     },
 
     back_color: BACK_COLOR
