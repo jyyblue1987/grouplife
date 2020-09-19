@@ -13,6 +13,7 @@ import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
+import {stylesGlobal} from './app/styles/stylesGlobal';
 import SignInScreen from  './app/screens/SignInScreen';
 
 const Stack = createStackNavigator();
@@ -35,16 +36,7 @@ export default class App extends Component {
                     initialRouteName = "Signin"
                     screenOptions={
 						({ route }) => (
-							{
-								headerTitleAlign: 'center',
-								headerStyle: {
-									backgroundColor: '#3476cb',
-								},
-								headerTintColor: '#fff',
-								headerTitleStyle: {
-									fontWeight: 'bold',
-								},
-							}
+							stylesGlobal.header_bar
 						)
 					}                    
                 >
