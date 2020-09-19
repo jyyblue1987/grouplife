@@ -3,6 +3,8 @@ import {Component} from 'react';
 
 import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { Button } from 'react-native-material-ui';
+
 import firebase from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
@@ -77,6 +79,15 @@ export default class GroupCreatePage extends Component {
                             group_type: item.value
                         })}
                     />
+
+                    <View style={{width: '100%', flexDirection: 'row', marginTop: 15}}>
+                        <Text
+                            style={{flex:1, fontSize: 18, alignSelf:'center'}}
+                            >
+                            Select a Cover Photo
+                        </Text>              
+                        <Button raised primary text="Upload" />
+                    </View>
                 </ScrollView>                
             </View>
         );
