@@ -2,6 +2,7 @@ import * as React from 'react';
 import {Component} from 'react';
 
 import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity } from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker';
 import firebase from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
@@ -13,6 +14,7 @@ export default class GroupCreatePage extends Component {
             isLoading: false, 
             group_name: '',      
             group_desc: '',     
+            group_type: 'ca'
         }
     }
 
@@ -60,6 +62,21 @@ export default class GroupCreatePage extends Component {
                             value={this.state.group_desc}
                             onChangeText={(val) => this.updateInputVal(val, 'group_desc')}
                         />
+
+                    <DropDownPicker 
+                        items={[
+                            {label: 'Church Affiliation', value: 'ca'},
+                            {label: 'Group Type1', value: 'gt1'}
+                        ]}
+                        defaultValue={this.state.group_type}
+                        containerStyle={{height:40}}
+                        style={{backgroundColor:'#fafafa'}}
+                        itemStyle={{justifyContent: 'flex-start'}}
+                        dropDownStyle={{backgroundColor:'#fafafa'}}
+                        onChangeItem={item => this.setState({
+                            group_type: item.value
+                        })}
+                    />
                 </ScrollView>                
             </View>
         );
