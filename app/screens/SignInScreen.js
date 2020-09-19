@@ -57,7 +57,8 @@ export default class SignInScreen extends Component {
                 });
 
                 this.setState({errorMessage: error.message});
-            }) 
+                Alert.alert(error.message);
+            }); 
     }
 
     render() {
