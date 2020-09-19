@@ -4,20 +4,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { StyleSheet, Text, View } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import firebase from '../../database/firebase';
 import { stylesGlobal } from '../styles/stylesGlobal';
 
+import GroupListPage from './groups/GroupListPage';
 const Tab = createBottomTabNavigator();
-
-function GroupHomePage() {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>GroupHomePage!</Text>
-      </View>
-    );
-}
   
 function NewsPage() {
     return (
@@ -67,15 +58,15 @@ export default class MainPage extends Component {
        
         return (           
             <Tab.Navigator
-                initialRouteName="Home"
+                initialRouteName="GroupList"
                 tabBarOptions={{
                     activeTintColor: stylesGlobal.back_color,
                     showLabel: false
                 }}
                 >
                 <Tab.Screen
-                    name="Group"
-                    component={GroupHomePage}
+                    name="GroupList"
+                    component={GroupListPage}
                     options={{                    
                         tabBarIcon: ({ color, size }) => (
                             <FontAwesome5 name="home" color={color} size={size} />
