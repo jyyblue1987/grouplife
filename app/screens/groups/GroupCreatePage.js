@@ -4,7 +4,19 @@ import {Component} from 'react';
 import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Button } from 'react-native-material-ui';
+import ImagePicker from 'react-native-image-picker';
 
+import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
+
+// you can set your style right here, it'll be propagated to application
+const uiTheme = {
+    palette: {
+        primaryColor: stylesGlobal.back_color,
+    },
+    button: {
+        upperCase: false,
+    },
+};
 import firebase from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
@@ -16,7 +28,8 @@ export default class GroupCreatePage extends Component {
             isLoading: false, 
             group_name: '',      
             group_desc: '',     
-            group_type: 'ca'
+            group_type: 'ca',
+            image_uri: '',
         }
     }
 
@@ -30,9 +43,39 @@ export default class GroupCreatePage extends Component {
         this.setState(state);
     }
 
+    showImagePicker = async() => {
+        var options = {
+            title: 'Select Image',
+            mediaType: 'photo',
+            quality: 1.0,
+            allowsEditing: false,
+            noData: true,
+            storageOptions: {
+                skipBackup: true,
+                path: 'images'
+            }
+        };
+
+        ImagePicker.showImagePicker(options, (response) => {
+
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            } else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            } else {
+                this.setState({
+                    image_uri: response.uri,                    
+                })                
+            }
+        });
+    }
+
     render() {
   
         return (
+            <ThemeContext.Provider value={getTheme(uiTheme)}>
             <View style={styles.container}>
                 {
                     this.state.isLoading && <View style={stylesGlobal.preloader}>
@@ -86,10 +129,13 @@ export default class GroupCreatePage extends Component {
                             >
                             Select a Cover Photo
                         </Text>              
-                        <Button raised primary text="Upload" />
+                        <Button raised primary text="Upload" onPress = {() => this.showImagePicker()} />
                     </View>
+
+                    <Image style = {{width: '100%', height: '100%', resizeMode: 'contain'}} source={this.state.image_uri != "" ? {uri: this.state.image_uri} : {}}></Image>
                 </ScrollView>                
             </View>
+            </ThemeContext.Provider>
         );
     }
 }
