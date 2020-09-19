@@ -3,7 +3,7 @@ import {Component} from 'react';
 
 import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Button } from 'react-native-material-ui';
+import { Button, Checkbox } from 'react-native-material-ui';
 import ImagePicker from 'react-native-image-picker';
 
 import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
@@ -30,6 +30,7 @@ export default class GroupCreatePage extends Component {
             group_desc: '',     
             group_type: 'ca',
             image_uri: '',
+            day_flag: [true, true, true, true, true, true, true]
         }
     }
 
@@ -70,6 +71,13 @@ export default class GroupCreatePage extends Component {
                 })                
             }
         });
+    }
+
+    setDayFlag(value, num) {
+        console.log(value);
+        var day_flag = [...this.state.day_flag];
+        day_flag[num] = value;
+        this.setState({day_flag: day_flag});
     }
 
     render() {
@@ -129,7 +137,7 @@ export default class GroupCreatePage extends Component {
                             >
                             Select a Cover Photo
                         </Text>              
-                        <Button raised primary text="Upload" onPress = {() => this.showImagePicker()} />
+                        <Button raised primary text="Upload" upperCase={false} onPress = {() => this.showImagePicker()} />
                     </View>
                     {
                         this.state.image_uri != "" && 
@@ -151,6 +159,35 @@ export default class GroupCreatePage extends Component {
                         >
                         Metting Day(s)
                     </Text>
+                    <View style={{flexDirection:'row', width: '100%', marginTop:10}}>
+                        <View style={{flex:1, flexDirection:'column'}}>
+                            <Checkbox label="Monday" value="1" checked={this.state.day_flag[1]}
+                                style={{label: {color:'#383838B2'}, container: {height: 30}}}
+                                onCheck = {(value) => this.setDayFlag(value, 1)}/>
+                            <Checkbox label="Wednesday" value="3" checked={this.state.day_flag[3]}
+                                style={{label: {color:'#383838B2'}, container: {height: 30}}}
+                                onCheck = {(value) => this.setDayFlag(value, 3)}/>
+                            <Checkbox label="Friday" value="5" checked={this.state.day_flag[5]}
+                                style={{label: {color:'#383838B2'}, container: {height: 30}}}
+                                onCheck = {(value) => this.setDayFlag(value, 3)}/>
+                            <Checkbox label="Sunday" value="0" checked={this.state.day_flag[0]}
+                                style={{label: {color:'#383838B2'}, container: {height: 30}}}
+                                onCheck = {(value) => this.setDayFlag(value, 0)}/>
+                        </View>
+
+                        <View style={{flex:1, flexDirection:'column', alignItems: 'flex-start'}}>
+                            <Checkbox label="Tuesday" value="2" checked={this.state.day_flag[2]}
+                                style={{label: {color:'#383838B2'}}}
+                                onCheck = {(value) => this.setDayFlag(value, 2)}/>
+                            <Checkbox label="Thursday" value="4" checked={this.state.day_flag[4]}
+                                style={{label: {color:'#383838B2'}}}
+                                onCheck = {(value) => this.setDayFlag(value, 4)}/>
+                            <Checkbox label="Saturday" value="6" checked={this.state.day_flag[6]}
+                                style={{label: {color:'#383838B2'}}}
+                                onCheck = {(value) => this.setDayFlag(value, 6)}/>                           
+                        </View>
+
+                    </View>
                 </ScrollView>                
             </View>
             </ThemeContext.Provider>
@@ -188,5 +225,9 @@ const styles = StyleSheet.create({
         marginTop: 20,
         fontSize: 17,        
     },
+
+    checkBox: {
+        
+    }
     
 });
