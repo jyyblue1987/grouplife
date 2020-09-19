@@ -1,16 +1,45 @@
 import * as React from 'react';
 import {Component} from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import firebase from '../../database/firebase';
 import { stylesGlobal } from '../styles/stylesGlobal';
 
+const Tab = createBottomTabNavigator();
+
+function GroupHomePage() {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>GroupHomePage!</Text>
+      </View>
+    );
+}
+  
+function NewsPage() {
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text>News/Social Feed!</Text>
+        </View>
+    );
+}
+
+function ProfilePage() {
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text>ProfilePage!</Text>
+        </View>
+    );
+}
 
 export default class MainPage extends Component {
     constructor(props) {
         super(props);
         this.state = { 
-            uid: ''
+            
         }
     }
 
@@ -18,29 +47,45 @@ export default class MainPage extends Component {
         
     }
 
-    signOut = () => {
-        firebase.auth().signOut().then(() => {
-            this.props.navigation.navigate('Signin');
-        }).catch(error => this.setState({ errorMessage: error.message}));
-    }
-
     render() {
-        this.state = {
-            displayName: firebase.auth().currentUser.displayName,
-            uid: firebase.auth().currentUser.uid,
-        }
-        return (
-            <View style={styles.container}>                
-                <Text style={styles.textStyle}>
-                    Hello, {this.state.displayName}
-                </Text>
-                <View style = {{width: '100%', alignItems: 'center', marginTop: 50}}>
-                    <TouchableOpacity style = {{width: '90%', height: 40, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
-                        onPress = {() => this.signOut()}>
-                        <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 16}]}>Logout</Text>
-                    </TouchableOpacity>
-                </View>                  
-            </View>
+       
+        return (           
+            <Tab.Navigator
+                initialRouteName="Home"
+                tabBarOptions={{
+                    activeTintColor: stylesGlobal.back_color,
+                    showLabel: false
+                }}
+                >
+                <Tab.Screen
+                    name="Group"
+                    component={GroupHomePage}
+                    options={{                    
+                        tabBarIcon: ({ color, size }) => (
+                            <FontAwesome5 name="home" color={color} size={size} />
+                        ),
+                    }}
+                />
+                <Tab.Screen
+                    name="News"
+                    component={NewsPage}
+                    options={{                    
+                        tabBarIcon: ({ color, size }) => (
+                            <FontAwesome5 name="compass" color={color} size={size} />
+                        ),
+                    }}
+                />
+                <Tab.Screen
+                    name="Profile"
+                    component={ProfilePage}
+                    options={{                    
+                        tabBarIcon: ({ color, size }) => (
+                            <FontAwesome5 name="user" color={color} size={size} />
+                        ),
+                    }}
+                />
+            </Tab.Navigator>
+           
         );
     }
 }
