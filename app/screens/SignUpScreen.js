@@ -1,12 +1,11 @@
 import * as React from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
 import firebase from '../../database/firebase';
-import { stylesGlobal } from '../styles/stylesGlobal';
 
 
-export default class SignInScreen extends Component {
+export default class SignUpScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -79,14 +78,13 @@ export default class SignInScreen extends Component {
                     maxLength={15}
                     secureTextEntry={true}
                 />
-
                 <View style = {{width: '100%', alignItems: 'center', marginTop: 50}}>
-                    <TouchableOpacity style = {{width: '90%', height: 40, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
+                    <TouchableOpacity style = {{width: '90%', height: 40, backgroundColor: '#3476cb', justifyContent: 'center', alignItems: 'center'}} 
                         onPress = {() => this.userLogin()}>
-                        <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 16}]}>SignIn</Text>
+                        <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 16}]}>SignUp</Text>
                     </TouchableOpacity>
                 </View>
-                
+
                 <Text
                     style={styles.loginText}
                     onPress={() => this.props.navigation.navigate('Signup')}>
@@ -115,7 +113,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1
     },
     loginText: {
-        color: stylesGlobal.back_color,
+        color: '#3740FE',
         marginTop: 25,
         textAlign: 'center'
     },
