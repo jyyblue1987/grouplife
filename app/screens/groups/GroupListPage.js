@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native';
 import firebase from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -22,7 +22,7 @@ export default class GroupListPage extends Component {
 
     getGroupList() {
         this.setState({
-            group_list: [{id: 1}, {id: 2}],
+            group_list: [{id: 1}, {id: 2}, {id: 3}],
             isLoading: false
         })
     }
@@ -33,10 +33,27 @@ export default class GroupListPage extends Component {
     }
 
     renderRow(item) {
-		return (
-			<Text>
-                Group Name
-            </Text>
+		return (			
+            <View style={{flex:1, flexDirection: 'row'}}>
+                <View style={{justifyContent: "center"}}>
+                    <Image style = {{width: 100, height: '100%'}} source = {require("../../assets/images/logo.png")}/>
+                </View>
+                <View style={{width:'100%'}}>
+                    <Text style={{fontSize: 22, fontWeight: 'bold'}}>
+                        Downtown Group
+                    </Text>
+
+                    <Text style={{fontSize: 18}}>
+                        Woodside Detroit
+                    </Text>
+
+                    <View style = {{width: '100%', borderWidth:0.5, borderColor:'lightgray', marginTop: 15, marginBottom: 7}} />
+
+                    <Text style={{fontSize: 16, color: 'gray'}}>
+                        Monday, 6:30 PM
+                    </Text>
+                </View>    
+            </View> 
 		)
 	}
 
@@ -94,11 +111,13 @@ const styles = StyleSheet.create({
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        padding: 35,
+        paddingVertical: 35,
+        paddingHorizontal: 10,
     }, 
     
     header: {
-        fontSize: 25
+        fontSize: 30,
+        fontWeight: 'bold'
     }
     
 });
