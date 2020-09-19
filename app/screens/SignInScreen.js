@@ -61,16 +61,14 @@ export default class SignInScreen extends Component {
     }
 
     render() {
-        if( this.state.isLoading ) 
-        {
-            return(
-                <View style={styles.preloader}>
-                    <ActivityIndicator size="large" color="#9E9E9E"/>
-                </View>
-            )
-        }
+  
         return (
             <View style={styles.container}>
+                {
+                    this.state.isLoading && <View style={stylesGlobal.preloader}>
+                        <ActivityIndicator size="large" color="#9E9E9E"/>
+                    </View>
+                }
                 <TextInput
                     style={styles.inputStyle}
                     placeholder="Email"
@@ -127,15 +125,6 @@ const styles = StyleSheet.create({
         marginTop: 25,
         textAlign: 'center'
     },
-    preloader: {
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        position: 'absolute',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#fff'
-    }
+    
   });
 

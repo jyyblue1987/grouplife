@@ -25,6 +25,17 @@ export const stylesGlobal = {
         backgroundColor: BACK_COLOR,
     },
 
+    preloader: {
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        position: 'absolute',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#DDFFFFFF'        
+    },
+
     back_color: BACK_COLOR
 
 
