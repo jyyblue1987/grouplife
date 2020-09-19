@@ -22,7 +22,7 @@ function GroupHomePage() {
 function NewsPage() {
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>News/Social Feed!</Text>
+            <Text>News/Social Feed Page!</Text>
         </View>
     );
 }
@@ -30,7 +30,23 @@ function NewsPage() {
 function ProfilePage() {
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>ProfilePage!</Text>
+            <Text>Profile Page!</Text>
+        </View>
+    );
+}
+
+function NotificationPage() {
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text>Notification Page!</Text>
+        </View>
+    );
+}
+
+function SettingPage() {
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text>Setting Page!</Text>
         </View>
     );
 }
@@ -81,6 +97,25 @@ export default class MainPage extends Component {
                     options={{                    
                         tabBarIcon: ({ color, size }) => (
                             <FontAwesome5 name="user" color={color} size={size} />
+                        ),
+                    }}
+                />
+
+                <Tab.Screen
+                    name="Notification"
+                    component={NotificationPage}
+                    options={{                    
+                        tabBarIcon: ({ color, size }) => (
+                            <FontAwesome5 name="bell" color={color} size={size} />
+                        ),
+                    }}
+                />
+                <Tab.Screen
+                    name="Setting"
+                    component={SettingPage}
+                    options={{                    
+                        tabBarIcon: ({ color, size }) => (
+                            <FontAwesome5 name="cog" color={color} size={size} />
                         ),
                     }}
                 />
