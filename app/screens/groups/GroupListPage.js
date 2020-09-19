@@ -2,6 +2,7 @@ import * as React from 'react';
 import {Component} from 'react';
 
 import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native';
+import { Card } from 'react-native-material-ui';
 import firebase from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -34,26 +35,28 @@ export default class GroupListPage extends Component {
 
     renderRow(item) {
 		return (			
-            <View style={{flex:1, flexDirection: 'row'}}>
-                <View style={{justifyContent: "center"}}>
-                    <Image style = {{width: 100, height: '100%'}} source = {require("../../assets/images/logo.png")}/>
-                </View>
-                <View style={{width:'100%'}}>
-                    <Text style={{fontSize: 22, fontWeight: 'bold'}}>
-                        Downtown Group
-                    </Text>
+            <Card>
+                <View style={{flex:1, flexDirection: 'row'}}>
+                    <View style={{justifyContent: "center"}}>
+                        <Image style = {{width: 100, height: '100%'}} source = {require("../../assets/images/logo.png")}/>
+                    </View>
+                    <View style={{width:'100%'}}>
+                        <Text style={{fontSize: 22, fontWeight: 'bold'}}>
+                            Downtown Group
+                        </Text>
 
-                    <Text style={{fontSize: 18}}>
-                        Woodside Detroit
-                    </Text>
+                        <Text style={{fontSize: 18}}>
+                            Woodside Detroit
+                        </Text>
 
-                    <View style = {{width: '100%', borderWidth:0.5, borderColor:'lightgray', marginTop: 15, marginBottom: 7}} />
+                        <View style = {{width: '100%', borderWidth:0.5, borderColor:'lightgray', marginTop: 15, marginBottom: 7}} />
 
-                    <Text style={{fontSize: 16, color: 'gray'}}>
-                        Monday, 6:30 PM
-                    </Text>
-                </View>    
-            </View> 
+                        <Text style={{fontSize: 16, color: 'gray'}}>
+                            Monday, 6:30 PM
+                        </Text>
+                    </View>    
+                </View> 
+            </Card>
 		)
 	}
 
