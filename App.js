@@ -15,6 +15,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import {stylesGlobal} from './app/styles/stylesGlobal';
 import SignInScreen from  './app/screens/SignInScreen';
+import SignUpScreen from  './app/screens/SignUpScreen';
 
 const Stack = createStackNavigator();
 
@@ -40,7 +41,8 @@ export default class App extends Component {
 						)
 					}                    
                 >
-                    <Stack.Screen name="Signin" component={SignInScreen} />                   
+                    <Stack.Screen name="Signin" component={SignInScreen} />
+					<Stack.Screen name="Signup" component={SignUpScreen} />                   
                 </Stack.Navigator>
             </NavigationContainer>
 

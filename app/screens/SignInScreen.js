@@ -51,7 +51,13 @@ export default class SignInScreen extends Component {
 
                 this.props.navigation.navigate('Main');
             })
-            .catch(error => this.setState({errorMessage: error.message})) 
+            .catch(error => {
+                this.setState({
+                    isLoading: false,                   
+                });
+
+                this.setState({errorMessage: error.message});
+            }) 
     }
 
     render() {
@@ -68,12 +74,14 @@ export default class SignInScreen extends Component {
                 <TextInput
                     style={styles.inputStyle}
                     placeholder="Email"
+                    autoCapitalize = 'none'
                     value={this.state.email}
                     onChangeText={(val) => this.updateInputVal(val, 'email')}
                 />
                 <TextInput
                     style={styles.inputStyle}
                     placeholder="Password"
+                    autoCapitalize = 'none'
                     value={this.state.password}
                     onChangeText={(val) => this.updateInputVal(val, 'password')}
                     maxLength={15}

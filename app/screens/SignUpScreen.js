@@ -1,14 +1,16 @@
 import * as React from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, Text, View, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import firebase from '../../database/firebase';
+import { stylesGlobal } from '../styles/stylesGlobal';
 
 
 export default class SignUpScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            displayName: '',
             email: '', 
             password: '',
             isLoading: false
@@ -25,9 +27,9 @@ export default class SignUpScreen extends Component {
         this.setState(state);
     }
 
-    userLogin = () => {
+    registerUser = () => {
         if( this.state.email === '' && this.state.password === '' ) {
-            Alert.alert("Enter details to signin!");
+            Alert.alert("Enter details to signup!");
         }
         else
         {
@@ -37,18 +39,22 @@ export default class SignUpScreen extends Component {
         }
 
         firebase.auth()
-            .signInWithEmailAndPassword(this.state.email, this.state.password)
+            .createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then( (res) => {   
-                console.log(res);
-                console.log('User logged-in successfully!');                
+                res.user.updateProfile({
+                    displayName: this.state.displayName
+                });
+
+                console.log('User registered successfully!');                
                 
                 this.setState({
                     isLoading: false,
+                    displayName: '',
                     email: '',
                     password: ''
                 });
 
-                this.props.navigation.navigate('Main');
+                this.props.navigation.navigate('Signin');
             })
             .catch(error => this.setState({errorMessage: error.message})) 
     }
@@ -66,29 +72,39 @@ export default class SignUpScreen extends Component {
             <View style={styles.container}>
                 <TextInput
                     style={styles.inputStyle}
+                    placeholder="Name"
+                    autoCapitalize = 'none'
+                    value={this.state.displayName}
+                    onChangeText={(val) => this.updateInputVal(val, 'displayName')}
+                    />      
+                <TextInput
+                    style={styles.inputStyle}
                     placeholder="Email"
+                    autoCapitalize = 'none'
                     value={this.state.email}
                     onChangeText={(val) => this.updateInputVal(val, 'email')}
                 />
                 <TextInput
                     style={styles.inputStyle}
                     placeholder="Password"
+                    autoCapitalize = 'none'
                     value={this.state.password}
                     onChangeText={(val) => this.updateInputVal(val, 'password')}
                     maxLength={15}
                     secureTextEntry={true}
                 />
+
                 <View style = {{width: '100%', alignItems: 'center', marginTop: 50}}>
-                    <TouchableOpacity style = {{width: '90%', height: 40, backgroundColor: '#3476cb', justifyContent: 'center', alignItems: 'center'}} 
-                        onPress = {() => this.userLogin()}>
+                    <TouchableOpacity style = {{width: '90%', height: 40, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
+                        onPress = {() => this.registerUser()}>
                         <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 16}]}>SignUp</Text>
                     </TouchableOpacity>
                 </View>
-
+                
                 <Text
                     style={styles.loginText}
                     onPress={() => this.props.navigation.navigate('Signup')}>
-                    Don't have account? Click here to signup
+                    Already Registered? Click here to login
                 </Text>                
             </View>
         );
@@ -113,7 +129,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1
     },
     loginText: {
-        color: '#3740FE',
+        color: stylesGlobal.back_color,
         marginTop: 25,
         textAlign: 'center'
     },
