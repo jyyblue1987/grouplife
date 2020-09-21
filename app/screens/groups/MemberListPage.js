@@ -35,24 +35,18 @@ export default class MemberListPage extends Component {
 
     renderRow(item) {
 		return (			
-            <Card style={{container:{borderRadius: 6}}}>
-                <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => this.props.navigation.navigate('MemberDetail', {group: item})}>
+            <Card style={{container:{borderRadius: 15}}}>
+                <TouchableOpacity style={{flex:1, flexDirection: 'row', padding: 5}} onPress={() => this.props.navigation.navigate('MemberDetail', {group: item})}>
                     <View style={{justifyContent: "center"}}>
-                        <Image style = {{width: 100, height: '100%'}} source = {require("../../assets/images/group_image.jpg")}/>
+                        <Image style = {{width: 60, height: 60, borderRadius: 30, borderColor: stylesGlobal.back_color, borderWidth: 2}} source = {require("../../assets/images/group_image.jpg")}/>
                     </View>
                     <View style={{width:'100%', marginLeft: 7, paddingVertical: 9}}>
                         <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-                            Downtown Group
+                            Michael Snow
                         </Text>
 
                         <Text style={{fontSize: 17}}>
-                            Woodside Detroit
-                        </Text>
-
-                        <View style = {{width: '100%', borderWidth:0.5, borderColor:'lightgray', marginTop: 15, marginBottom: 7}} />
-
-                        <Text style={{fontSize: 16, color: 'gray'}}>
-                            Monday, 6:30 PM
+                            Group Leader
                         </Text>
                     </View>    
                 </TouchableOpacity> 
