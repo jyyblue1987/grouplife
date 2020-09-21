@@ -20,6 +20,7 @@ import MainPage from  './app/screens/MainPage';
 import GroupCreatePage from  './app/screens/groups/GroupCreatePage';
 import GroupDetailPage from  './app/screens/groups/GroupDetailPage';
 import MemberListPage from  './app/screens/groups/MemberListPage';
+import MemberProfilePage from  './app/screens/profile/MemberProfilePage';
 
 const Stack = createStackNavigator();
 
@@ -68,6 +69,12 @@ export default class App extends Component {
 							title: 'Group Members',							
 						}} 
 					/>  
+
+					<Stack.Screen name="MemberProfile" component={MemberProfilePage} 
+						options={{
+							title: 'Member Profile',							
+						}} 
+					/>
                 </Stack.Navigator>
             </NavigationContainer>
 

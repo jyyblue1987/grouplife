@@ -36,7 +36,7 @@ export default class MemberListPage extends Component {
     renderRow(item) {
 		return (			
             <Card style={{container:{borderRadius: 15}}}>
-                <TouchableOpacity style={{flex:1, flexDirection: 'row', padding: 5}} onPress={() => this.props.navigation.navigate('MemberDetail', {group: item})}>
+                <TouchableOpacity style={{flex:1, flexDirection: 'row', padding: 5}} onPress={() => this.props.navigation.navigate('MemberProfile', {group: item})}>
                     <View style={{justifyContent: "center"}}>
                         <Image style = {{width: 60, height: 60, borderRadius: 30, borderColor: stylesGlobal.back_color, borderWidth: 2}} source = {require("../../assets/images/group_image.jpg")}/>
                     </View>
