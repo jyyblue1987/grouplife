@@ -3,6 +3,7 @@ import {Component} from 'react';
 
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-material-ui';
+import LinearGradient from 'react-native-linear-gradient';
 import firebase from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -39,9 +40,11 @@ export default class GroupDetailPage extends Component {
                         <ActivityIndicator size="large" color="#9E9E9E"/>
                     </View>
                 }
-
-                <View style={{width: '100%', height: 300}}>                    
-                    <Image style = {{width: '100%', height: '100%'}} source = {require("../../assets/images/group_image_detail.jpg")}/>
+                <View style={{width: '100%', height: 300}}>                        
+                    <Image style = {{width: '100%', height: '100%'}} source = {require("../../assets/images/group_image_detail.jpg")}>                       
+                    </Image>
+                    <LinearGradient colors={["black", "transparent"]} style={styles.linearGradient}>
+                    </LinearGradient>                 
                     <View style={{width:'100%', flexDirection:'row', alignItems: 'center', position: 'absolute', paddingVertical: 9, bottom: 0, backgroundColor: stylesGlobal.back_color}}>
                         <FontAwesome5 name="calendar" size={22} color={'#fff'} style={{marginLeft: 15}} />
                         <Text style={{marginLeft: 10, color: '#fff'}}>Next group meeting in 2 days, 3 hours</Text>
@@ -96,7 +99,14 @@ const styles = StyleSheet.create({
 
     textStyle: {
         marginLeft: 18,
-    }
+    },
+    linearGradient: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        left: 0,
+        top: 0
+    },
 
     
     
