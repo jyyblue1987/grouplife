@@ -5,6 +5,7 @@ import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity 
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Button, Checkbox } from 'react-native-material-ui';
 import ImagePicker from 'react-native-image-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
 
@@ -25,12 +26,14 @@ export default class GroupCreatePage extends Component {
         super(props);
 
         this.state = {
-            isLoading: false, 
+            isLoading: false,             
             group_name: '',      
             group_desc: '',     
             group_type: 'ca',
             image_uri: '',
-            day_flag: [true, true, true, true, true, true, true]
+            day_flag: [true, true, true, true, true, true, true],
+            timepicker_show: false,
+            date: new Date(),
         }
     }
 
@@ -78,6 +81,16 @@ export default class GroupCreatePage extends Component {
         var day_flag = [...this.state.day_flag];
         day_flag[num] = value;
         this.setState({day_flag: day_flag});
+    }
+
+    showTimepicker() {
+        this.setState({timepicker_show: true});
+    }
+
+    onChangeMeetingTime(event, selectedDate) 
+    {
+        const currentDate = selectedDate || this.state.date;
+        this.setState({date: currentDate});
     }
 
     render() {
@@ -186,8 +199,30 @@ export default class GroupCreatePage extends Component {
                                 style={{label: {color:'#383838B2'}}}
                                 onCheck = {(value) => this.setDayFlag(value, 6)}/>                           
                         </View>
-
                     </View>
+
+                    <View style={{width: '100%', flexDirection: 'row', marginTop: 15}}>                        
+                        <TouchableOpacity style = {[{width:'100%'}, styles.showdowButton]} 
+                        onPress = {() => this.showTimepicker()}
+                        >
+                            <Text style={{flex:1, color: '#383838B2'}}>Metting Time</Text>
+                            <Image style = {{width: 20, height: 20, tintColor: stylesGlobal.back_color}} source = {require("../../assets/images/dropdown.png")}/>
+                        </TouchableOpacity>                        
+                    </View>
+                    {
+                        this.state.timepicker_show && (
+                            <DateTimePicker
+                                testID="datetTimePicker"
+                                value={this.state.date}
+                                mode="time"
+                                is24Hour={false}
+                                display="default"                               
+                                onChange = {(event, selectedDate) => this.onChangeMeetingTime(event, selectedDate)}
+
+                            />
+                        )
+                    }
+
                 </ScrollView>                
             </View>
             </ThemeContext.Provider>
@@ -224,6 +259,16 @@ const styles = StyleSheet.create({
         color: '#383838',        
         marginTop: 20,
         fontSize: 17,        
+    },
+
+    showdowButton: {
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        height: 45, 
+        paddingHorizontal: 8, 
+        borderRadius:8, 
+        borderColor: '#383838B2', 
+        borderWidth: 1,        
     },
 
     checkBox: {
