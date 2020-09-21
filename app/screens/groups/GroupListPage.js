@@ -38,14 +38,14 @@ export default class GroupListPage extends Component {
             <Card>
                 <View style={{flex:1, flexDirection: 'row'}}>
                     <View style={{justifyContent: "center"}}>
-                        <Image style = {{width: 100, height: '100%'}} source = {require("../../assets/images/logo.png")}/>
+                        <Image style = {{width: 100, height: '100%'}} source = {require("../../assets/images/group_image.jpg")}/>
                     </View>
-                    <View style={{width:'100%'}}>
-                        <Text style={{fontSize: 22, fontWeight: 'bold'}}>
+                    <View style={{width:'100%', marginLeft: 7}}>
+                        <Text style={{fontSize: 20, fontWeight: 'bold'}}>
                             Downtown Group
                         </Text>
 
-                        <Text style={{fontSize: 18}}>
+                        <Text style={{fontSize: 17}}>
                             Woodside Detroit
                         </Text>
 
