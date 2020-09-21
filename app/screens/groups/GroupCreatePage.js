@@ -206,16 +206,16 @@ export default class GroupCreatePage extends Component {
                                 onCheck = {(value) => this.setDayFlag(value, 0)}/>
                         </View>
 
-                        <View style={{flex:1, flexDirection:'column', alignItems: 'flex-start'}}>
+                        <View style={{flex:1, flexDirection:'column', height: 95}}>
                             <Checkbox label="Tuesday" value="2" checked={this.state.day_flag[2]}
-                                style={{label: {color:'#383838B2'}}}
+                                style={{label: {color:'#383838B2'}, container: {height: 30}}}
                                 onCheck = {(value) => this.setDayFlag(value, 2)}/>
                             <Checkbox label="Thursday" value="4" checked={this.state.day_flag[4]}
-                                style={{label: {color:'#383838B2'}}}
+                                style={{label: {color:'#383838B2'}, container: {height: 30}}}
                                 onCheck = {(value) => this.setDayFlag(value, 4)}/>
                             <Checkbox label="Saturday" value="6" checked={this.state.day_flag[6]}
-                                style={{label: {color:'#383838B2'}}}
-                                onCheck = {(value) => this.setDayFlag(value, 6)}/>                           
+                                style={{label: {color:'#383838B2'}, container: {height: 30}}}
+                                onCheck = {(value) => this.setDayFlag(value, 6)}/>                                                    
                         </View>
                     </View>
 
