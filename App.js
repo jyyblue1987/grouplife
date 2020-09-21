@@ -19,6 +19,7 @@ import SignUpScreen from  './app/screens/SignUpScreen';
 import MainPage from  './app/screens/MainPage';
 import GroupCreatePage from  './app/screens/groups/GroupCreatePage';
 import GroupDetailPage from  './app/screens/groups/GroupDetailPage';
+import MemberListPage from  './app/screens/groups/MemberListPage';
 
 const Stack = createStackNavigator();
 
@@ -58,10 +59,15 @@ export default class App extends Component {
 					/>     
 					<Stack.Screen name="GroupDetail" component={GroupDetailPage} 
 						options={{
-							title: 'Group Home',
+							title: '',
 							headerShown: false,							
 						}} 
-					/>      
+					/>     
+					<Stack.Screen name="MemberList" component={MemberListPage} 
+						options={{
+							title: 'Group Members',							
+						}} 
+					/>  
                 </Stack.Navigator>
             </NavigationContainer>
 

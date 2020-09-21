@@ -68,7 +68,11 @@ export default class GroupDetailPage extends Component {
                             <Text style={{flex:1, fontSize: 16}}>Woodside Detroit</Text>
                             <View style={{flex:1, flexDirection: 'row', alignItems: 'center', fontSize: 16}}>
                                 <FontAwesome5 name="user" size={18} color={stylesGlobal.back_color} style={{marginLeft: 15}} />
-                                <Text style={{marginLeft: 15, fontSize: 16}}>31 Members</Text>
+                                <Text style={{marginLeft: 15, fontSize: 16}}
+                                onPress={() => this.props.navigation.navigate('MemberList', {group: this.state.group})}
+                                >
+                                    31 Members
+                                </Text>
                             </View>                        
                         </View>
 
