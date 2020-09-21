@@ -38,6 +38,7 @@ export default class GroupCreatePage extends Component {
             timepicker_show: false,
             date: new Date(),
             meeting_time: 'Meeting Time',
+            occurence: '1',
         }
     }
 
@@ -225,6 +226,22 @@ export default class GroupCreatePage extends Component {
                         mode="time"
                         onConfirm = {(date) => this.onChangeMeetingTime(date)}
                         onCancel = {() =>this.onCancelMeetingTime()}
+                    />
+
+                    <DropDownPicker 
+                        items={[
+                            {label: 'Twice a week', value: '1'},
+                            {label: 'Once a week', value: '2'},
+                            {label: 'Every 2 weeks', value: '3'}
+                        ]}
+                        defaultValue={this.state.occurence}
+                        containerStyle={{height:45, marginTop: 20}}
+                        style={{backgroundColor:'#fafafa'}}
+                        itemStyle={{justifyContent: 'flex-start'}}
+                        dropDownStyle={{backgroundColor:'#fafafa'}}
+                        onChangeItem={item => this.setState({
+                            occurence: item.value
+                        })}
                     />
                    
                 </ScrollView>                
