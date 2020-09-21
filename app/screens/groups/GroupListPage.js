@@ -35,8 +35,8 @@ export default class GroupListPage extends Component {
 
     renderRow(item) {
 		return (			
-            <Card style={{container:{borderRadius: 6}}} onPress={() => this.props.navigation.navigate('GroupDetail', {group: item})}>
-                <View style={{flex:1, flexDirection: 'row'}}>
+            <Card style={{container:{borderRadius: 6}}}>
+                <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => this.props.navigation.navigate('GroupDetail', {group: item})}>
                     <View style={{justifyContent: "center"}}>
                         <Image style = {{width: 100, height: '100%'}} source = {require("../../assets/images/group_image.jpg")}/>
                     </View>
@@ -55,7 +55,7 @@ export default class GroupListPage extends Component {
                             Monday, 6:30 PM
                         </Text>
                     </View>    
-                </View> 
+                </TouchableOpacity> 
             </Card>
 		)
 	}

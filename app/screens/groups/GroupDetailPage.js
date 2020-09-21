@@ -8,6 +8,7 @@ import firebase from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 export default class GroupDetailPage extends Component {
     constructor(props) {
@@ -78,6 +79,25 @@ export default class GroupDetailPage extends Component {
                     <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 10}}>
                         <Ionicons name="ios-information-circle-outline" size={22} color={stylesGlobal.back_color} />
                         <Text style={styles.textStyle}>Overview</Text>
+                    </TouchableOpacity>
+                </Card>
+
+                {/* Group Chat */}
+                <Card style={{container: {borderRadius: 10}}}>
+                    <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 10}}>
+                        <Entypo name="chat" size={22} color={stylesGlobal.back_color} />
+                        <Text style={styles.textStyle}>Group Chat</Text>
+                        <View style={{width: 28, height: 28, borderRadius: 14, position: 'absolute', justifyContent: 'center', alignItems: 'center', right: 10, backgroundColor:'#0AB97A'}}>
+                            <Text style={{color:'white', fontSize: 17}}>2</Text>
+                        </View>                        
+                    </TouchableOpacity>
+                </Card>
+
+                {/* Material */}
+                <Card style={{container: {borderRadius: 10}}}>
+                    <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 10}}>
+                        <Entypo name="chat" size={22} color={stylesGlobal.back_color} />
+                        <Text style={styles.textStyle}>Materials</Text>
                     </TouchableOpacity>
                 </Card>
             </View>
