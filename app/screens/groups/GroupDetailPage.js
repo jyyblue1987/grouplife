@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { Card } from 'react-native-material-ui';
 import LinearGradient from 'react-native-linear-gradient';
 import firebase from '../../../database/firebase';
@@ -9,6 +9,8 @@ import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default class GroupDetailPage extends Component {
     constructor(props) {
@@ -41,65 +43,107 @@ export default class GroupDetailPage extends Component {
                         <ActivityIndicator size="large" color="#9E9E9E"/>
                     </View>
                 }
-                <View style={{width: '100%', height: 300}}>                        
-                    <Image style = {{width: '100%', height: '100%'}} source = {require("../../assets/images/group_image_detail.jpg")}>                       
-                    </Image>
-                    <LinearGradient colors={["black", "transparent"]} style={styles.linearGradient}>
-                    </LinearGradient>                 
-                    <View style={{width:'100%', flexDirection:'row', alignItems: 'center', position: 'absolute', paddingVertical: 9, bottom: 0, backgroundColor: stylesGlobal.back_color}}>
-                        <FontAwesome5 name="calendar" size={22} color={'#fff'} style={{marginLeft: 15}} />
-                        <Text style={{marginLeft: 10, color: '#fff'}}>Next group meeting in 2 days, 3 hours</Text>
-                    </View>
-                    <TouchableOpacity style={{position: 'absolute', left: 20, top: 45}}
-                        onPress={() => this.props.navigation.goBack()}
-                        >
-                        <Ionicons name="arrow-back" size={30} color={'#fff'} />
-                    </TouchableOpacity>
-                </View>
-
-                <View style={{paddingHorizontal: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: 'gray'}}>
-                    <Text style={{fontWeight: 'bold', fontSize: 22}}>
-                        Downdown Group
-                    </Text>
-                    <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
-                        <Text style={{flex:1, fontSize: 16}}>Woodside Detroit</Text>
-                        <View style={{flex:1, flexDirection: 'row', alignItems: 'center', fontSize: 16}}>
-                            <FontAwesome5 name="user" size={18} color={stylesGlobal.back_color} style={{marginLeft: 15}} />
-                            <Text style={{marginLeft: 15, fontSize: 16}}>31 Members</Text>
-                        </View>                        
+                <ScrollView style={{width:'100%'}}>
+                    <View style={{width: '100%', height: 300}}>                        
+                        <Image style = {{width: '100%', height: '100%'}} source = {require("../../assets/images/group_image_detail.jpg")}>                       
+                        </Image>
+                        <LinearGradient colors={["black", "transparent"]} style={styles.linearGradient}>
+                        </LinearGradient>                 
+                        <View style={{width:'100%', flexDirection:'row', alignItems: 'center', position: 'absolute', paddingVertical: 9, bottom: 0, backgroundColor: stylesGlobal.back_color}}>
+                            <FontAwesome5 name="calendar" size={22} color={'#fff'} style={{marginLeft: 15}} />
+                            <Text style={{marginLeft: 10, color: '#fff'}}>Next group meeting in 2 days, 3 hours</Text>
+                        </View>
+                        <TouchableOpacity style={{position: 'absolute', left: 20, top: 45}}
+                            onPress={() => this.props.navigation.goBack()}
+                            >
+                            <Ionicons name="arrow-back" size={30} color={'#fff'} />
+                        </TouchableOpacity>
                     </View>
 
-                    <Text style={{fontSize: 15, color: '#383838B2'}}>
-                        Monday's, 6:30 PM
-                    </Text>
-                </View>
+                    <View style={{paddingHorizontal: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: 'gray'}}>
+                        <Text style={{fontWeight: 'bold', fontSize: 22}}>
+                            Downdown Group
+                        </Text>
+                        <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
+                            <Text style={{flex:1, fontSize: 16}}>Woodside Detroit</Text>
+                            <View style={{flex:1, flexDirection: 'row', alignItems: 'center', fontSize: 16}}>
+                                <FontAwesome5 name="user" size={18} color={stylesGlobal.back_color} style={{marginLeft: 15}} />
+                                <Text style={{marginLeft: 15, fontSize: 16}}>31 Members</Text>
+                            </View>                        
+                        </View>
 
-                {/* Overview */}
-                <Card style={{container: {borderRadius: 10}}}>
-                    <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 10}}>
-                        <Ionicons name="ios-information-circle-outline" size={22} color={stylesGlobal.back_color} />
-                        <Text style={styles.textStyle}>Overview</Text>
-                    </TouchableOpacity>
-                </Card>
+                        <Text style={{fontSize: 15, color: '#383838B2'}}>
+                            Monday's, 6:30 PM
+                        </Text>
+                    </View>
 
-                {/* Group Chat */}
-                <Card style={{container: {borderRadius: 10}}}>
-                    <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 10}}>
-                        <Entypo name="chat" size={22} color={stylesGlobal.back_color} />
-                        <Text style={styles.textStyle}>Group Chat</Text>
-                        <View style={{width: 28, height: 28, borderRadius: 14, position: 'absolute', justifyContent: 'center', alignItems: 'center', right: 10, backgroundColor:'#0AB97A'}}>
-                            <Text style={{color:'white', fontSize: 17}}>2</Text>
-                        </View>                        
-                    </TouchableOpacity>
-                </Card>
+                    {/* Overview */}
+                    <Card style={{container: {borderRadius: 10}}}>
+                        <TouchableOpacity style={styles.cardButtonStyle}>
+                            <Ionicons name="ios-information-circle-outline" size={22} color={stylesGlobal.back_color} />
+                            <Text style={styles.textStyle}>Overview</Text>
+                        </TouchableOpacity>
+                    </Card>
 
-                {/* Material */}
-                <Card style={{container: {borderRadius: 10}}}>
-                    <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 10}}>
-                        <Entypo name="chat" size={22} color={stylesGlobal.back_color} />
-                        <Text style={styles.textStyle}>Materials</Text>
-                    </TouchableOpacity>
-                </Card>
+                    {/* Group Chat */}
+                    <Card style={{container: {borderRadius: 10}}}>
+                        <TouchableOpacity style={styles.cardButtonStyle}>
+                            <Entypo name="chat" size={22} color={stylesGlobal.back_color} />
+                            <Text style={styles.textStyle}>Group Chat</Text>
+                            <View style={{width: 28, height: 28, borderRadius: 14, position: 'absolute', justifyContent: 'center', alignItems: 'center', right: 10, backgroundColor:'#0AB97A'}}>
+                                <Text style={{color:'white', fontSize: 17}}>2</Text>
+                            </View>                        
+                        </TouchableOpacity>
+                    </Card>
+
+                    {/* Material */}
+                    <Card style={{container: {borderRadius: 10}}}>
+                        <TouchableOpacity style={styles.cardButtonStyle}>
+                            <FontAwesome5 name="book-open" size={22} color={stylesGlobal.back_color} />
+                            <Text style={styles.textStyle}>Materials</Text>
+                        </TouchableOpacity>
+                    </Card>
+
+                    {/* Group Poll */}
+                    <Card style={{container: {borderRadius: 10}}}>
+                        <TouchableOpacity style={styles.cardButtonStyle}>
+                            <Fontisto name="checkbox-active" size={22} color={stylesGlobal.back_color} />
+                            <Text style={styles.textStyle}>Group Poll</Text>
+                        </TouchableOpacity>
+                    </Card>
+
+                    {/* Group Poll */}
+                    <Card style={{container: {borderRadius: 10}}}>
+                        <TouchableOpacity style={styles.cardButtonStyle}>
+                            <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
+                            <Text style={styles.textStyle}>Schedule</Text>
+                        </TouchableOpacity>
+                    </Card>
+
+                    {/* Prayer Requests */}
+                    <Card style={{container: {borderRadius: 10}}}>
+                        <TouchableOpacity style={styles.cardButtonStyle}>
+                            <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
+                            <Text style={styles.textStyle}>Prayer Requests</Text>
+                        </TouchableOpacity>
+                    </Card>
+
+                    {/* Testimonials */}
+                    <Card style={{container: {borderRadius: 10}}}>
+                        <TouchableOpacity style={styles.cardButtonStyle}>
+                            <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
+                            <Text style={styles.textStyle}>Testimonials</Text>
+                        </TouchableOpacity>
+                    </Card>
+
+                    {/* Freedback */}
+                    <Card style={{container: {borderRadius: 10}}}>
+                        <TouchableOpacity style={styles.cardButtonStyle}>
+                            <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
+                            <Text style={styles.textStyle}>Freedback</Text>
+                        </TouchableOpacity>
+                    </Card>
+                </ScrollView>
             </View>
         );
     }
@@ -128,6 +172,13 @@ const styles = StyleSheet.create({
         left: 0,
         top: 0
     },
+
+    cardButtonStyle: {
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        paddingHorizontal: 10, 
+        paddingVertical: 15
+    }
 
     
     
