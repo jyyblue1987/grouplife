@@ -2,8 +2,8 @@ import * as React from 'react';
 import {Component} from 'react';
 
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { Card } from 'react-native-material-ui';
-
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import Ionicons from 'react-native-vector-icons/Ionicons'; 
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
 export default class MemberProfielPage extends Component {
@@ -69,8 +69,8 @@ export default class MemberProfielPage extends Component {
                         </Text>
                         {/* Email */}
                         <View style={{flex:1, flexDirection: 'row', alignItems: 'center', paddingVertical: 10}}>
-                            <View style={{justifyContent: "center"}}>
-                                <Image style = {{width: 60, height: 60}} source = {require("../../assets/images/group_image.jpg")}/>
+                            <View style={styles.contactPanel}>
+                                <Fontisto name="email" size={25} color='white' />
                             </View>
                             <View style={{width:'100%', marginLeft: 10, paddingVertical: 9}}>
                                 <Text style={{fontSize: 20, color:'gray'}}>
@@ -82,10 +82,10 @@ export default class MemberProfielPage extends Component {
                             </View>    
                         </View>
 
-                        {/* Email */}
+                        {/* Phone */}
                         <View style={{flex:1, flexDirection: 'row', alignItems: 'center', paddingVertical: 10}}>
-                            <View style={{justifyContent: "center"}}>
-                                <Image style = {{width: 60, height: 60}} source = {require("../../assets/images/group_image.jpg")}/>
+                            <View style={styles.contactPanel}>
+                                <Fontisto name="mobile" size={25} color='white' />
                             </View>
                             <View style={{width:'100%', marginLeft: 10, paddingVertical: 9}}>
                                 <Text style={{fontSize: 20, color:'gray'}}>
@@ -97,10 +97,10 @@ export default class MemberProfielPage extends Component {
                             </View>    
                         </View>
 
-                        {/* Email */}
+                        {/* Address */}
                         <View style={{flex:1, flexDirection: 'row', alignItems: 'center', paddingVertical: 10}}>
-                            <View style={{justifyContent: "center"}}>
-                                <Image style = {{width: 60, height: 60}} source = {require("../../assets/images/group_image.jpg")}/>
+                            <View style={styles.contactPanel}>
+                                <Ionicons name="location" size={25} color='white' />
                             </View>
                             <View style={{width:'100%', marginLeft: 10, paddingVertical: 9}}>
                                 <Text style={{fontSize: 20, color:'gray'}}>
@@ -128,6 +128,15 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         paddingBottom: 35,        
     }, 
+
+    contactPanel: {
+        width: 60,
+        height: 60,
+        backgroundColor: stylesGlobal.back_color,
+        borderRadius: 10,
+        justifyContent: "center",
+        alignItems: 'center'
+    }
     
     
 });
