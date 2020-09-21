@@ -58,7 +58,8 @@ export default class App extends Component {
 					/>     
 					<Stack.Screen name="GroupDetail" component={GroupDetailPage} 
 						options={{
-							title: 'Group Home',							
+							title: 'Group Home',
+							headerShown: false,							
 						}} 
 					/>      
                 </Stack.Navigator>
