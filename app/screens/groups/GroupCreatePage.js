@@ -7,8 +7,8 @@ import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity 
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Button, Checkbox } from 'react-native-material-ui';
 import ImagePicker from 'react-native-image-picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
 
@@ -39,6 +39,10 @@ export default class GroupCreatePage extends Component {
             date: new Date(),
             meeting_time: 'Meeting Time',
             occurence: '1',
+            location: '',
+            leader_name: '',
+            leader_phone: '',
+            leader_email: '',            
         }
     }
 
@@ -103,6 +107,9 @@ export default class GroupCreatePage extends Component {
         this.setState({timepicker_show: false});
     }
 
+    onAddLeader() {
+
+    }
 
     render() {
   
@@ -213,7 +220,7 @@ export default class GroupCreatePage extends Component {
                     </View>
 
                     <View style={{width: '100%', flexDirection: 'row', marginTop: 15}}>                        
-                        <TouchableOpacity style = {[{width:'100%'}, styles.showdowButton]} 
+                        <TouchableOpacity style = {[{width:'100%'}, styles.roundButton]} 
                         onPress = {() => this.showTimepicker()}
                         >
                             <Text style={{flex:1, color: '#383838B2', fontSize: 18}}>{this.state.meeting_time}</Text>
@@ -232,7 +239,8 @@ export default class GroupCreatePage extends Component {
                         items={[
                             {label: 'Twice a week', value: '1'},
                             {label: 'Once a week', value: '2'},
-                            {label: 'Every 2 weeks', value: '3'}
+                            {label: 'Every 2 weeks', value: '3'},
+                            {label: 'Once a month', value: '4'},
                         ]}
                         defaultValue={this.state.occurence}
                         containerStyle={{height:45, marginTop: 20}}
@@ -243,6 +251,58 @@ export default class GroupCreatePage extends Component {
                             occurence: item.value
                         })}
                     />
+
+                    <TextInput
+                            style={[stylesGlobal.inputStyle, {marginTop: 15}]}
+                            placeholder="Location"
+                            autoCapitalize = 'none'
+                            value={this.state.location}
+                            onChangeText={(val) => this.updateInputVal(val, 'location')}
+                        />
+
+                    <Text
+                        style={styles.paraText}
+                        >
+                        Leader Information
+                    </Text>         
+                    <Text
+                        style={styles.paraText2}
+                        >
+                        Information about the event reader
+                    </Text>
+
+                    <TextInput
+                            style={[stylesGlobal.inputStyle, {marginTop: 15}]}
+                            placeholder="Name"
+                            autoCapitalize = 'none'
+                            value={this.state.leader_name}
+                            onChangeText={(val) => this.updateInputVal(val, 'leader_name')}
+                        />
+
+                    <TextInput
+                            style={[stylesGlobal.inputStyle, {marginTop: 15}]}
+                            placeholder="Phone Number"
+                            autoCapitalize = 'none'
+                            value={this.state.leader_phone}
+                            onChangeText={(val) => this.updateInputVal(val, 'leader_phone')}
+                        />
+                   
+                   <TextInput
+                            style={[stylesGlobal.inputStyle, {marginTop: 15}]}
+                            placeholder="Email Address"
+                            autoCapitalize = 'none'
+                            value={this.state.leader_email}
+                            onChangeText={(val) => this.updateInputVal(val, 'leader_email')}
+                        />
+
+                    <View style={{width: '100%', flexDirection: 'row', marginTop: 15, justifyContent: 'center'}}>                        
+                        <TouchableOpacity style = {[{width:'70%', justifyContent: 'center'}, styles.addButton]} 
+                        onPress = {() => this.onAddLeader()}
+                        >                            
+                            <FontAwesome5 name="plus-circle"  size={22} style = {{position: "absolute", left: 4}} color={stylesGlobal.back_color} />
+                            <Text style={{color: stylesGlobal.back_color, fontSize: 17, alignContent: 'center'}}>Add Additional Leader</Text>                            
+                        </TouchableOpacity>                        
+                    </View>
                    
                 </ScrollView>                
             </View>
@@ -256,7 +316,7 @@ const styles = StyleSheet.create({
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        paddingVertical: 0,
+        paddingBottom: 30,
         paddingHorizontal: 10,
     }, 
     
@@ -282,13 +342,23 @@ const styles = StyleSheet.create({
         fontSize: 17,        
     },
 
-    showdowButton: {
+    roundButton: {
         flexDirection: 'row', 
         alignItems: 'center', 
         height: 45, 
         paddingHorizontal: 8, 
         borderRadius:8, 
         borderColor: '#383838B2', 
+        borderWidth: 1,        
+    },
+
+    addButton: {
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        height: 32, 
+        paddingHorizontal: 8, 
+        borderRadius:20, 
+        borderColor: stylesGlobal.back_color, 
         borderWidth: 1,        
     },
 
