@@ -1,6 +1,8 @@
 import * as React from 'react';
 import {Component} from 'react';
 
+import Moment from 'moment';
+
 import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Button, Checkbox } from 'react-native-material-ui';
@@ -34,6 +36,7 @@ export default class GroupCreatePage extends Component {
             day_flag: [true, true, true, true, true, true, true],
             timepicker_show: false,
             date: new Date(),
+            meeting_time: 'Meeting Time',
         }
     }
 
@@ -90,7 +93,8 @@ export default class GroupCreatePage extends Component {
     onChangeMeetingTime(event, selectedDate) 
     {
         const currentDate = selectedDate || this.state.date;
-        this.setState({date: currentDate});
+        var meeting_time = Moment(currentDate).format('HH:mm');
+        this.setState({date: currentDate, meeting_time: meeting_time, timepicker_show: false});
     }
 
     render() {
@@ -205,7 +209,7 @@ export default class GroupCreatePage extends Component {
                         <TouchableOpacity style = {[{width:'100%'}, styles.showdowButton]} 
                         onPress = {() => this.showTimepicker()}
                         >
-                            <Text style={{flex:1, color: '#383838B2'}}>Metting Time</Text>
+                            <Text style={{flex:1, color: '#383838B2', fontSize: 18}}>{this.state.meeting_time}</Text>
                             <Image style = {{width: 20, height: 20, tintColor: stylesGlobal.back_color}} source = {require("../../assets/images/dropdown.png")}/>
                         </TouchableOpacity>                        
                     </View>
