@@ -18,6 +18,7 @@ import SignInScreen from  './app/screens/SignInScreen';
 import SignUpScreen from  './app/screens/SignUpScreen';
 import MainPage from  './app/screens/MainPage';
 import GroupCreatePage from  './app/screens/groups/GroupCreatePage';
+import GroupDetailPage from  './app/screens/groups/GroupDetailPage';
 
 const Stack = createStackNavigator();
 
@@ -54,7 +55,12 @@ export default class App extends Component {
 						options={{
 							title: 'Create Group',							
 						}} 
-					/>       
+					/>     
+					<Stack.Screen name="GroupDetail" component={GroupDetailPage} 
+						options={{
+							title: 'Group Home',							
+						}} 
+					/>      
                 </Stack.Navigator>
             </NavigationContainer>
 
