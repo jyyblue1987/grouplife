@@ -49,7 +49,9 @@ export default class GroupDetailPage extends Component {
                         <FontAwesome5 name="calendar" size={22} color={'#fff'} style={{marginLeft: 15}} />
                         <Text style={{marginLeft: 10, color: '#fff'}}>Next group meeting in 2 days, 3 hours</Text>
                     </View>
-                    <TouchableOpacity style={{position: 'absolute', left: 20, top: 45}}>
+                    <TouchableOpacity style={{position: 'absolute', left: 20, top: 45}}
+                        onPress={() => this.props.navigation.goBack()}
+                        >
                         <Ionicons name="arrow-back" size={30} color={'#fff'} />
                     </TouchableOpacity>
                 </View>
@@ -71,8 +73,7 @@ export default class GroupDetailPage extends Component {
                     </Text>
                 </View>
 
-                
-
+                {/* Overview */}
                 <Card style={{container: {borderRadius: 10}}}>
                     <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 10}}>
                         <Ionicons name="ios-information-circle-outline" size={22} color={stylesGlobal.back_color} />

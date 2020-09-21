@@ -35,12 +35,12 @@ export default class GroupListPage extends Component {
 
     renderRow(item) {
 		return (			
-            <Card onPress={() => this.props.navigation.navigate('GroupDetail', {group: item})}>
+            <Card style={{container:{borderRadius: 6}}} onPress={() => this.props.navigation.navigate('GroupDetail', {group: item})}>
                 <View style={{flex:1, flexDirection: 'row'}}>
                     <View style={{justifyContent: "center"}}>
                         <Image style = {{width: 100, height: '100%'}} source = {require("../../assets/images/group_image.jpg")}/>
                     </View>
-                    <View style={{width:'100%', marginLeft: 7}}>
+                    <View style={{width:'100%', marginLeft: 7, paddingVertical: 9}}>
                         <Text style={{fontSize: 20, fontWeight: 'bold'}}>
                             Downtown Group
                         </Text>
