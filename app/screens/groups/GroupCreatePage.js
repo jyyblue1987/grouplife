@@ -8,6 +8,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { Button, Checkbox } from 'react-native-material-ui';
 import ImagePicker from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
 
@@ -90,12 +91,17 @@ export default class GroupCreatePage extends Component {
         this.setState({timepicker_show: true});
     }
 
-    onChangeMeetingTime(event, selectedDate) 
+    onChangeMeetingTime(selectedDate) 
     {
         const currentDate = selectedDate || this.state.date;
         var meeting_time = Moment(currentDate).format('HH:mm');
         this.setState({date: currentDate, meeting_time: meeting_time, timepicker_show: false});
     }
+
+    onCancelMeetingTime() {
+        this.setState({timepicker_show: false});
+    }
+
 
     render() {
   
@@ -139,7 +145,7 @@ export default class GroupCreatePage extends Component {
                             {label: 'Group Type1', value: 'gt1'}
                         ]}
                         defaultValue={this.state.group_type}
-                        containerStyle={{height:40}}
+                        containerStyle={{height:45}}
                         style={{backgroundColor:'#fafafa'}}
                         itemStyle={{justifyContent: 'flex-start'}}
                         dropDownStyle={{backgroundColor:'#fafafa'}}
@@ -213,20 +219,14 @@ export default class GroupCreatePage extends Component {
                             <Image style = {{width: 20, height: 20, tintColor: stylesGlobal.back_color}} source = {require("../../assets/images/dropdown.png")}/>
                         </TouchableOpacity>                        
                     </View>
-                    {
-                        this.state.timepicker_show && (
-                            <DateTimePicker
-                                testID="datetTimePicker"
-                                value={this.state.date}
-                                mode="time"
-                                is24Hour={false}
-                                display="default"                               
-                                onChange = {(event, selectedDate) => this.onChangeMeetingTime(event, selectedDate)}
 
-                            />
-                        )
-                    }
-
+                    <DateTimePickerModal
+                        isVisible={this.state.timepicker_show}
+                        mode="time"
+                        onConfirm = {(date) => this.onChangeMeetingTime(date)}
+                        onCancel = {() =>this.onCancelMeetingTime()}
+                    />
+                   
                 </ScrollView>                
             </View>
             </ThemeContext.Provider>
