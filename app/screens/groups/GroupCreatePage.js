@@ -5,7 +5,8 @@ import Moment from 'moment';
 
 import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Button, Checkbox } from 'react-native-material-ui';
+import { Checkbox } from 'react-native-material-ui';
+import { Button } from 'react-native-elements';
 import ImagePicker from 'react-native-image-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -111,6 +112,10 @@ export default class GroupCreatePage extends Component {
 
     }
 
+    onCreateGroup() {
+        console.log("On Create Group");
+    }
+
     render() {
   
         return (
@@ -122,12 +127,13 @@ export default class GroupCreatePage extends Component {
                     </View>
                 }
                 <ScrollView style={{width:'100%'}}>
-                    <View style = {{width: '100%', height: 80, justifyContent: 'center'}}>
+                    <View style = {{width: '100%', height: 80, marginTop: 10, flexDirection: 'row', justifyContent: 'center'}}>
                         <Text
-                            style={styles.header}
+                            style={[styles.header, {flex: 1}]}
                             >
                             Create Group
-                        </Text>                        
+                        </Text>                            
+                        <Button title="CREATE" type="clear" titleStyle={{color:stylesGlobal.back_color}} onPress = {() => this.onCreateGroup()} />
                     </View>
 
                     <TextInput
@@ -168,7 +174,7 @@ export default class GroupCreatePage extends Component {
                             >
                             Select a Cover Photo
                         </Text>              
-                        <Button raised primary text="Upload" upperCase={false} onPress = {() => this.showImagePicker()} />
+                        <Button title="Upload" buttonStyle={{backgroundColor:stylesGlobal.back_color,borderRadius:6}} onPress = {() => this.showImagePicker()} />
                     </View>
                     {
                         this.state.image_uri != "" && 
@@ -200,7 +206,7 @@ export default class GroupCreatePage extends Component {
                                 onCheck = {(value) => this.setDayFlag(value, 3)}/>
                             <Checkbox label="Friday" value="5" checked={this.state.day_flag[5]}
                                 style={{label: {color:'#383838B2'}, container: {height: 30}}}
-                                onCheck = {(value) => this.setDayFlag(value, 3)}/>
+                                onCheck = {(value) => this.setDayFlag(value, 5)}/>
                             <Checkbox label="Sunday" value="0" checked={this.state.day_flag[0]}
                                 style={{label: {color:'#383838B2'}, container: {height: 30}}}
                                 onCheck = {(value) => this.setDayFlag(value, 0)}/>
