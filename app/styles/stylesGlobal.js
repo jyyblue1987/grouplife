@@ -45,6 +45,14 @@ export const stylesGlobal = {
         backgroundColor: '#FFFFFFDD'        
     },
 
+    searchcontainer: {
+        backgroundColor: 'transparent',
+        borderWidth: 0, //no effect        
+        shadowColor: 'transparent', //no effect
+        borderBottomColor: 'transparent',
+        borderTopColor: 'transparent'
+    },
+
     back_color: BACK_COLOR
 
 

@@ -3,9 +3,11 @@ import {Component} from 'react';
 
 import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-material-ui';
+import { SearchBar } from 'react-native-elements';
 import firebase from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+
 
 export default class GroupListPage extends Component {
     constructor(props) {
@@ -14,6 +16,8 @@ export default class GroupListPage extends Component {
         this.state = {
             isLoading: false,
             group_list: [],
+            isSearchVisible: false,
+            search: '',            
         }
     }
 
@@ -35,7 +39,15 @@ export default class GroupListPage extends Component {
 
     onShowSearch() {
         console.log("onShowSearch");
+        this.setState({
+            isSearchVisible: true,
+        });
     }
+
+    updateSearch = (search) => {
+        console.log(search);
+        this.setState({search: search});
+    };
 
     renderRow(item) {
 		return (			
@@ -80,6 +92,18 @@ export default class GroupListPage extends Component {
                         My Groups
                     </Text>
                 </View>
+
+                {
+                    this.state.isSearchVisible && <SearchBar 
+                        placeholder="group..."
+                        searchIcon={{size: 28}}
+                        containerStyle={stylesGlobal.searchcontainer}                               
+                        inputContainerStyle={{backgroundColor: 'white', borderWidth: 1, borderRadius: 15}}                    
+                        placeholderTextColor={'gray'}
+                        onChangeText={this.updateSearch}
+                        value={this.state.search}
+                    />
+                }
 
                 <FlatList
                     data={this.state.group_list}
