@@ -33,6 +33,10 @@ export default class GroupListPage extends Component {
         this.getGroupList()
     }
 
+    onShowSearch() {
+        console.log("onShowSearch");
+    }
+
     renderRow(item) {
 		return (			
             <Card style={{container:{borderRadius: 6}}}>
@@ -96,13 +100,32 @@ export default class GroupListPage extends Component {
                         height:70,
                         position: 'absolute',                                          
                         bottom: 10,                                                    
-                        right: 10,
+                        left: 10,
                         backgroundColor:stylesGlobal.back_color,
                         borderRadius:100,
                         }}
                         onPress={() => this.props.navigation.navigate('GroupCreate')}
                     >
                     <FontAwesome5 name="plus"  size={30} color="#fff" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={{
+                        borderWidth:1,
+                        borderColor:'rgba(0,0,0,0.2)',
+                        alignItems:'center',
+                        justifyContent:'center',
+                        width:70,
+                        height:70,
+                        position: 'absolute',                                          
+                        bottom: 10,                                                    
+                        right: 10,
+                        backgroundColor:stylesGlobal.back_color,
+                        borderRadius:100,
+                        }}                        
+                        onPress={() => this.onShowSearch()}
+                    >
+                    <FontAwesome5 name="search"  size={30} color="#fff" />
                 </TouchableOpacity>
             </View>
         );
