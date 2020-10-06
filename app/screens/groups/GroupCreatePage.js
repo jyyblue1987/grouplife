@@ -3,7 +3,7 @@ import {Component} from 'react';
 
 import Moment from 'moment';
 
-import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Checkbox } from 'react-native-material-ui';
 import { Button } from 'react-native-elements';
@@ -112,15 +112,39 @@ export default class GroupCreatePage extends Component {
 
     }
 
-    onCreateGroup() {
+    onCreateGroup = () => {
         console.log("On Create Group");
+        this.setState({isLoading: true});
+        var vm = this;
         firestore.collection("group_list").add({
             group_name: this.state.group_name,
             group_desc: this.state.group_desc,
         }).then(function(docRef) {
+            vm.clearInputData();
             console.log("Group is created with ID:", docRef.id);
         }).catch(function(error) {
+            vm.clearInputData();
             console.error("Error adding group: ", error);
+        });
+    }
+
+    clearInputData()
+    {
+        this.setState({
+            isLoading: false,             
+            group_name: '',      
+            group_desc: '',     
+            group_type: 'ca',
+            image_uri: '',
+            day_flag: [true, true, true, true, true, true, true],
+            timepicker_show: false,
+            date: new Date(),
+            meeting_time: 'Meeting Time',
+            occurence: '1',
+            location: '',
+            leader_name: '',
+            leader_phone: '',
+            leader_email: '', 
         });
     }
 
