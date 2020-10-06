@@ -22,7 +22,7 @@ const uiTheme = {
         upperCase: false,
     },
 };
-import firebase from '../../../database/firebase';
+import {firebase, firestore} from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
 export default class GroupCreatePage extends Component {
@@ -114,6 +114,14 @@ export default class GroupCreatePage extends Component {
 
     onCreateGroup() {
         console.log("On Create Group");
+        firestore.collection("group_list").add({
+            group_name: this.state.group_name,
+            group_desc: this.state.group_desc,
+        }).then(function(docRef) {
+            console.log("Group is created with ID:", docRef.id);
+        }).catch(function(error) {
+            console.error("Error adding group: ", error);
+        });
     }
 
     render() {
