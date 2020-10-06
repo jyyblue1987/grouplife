@@ -1,6 +1,10 @@
 import * as React from 'react';
 import {Component} from 'react';
 
+import {    
+    Platform,
+} from 'react-native';
+
 import Moment from 'moment';
 
 import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
@@ -22,7 +26,7 @@ const uiTheme = {
         upperCase: false,
     },
 };
-import {firebase, firestore} from '../../../database/firebase';
+import {firebase, firestore, storage} from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
 export default class GroupCreatePage extends Component {
@@ -32,8 +36,8 @@ export default class GroupCreatePage extends Component {
         this.state = {
             isLoading: false,             
             group_name: '',      
-            group_desc: '',     
-            group_type: 'ca',
+            group_desc: '',                 
+            group_type: '',
             image_uri: '',
             day_flag: [true, true, true, true, true, true, true],
             timepicker_show: false,
@@ -79,9 +83,28 @@ export default class GroupCreatePage extends Component {
             } else if (response.customButton) {
                 console.log('User tapped custom button: ', response.customButton);
             } else {
+                var uri = response.uri;
+                console.log(uri);
                 this.setState({
-                    image_uri: response.uri,                    
-                })                
+                    isLoading: true,                    
+                    image_uri: uri,                    
+                });
+                
+                var storageRef = storage.ref();
+
+                const filename = uri.substring(uri.lastIndexOf('/') + 1);
+                const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+
+                console.log(filename, uploadUri);
+
+                // create reference
+                var imageRef = storageRef.child("images/" + filename);
+
+                // imageRef.put(uploadUri).then(function(snapshot) {
+                //     console.log(snapshot);
+                //     // this.setState({isLoading: false});
+                // });
+
             }
         });
     }
@@ -134,7 +157,7 @@ export default class GroupCreatePage extends Component {
             isLoading: false,             
             group_name: '',      
             group_desc: '',     
-            group_type: 'ca',
+            group_type: '',
             image_uri: '',
             day_flag: [true, true, true, true, true, true, true],
             timepicker_show: false,
@@ -185,20 +208,13 @@ export default class GroupCreatePage extends Component {
                             onChangeText={(val) => this.updateInputVal(val, 'group_desc')}
                         />
 
-                    <DropDownPicker 
-                        items={[
-                            {label: 'Church Affiliation', value: 'ca'},
-                            {label: 'Group Type1', value: 'gt1'}
-                        ]}
-                        defaultValue={this.state.group_type}
-                        containerStyle={{height:45}}
-                        style={{backgroundColor:'#fafafa'}}
-                        itemStyle={{justifyContent: 'flex-start'}}
-                        dropDownStyle={{backgroundColor:'#fafafa'}}
-                        onChangeItem={item => this.setState({
-                            group_type: item.value
-                        })}
-                    />
+                    <TextInput
+                            style={[stylesGlobal.inputStyle, {marginTop: 15}]}
+                            placeholder="Group Type"
+                            autoCapitalize = 'none'
+                            value={this.state.group_type}
+                            onChangeText={(val) => this.updateInputVal(val, 'group_type')}
+                        />
 
                     <View style={{width: '100%', flexDirection: 'row', marginTop: 15}}>
                         <Text
