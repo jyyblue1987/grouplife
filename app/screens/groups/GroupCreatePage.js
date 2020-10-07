@@ -17,13 +17,13 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
 
-import RNFetchBlob from 'rn-fetch-blob';
+// import RNFetchBlob from 'rn-fetch-blob';
 
-// Prepare Blob support
-const Blob = RNFetchBlob.polyfill.Blob
-const fs = RNFetchBlob.fs
-window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
-window.Blob = Blob;
+// // Prepare Blob support
+// const Blob = RNFetchBlob.polyfill.Blob
+// const fs = RNFetchBlob.fs
+// window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
+// window.Blob = Blob;
 
 // you can set your style right here, it'll be propagated to application
 const uiTheme = {
@@ -34,6 +34,8 @@ const uiTheme = {
         upperCase: false,
     },
 };
+
+//import firebase from '../../../database/firebase';
 import {firebase, firestore, storage} from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
@@ -47,6 +49,7 @@ export default class GroupCreatePage extends Component {
             group_desc: '',                 
             group_type: '',
             image_uri: '',
+            group_image: '',
             day_flag: [true, true, true, true, true, true, true],
             timepicker_show: false,
             date: new Date(),
@@ -82,8 +85,6 @@ export default class GroupCreatePage extends Component {
             }
         };
 
-        var vm = this;
-
         ImagePicker.showImagePicker(options, (response) => {
 
             if (response.didCancel) {
@@ -102,10 +103,14 @@ export default class GroupCreatePage extends Component {
                 
                 this.uploadImage(uri, 'image/jpeg')
                     .then(url => { 
-                        this.setState({image_uri: url});
+                        this.setState({group_image: url, isLoading: false});
                         console.log("Upload URL = ", url);
+
                     })
-                    .catch(error => console.log(error));
+                    .catch(error => {
+                        this.setState({group_image: '', isLoading: false});
+                        console.log(error)
+                    });
 
             }
             
@@ -175,19 +180,63 @@ export default class GroupCreatePage extends Component {
     }
 
     onCreateGroup = () => {
-        console.log("On Create Group");
+        console.log("On Create Group", this.state.group_name);
         this.setState({isLoading: true});
+
+
+
         var vm = this;
+        // firestore.collection("group_list").add({
+        //     group_name: this.state.group_name,
+        //     group_desc: this.state.group_desc,
+        //     // group_type: this.state.group_type,
+        //     // group_image: this.state.group_image,
+        //     // day_flag: this.state.day_flag,
+        //     // meeting_time: this.state.meeting_time,
+        //     // occurence: this.state.occurence,
+        //     // location: this.state.location,
+        //     // leader_name: this.state.leader_name,
+        //     // leader_phone: this.state.leader_phone,
+        //     // leader_email: this.state.leader_email, 
+        //     // created_by: firebase.auth().currentUser.uid,
+
+        // }).then(function(docRef) {
+        //     console.log("Group is created with ID:", docRef.id);
+        //     vm.clearInputData();            
+        // }).catch(function(error) {
+        //     console.error("Error adding group: ", error);
+        //     vm.clearInputData();            
+        // });
+
+        // firestore.collection("users").add({
+        //     first: "Ada",
+        //     last: "Lovelace",
+        //     born: 1815
+        // })
+        // .then(function(docRef) {
+        //     console.log("Document written with ID: ", docRef.id);
+        // })
+        // .catch(function(error) {
+        //     console.error("Error adding document: ", error);
+        // });
+
+        // firestore.settings({experimentalForceLongPolling: true});
+
+        // firestore.collection("group_list").get().then((querySnapshot) => {
+        //     querySnapshot.forEach((doc) => {
+        //         console.log("Data is feteched");
+        //     });
+        // });
+
         firestore.collection("group_list").add({
             group_name: this.state.group_name,
             group_desc: this.state.group_desc,
         }).then(function(docRef) {
-            vm.clearInputData();
             console.log("Group is created with ID:", docRef.id);
         }).catch(function(error) {
-            vm.clearInputData();
             console.error("Error adding group: ", error);
         });
+
     }
 
     clearInputData()
@@ -198,6 +247,7 @@ export default class GroupCreatePage extends Component {
             group_desc: '',     
             group_type: '',
             image_uri: '',
+            group_image: '',
             day_flag: [true, true, true, true, true, true, true],
             timepicker_show: false,
             date: new Date(),
