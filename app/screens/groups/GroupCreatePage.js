@@ -35,7 +35,7 @@ const uiTheme = {
     },
 };
 
-// import firebase from '../../../database/firebase';
+import firebase from '../../../database/firebase';
 import { firestore, storage} from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
@@ -186,6 +186,8 @@ export default class GroupCreatePage extends Component {
 
         console.log("Make Data");
 
+        var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
+
         var data = {
             group_name: this.state.group_name,
             group_desc: this.state.group_desc,
@@ -198,7 +200,8 @@ export default class GroupCreatePage extends Component {
             leader_name: this.state.leader_name,
             leader_phone: this.state.leader_phone,
             leader_email: this.state.leader_email, 
-            // created_by: firebase.auth().currentUser.uid,
+            created_by: firebase.auth().currentUser.uid,
+            created_at: cur_time,
         };
 
         console.log(JSON.stringify(data));
