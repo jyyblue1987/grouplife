@@ -14,6 +14,10 @@ export default class SignInScreen extends Component {
             password: '',
             isLoading: false
         }
+
+        var user = firebase.auth().currentUser;
+        if( user != null )
+            this.props.navigation.navigate('Main');
     }
 
     UNSAFE_componentWillMount() {
