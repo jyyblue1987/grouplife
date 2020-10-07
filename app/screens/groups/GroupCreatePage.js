@@ -17,13 +17,13 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
 
-// import RNFetchBlob from 'rn-fetch-blob';
+import RNFetchBlob from 'rn-fetch-blob';
 
-// // Prepare Blob support
-// const Blob = RNFetchBlob.polyfill.Blob
-// const fs = RNFetchBlob.fs
-// window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
-// window.Blob = Blob;
+// Prepare Blob support
+const Blob = RNFetchBlob.polyfill.Blob
+const fs = RNFetchBlob.fs
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
+window.Blob = Blob;
 
 // you can set your style right here, it'll be propagated to application
 const uiTheme = {
@@ -35,8 +35,8 @@ const uiTheme = {
     },
 };
 
-//import firebase from '../../../database/firebase';
-import {firebase, firestore, storage} from '../../../database/firebase';
+// import firebase from '../../../database/firebase';
+import { firestore, storage} from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
 export default class GroupCreatePage extends Component {
@@ -58,7 +58,8 @@ export default class GroupCreatePage extends Component {
             location: '',
             leader_name: '',
             leader_phone: '',
-            leader_email: '',            
+            leader_email: '',      
+            created_by: '',      
         }
     }
 
@@ -183,60 +184,43 @@ export default class GroupCreatePage extends Component {
         console.log("On Create Group", this.state.group_name);
         this.setState({isLoading: true});
 
+        console.log("Make Data");
 
+        var data = {
+            group_name: this.state.group_name,
+            group_desc: this.state.group_desc,
+            group_type: this.state.group_type,
+            group_image: this.state.group_image,
+            day_flag: this.state.day_flag,
+            meeting_time: this.state.meeting_time,
+            occurence: this.state.occurence,
+            location: this.state.location,
+            leader_name: this.state.leader_name,
+            leader_phone: this.state.leader_phone,
+            leader_email: this.state.leader_email, 
+            // created_by: firebase.auth().currentUser.uid,
+        };
+
+        console.log(JSON.stringify(data));
 
         var vm = this;
-        // firestore.collection("group_list").add({
-        //     group_name: this.state.group_name,
-        //     group_desc: this.state.group_desc,
-        //     // group_type: this.state.group_type,
-        //     // group_image: this.state.group_image,
-        //     // day_flag: this.state.day_flag,
-        //     // meeting_time: this.state.meeting_time,
-        //     // occurence: this.state.occurence,
-        //     // location: this.state.location,
-        //     // leader_name: this.state.leader_name,
-        //     // leader_phone: this.state.leader_phone,
-        //     // leader_email: this.state.leader_email, 
-        //     // created_by: firebase.auth().currentUser.uid,
+        firestore.collection("group_list").add(data).then(function(docRef) {
+            console.log("Group is created with ID:", docRef.id);
+            vm.clearInputData();            
+        }).catch(function(error) {
+            console.error("Error adding group: ", error);
+            vm.clearInputData();            
+        });
 
-        // }).then(function(docRef) {
-        //     console.log("Group is created with ID:", docRef.id);
-        //     vm.clearInputData();            
-        // }).catch(function(error) {
-        //     console.error("Error adding group: ", error);
-        //     vm.clearInputData();            
-        // });
+        console.log("Make Data End");
 
-        // firestore.collection("users").add({
-        //     first: "Ada",
-        //     last: "Lovelace",
-        //     born: 1815
-        // })
-        // .then(function(docRef) {
-        //     console.log("Document written with ID: ", docRef.id);
-        // })
-        // .catch(function(error) {
-        //     console.error("Error adding document: ", error);
-        // });
-
-        // firestore.settings({experimentalForceLongPolling: true});
-
-        // firestore.collection("group_list").get().then((querySnapshot) => {
+              // firestore.collection("group_list").get().then((querySnapshot) => {
         //     querySnapshot.forEach((doc) => {
         //         console.log("Data is feteched");
         //     });
         // });
 
-        firestore.collection("group_list").add({
-            group_name: this.state.group_name,
-            group_desc: this.state.group_desc,
-        }).then(function(docRef) {
-            console.log("Group is created with ID:", docRef.id);
-        }).catch(function(error) {
-            console.error("Error adding group: ", error);
-        });
-
+       
     }
 
     clearInputData()
@@ -257,6 +241,7 @@ export default class GroupCreatePage extends Component {
             leader_name: '',
             leader_phone: '',
             leader_email: '', 
+            created_by: '',
         });
     }
 
