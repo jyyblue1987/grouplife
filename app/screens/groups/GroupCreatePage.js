@@ -17,6 +17,14 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
 
+import RNFetchBlob from 'rn-fetch-blob';
+
+// Prepare Blob support
+const Blob = RNFetchBlob.polyfill.Blob
+const fs = RNFetchBlob.fs
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
+window.Blob = Blob;
+
 // you can set your style right here, it'll be propagated to application
 const uiTheme = {
     palette: {
@@ -74,6 +82,8 @@ export default class GroupCreatePage extends Component {
             }
         };
 
+        var vm = this;
+
         ImagePicker.showImagePicker(options, (response) => {
 
             if (response.didCancel) {
@@ -90,24 +100,53 @@ export default class GroupCreatePage extends Component {
                     image_uri: uri,                    
                 });
                 
-                var storageRef = storage.ref();
-
-                const filename = uri.substring(uri.lastIndexOf('/') + 1);
-                const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
-
-                console.log(filename, uploadUri);
-
-                // create reference
-                var imageRef = storageRef.child("images/" + filename);
-
-                // imageRef.put(uploadUri).then(function(snapshot) {
-                //     console.log(snapshot);
-                //     // this.setState({isLoading: false});
-                // });
+                this.uploadImage(uri, 'image/jpeg')
+                    .then(url => { 
+                        this.setState({image_uri: url});
+                        console.log("Upload URL = ", url);
+                    })
+                    .catch(error => console.log(error));
 
             }
+            
         });
     }
+
+    uploadImage(uri, mime = 'application/octet-stream') {
+        return new Promise((resolve, reject) => {            
+            const filename = uri.substring(uri.lastIndexOf('/') + 1);
+            console.log(filename);
+            const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+            console.log("uploadUri", uploadUri);
+            // create reference
+            var storageRef = storage.ref();
+            console.log("imageRef");
+            var imageRef = storageRef.child("images/" + filename);
+
+            let uploadBlob = null
+    
+            fs.readFile(uploadUri, 'base64')
+                .then((data) => {
+                    return Blob.build(data, { type: `${mime};BASE64` })
+                })
+                .then((blob) => {
+                    uploadBlob = blob
+                    return imageRef.put(blob, { contentType: mime });
+                })
+                .then(() => {
+                    uploadBlob.close()
+                    return imageRef.getDownloadURL();
+                })
+                .then((url) => {
+                    resolve(url);
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        })
+    }
+
+
 
     setDayFlag(value, num) {
         console.log(value);
