@@ -68,7 +68,7 @@ export default class GroupListPage extends Component {
             <Card style={{container:{borderRadius: 6}}}>
                 <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => this.props.navigation.navigate('GroupDetail', {group: item})}>
                     <View style={{justifyContent: "center"}}>
-                        <Image style = {{width: 100, height: '100%'}} source = {require("../../assets/images/group_image.jpg")}/>
+                        <Image style = {{width: 100, height: '100%'}} source = {{uri: item.group_image}}/>
                     </View>
                     <View style={{width:'100%', marginLeft: 7, paddingVertical: 9}}>
                         <Text style={{fontSize: 20, fontWeight: 'bold'}}>
