@@ -238,6 +238,10 @@ export default class GroupCreatePage extends Component {
             leader_email: '', 
             created_by: '',
         });
+
+        const { navigation, route } = this.props;
+        navigation.goBack();
+        route.params.onCreated({ created: true });
     }
 
     render() {

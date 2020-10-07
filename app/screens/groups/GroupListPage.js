@@ -61,7 +61,17 @@ export default class GroupListPage extends Component {
     updateSearch = (search) => {
         console.log(search);
         this.setState({search: search});
-    };
+    }
+
+    onCreated = data => {
+        console.log("Back to Home", JSON.stringify(data));
+        if( data.created == true )
+            this.renderRefreshControl();
+    }
+
+    onGoCreate = () => {
+        this.props.navigation.navigate('GroupCreate', { onCreated: this.onCreated });
+    }
 
     renderRow(item) {
 		return (			
@@ -142,7 +152,7 @@ export default class GroupListPage extends Component {
                         backgroundColor:stylesGlobal.back_color,
                         borderRadius:100,
                         }}
-                        onPress={() => this.props.navigation.navigate('GroupCreate')}
+                        onPress={() => this.onGoCreate()}
                     >
                     <FontAwesome5 name="plus"  size={30} color="#fff" />
                 </TouchableOpacity>
