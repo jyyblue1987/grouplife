@@ -71,7 +71,7 @@ export default class GroupListPage extends Component {
         var user_id = user.uid;
         console.log("User ID = ", user_id);
 
-        this.setState({ isLoading: true });
+        this.setState({ isLoading: true, group_list: [] });
         firestore.collection("group_list")
             .where('group_name', '>=', search)
             .where('group_name', '<=', search + '~')
@@ -122,7 +122,7 @@ export default class GroupListPage extends Component {
     }
 
     onCancelSearch = () => {
-        this.setState({isSearchVisible: false, search: ''});
+        this.setState({isSearchVisible: false, search: '', group_list: []});
         this.renderRefreshControl();
     }
 
@@ -133,14 +133,21 @@ export default class GroupListPage extends Component {
     onCreated = data => {
         console.log("Back to Home", JSON.stringify(data));
         if( data.created == true )
-            this.renderRefreshControl();
+        {
+            var doc = {id: data.doc_id};
+            this.onJoinGroup(doc);            
+        }
     }
 
     onGoCreate = () => {
+        if( this.state.isSearchVisible )
+            this.onCancelSearch();
+
         this.props.navigation.navigate('GroupCreate', { onCreated: this.onCreated });
     }
 
     onJoinGroup = (item) => {
+        var vm = this;
         var groupRef = firestore.collection("group_list").doc(item.id);        
         groupRef.get().then(function(doc) {
                 if (doc.exists) 
@@ -154,6 +161,7 @@ export default class GroupListPage extends Component {
 
                     console.log("Document data:", data);
                     groupRef.set(data);
+                    vm.renderRefreshControl();
                 } else {
                     // doc.data() will be undefined in this case
                     console.log("No such document!");

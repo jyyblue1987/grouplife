@@ -7,7 +7,7 @@ import {
 
 import Moment from 'moment';
 
-import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Checkbox } from 'react-native-material-ui';
 import { Button } from 'react-native-elements';
@@ -209,7 +209,7 @@ export default class GroupCreatePage extends Component {
         var vm = this;
         firestore.collection("group_list").add(data).then(function(docRef) {
             console.log("Group is created with ID:", docRef.id);
-            vm.clearInputData();            
+            vm.clearInputData(docRef.id);            
         }).catch(function(error) {
             console.error("Error adding group: ", error);
             vm.clearInputData();            
@@ -218,30 +218,18 @@ export default class GroupCreatePage extends Component {
         console.log("Make Data End");
     }
 
-    clearInputData()
+    clearInputData(doc_id)
     {
-        this.setState({
-            isLoading: false,             
-            group_name: '',      
-            group_desc: '',     
-            group_type: '',
-            image_uri: '',
-            group_image: '',
-            day_flag: [true, true, true, true, true, true, true],
-            timepicker_show: false,
-            date: new Date(),
-            meeting_time: 'Meeting Time',
-            occurence: '1',
-            location: '',
-            leader_name: '',
-            leader_phone: '',
-            leader_email: '', 
-            created_by: '',
-        });
-
-        const { navigation, route } = this.props;
-        navigation.goBack();
-        route.params.onCreated({ created: true });
+        if( doc_id )
+        {
+            const { navigation, route } = this.props;
+            navigation.goBack();
+            route.params.onCreated({ created: true, doc_id: doc_id });
+        }
+        else
+        {
+            Alert.alert("Failed to create group!");
+        }
     }
 
     render() {
