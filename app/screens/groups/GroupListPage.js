@@ -27,7 +27,17 @@ export default class GroupListPage extends Component {
         this.renderRefreshControl();
     }
 
-    getGroupList() {
+    getMyGroupList() {
+        var user = firebase.auth().currentUser;
+        if( user == null )
+        {
+            console.log("Invalid User");
+            return;    
+        }
+
+        var user_id = user.uid;
+        console.log("User ID = ", user_id);
+        this.setState({ isLoading: true });
         firestore.collection("group_list").get().then((querySnapshot) => {
             var group_list = [];
 
@@ -36,7 +46,11 @@ export default class GroupListPage extends Component {
                 var data = doc.data();
                 data.id = doc.id;
 
-                group_list.push(data);
+                if( data.member_list != null )
+                {
+                    if(data.member_list.includes(user_id))
+                        group_list.push(data);
+                }
             });
 
             this.setState({
@@ -47,6 +61,16 @@ export default class GroupListPage extends Component {
     }
 
     searchGroupList(search) {
+        var user = firebase.auth().currentUser;
+        if( user == null )
+        {
+            console.log("Invalid User");
+            return;    
+        }
+
+        var user_id = user.uid;
+        console.log("User ID = ", user_id);
+
         this.setState({ isLoading: true });
         firestore.collection("group_list")
             .where('group_name', '>=', search)
@@ -59,7 +83,10 @@ export default class GroupListPage extends Component {
                     var data = doc.data();
                     data.id = doc.id;
 
-                    group_list.push(data);
+                    if( data.member_list == null || data.member_list.includes(user_id) == false )
+                    {                        
+                        group_list.push(data);
+                    }
                 });
 
                 this.setState({
@@ -72,7 +99,7 @@ export default class GroupListPage extends Component {
     renderRefreshControl() {
         this.setState({ isLoading: true });
         if( this.state.isSearchVisible == false )
-            this.getGroupList();
+            this.getMyGroupList();
         else
             this.searchGroupList(this.state.search);
     }
@@ -82,6 +109,7 @@ export default class GroupListPage extends Component {
         this.setState({
             isSearchVisible: true,
         });
+        this.searchGroupList(this.state.search);
     }
 
     updateSearch = (search) => {        
@@ -112,6 +140,30 @@ export default class GroupListPage extends Component {
         this.props.navigation.navigate('GroupCreate', { onCreated: this.onCreated });
     }
 
+    onJoinGroup = (item) => {
+        var groupRef = firestore.collection("group_list").doc(item.id);        
+        groupRef.get().then(function(doc) {
+                if (doc.exists) 
+                {
+                    var data = doc.data();
+                    if( data.member_list == null )
+                        data.member_list = [];
+            
+                    var user = firebase.auth().currentUser;
+                    data.member_list.push(user.uid);                        
+
+                    console.log("Document data:", data);
+                    groupRef.set(data);
+                } else {
+                    // doc.data() will be undefined in this case
+                    console.log("No such document!");
+                }
+            }).catch(function(error) {
+                console.log("Error getting document:", error);
+            });
+      
+    }
+
 
 
     renderRow(item) {
@@ -132,9 +184,21 @@ export default class GroupListPage extends Component {
 
                         <View style = {{width: '100%', borderWidth:0.5, borderColor:'lightgray', marginTop: 15, marginBottom: 7}} />
 
-                        <Text style={{fontSize: 16, color: 'gray'}}>
-                            {Moment(item.created_at).format('dddd LT')}
-                        </Text>
+                        <View style={{width: '100%',marginTop: 3, flexDirection:'row'}}>
+                            <Text
+                                style={{fontSize: 16, color:'gray'}}
+                                >
+                                {Moment(item.created_at).format('dddd LT')}
+                            </Text>      
+                            {
+                                this.state.isSearchVisible &&        
+                                <TouchableOpacity style = {{width: 60, height: 20, marginLeft: 30, borderRadius: 3, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
+                                    onPress = {() => this.onJoinGroup(item)}>
+                                    <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 12}]}>Join</Text>
+                                </TouchableOpacity>
+                            }
+                        </View>
+                        
                     </View>    
                 </TouchableOpacity> 
             </Card>
