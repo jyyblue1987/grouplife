@@ -46,9 +46,35 @@ export default class GroupListPage extends Component {
         });        
     }
 
+    searchGroupList(search) {
+        this.setState({ isLoading: true });
+        firestore.collection("group_list")
+            .where('group_name', '>=', search)
+            .where('group_name', '<=', search + '~')
+            .get().then((querySnapshot) => {
+                var group_list = [];
+
+                querySnapshot.forEach((doc) => {
+                    console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
+                    var data = doc.data();
+                    data.id = doc.id;
+
+                    group_list.push(data);
+                });
+
+                this.setState({
+                    group_list: group_list,
+                    isLoading: false
+                })
+            });
+    }
+
     renderRefreshControl() {
-        this.setState({ isLoading: true })
-        this.getGroupList()
+        this.setState({ isLoading: true });
+        if( this.state.isSearchVisible == false )
+            this.getGroupList();
+        else
+            this.searchGroupList(this.state.search);
     }
 
     onShowSearch() {
@@ -58,9 +84,22 @@ export default class GroupListPage extends Component {
         });
     }
 
-    updateSearch = (search) => {
-        console.log(search);
+    updateSearch = (search) => {        
         this.setState({search: search});
+    }
+
+    onSubmitSearch = () => {
+        console.log("Submit", this.state.search);
+        this.searchGroupList(this.state.search);
+    }
+
+    onCancelSearch = () => {
+        this.setState({isSearchVisible: false, search: ''});
+        this.renderRefreshControl();
+    }
+
+    onClearSearch = () => {
+        this.onSubmitSearch();
     }
 
     onCreated = data => {
@@ -72,6 +111,8 @@ export default class GroupListPage extends Component {
     onGoCreate = () => {
         this.props.navigation.navigate('GroupCreate', { onCreated: this.onCreated });
     }
+
+
 
     renderRow(item) {
 		return (			
@@ -104,16 +145,11 @@ export default class GroupListPage extends Component {
   
         return (
             <View style={styles.container}>
-                {
-                    this.state.isLoading && <View style={stylesGlobal.preloader}>
-                        <ActivityIndicator size="large" color="#9E9E9E"/>
-                    </View>
-                }
                 <View style = {{width: '100%', height: 80, justifyContent: 'center'}}>
                     <Text
                         style={styles.header}
                         >
-                        My Groups
+                        {this.state.isSearchVisible ? 'Search Groups' : 'My Groups'}
                     </Text>
                 </View>
 
@@ -124,7 +160,13 @@ export default class GroupListPage extends Component {
                         containerStyle={stylesGlobal.searchcontainer}                               
                         inputContainerStyle={{backgroundColor: 'white', borderWidth: 1, borderRadius: 15}}                    
                         placeholderTextColor={'gray'}
+                        platform="ios"
+                        autoCapitalize='none'
+                        showCancel={true}
                         onChangeText={this.updateSearch}
+                        onSubmitEditing={this.onSubmitSearch}                        
+                        onCancel={this.onCancelSearch}
+                        onClear={this.onClearSearch}
                         value={this.state.search}
                     />
                 }
