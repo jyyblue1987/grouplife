@@ -216,14 +216,6 @@ export default class GroupCreatePage extends Component {
         });
 
         console.log("Make Data End");
-
-              // firestore.collection("group_list").get().then((querySnapshot) => {
-        //     querySnapshot.forEach((doc) => {
-        //         console.log("Data is feteched");
-        //     });
-        // });
-
-       
     }
 
     clearInputData()

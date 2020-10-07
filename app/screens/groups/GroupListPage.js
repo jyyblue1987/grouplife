@@ -1,13 +1,15 @@
 import * as React from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Card } from 'react-native-material-ui';
 import { SearchBar } from 'react-native-elements';
-import firebase from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
+import firebase from '../../../database/firebase';
+import { firestore, storage} from '../../../database/firebase';
+import Moment from 'moment';
 
 export default class GroupListPage extends Component {
     constructor(props) {
@@ -26,10 +28,22 @@ export default class GroupListPage extends Component {
     }
 
     getGroupList() {
-        this.setState({
-            group_list: [{id: 1}, {id: 2}, {id: 3}],
-            isLoading: false
-        })
+        firestore.collection("group_list").get().then((querySnapshot) => {
+            var group_list = [];
+
+            querySnapshot.forEach((doc) => {
+                console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
+                var data = doc.data();
+                data.id = doc.id;
+
+                group_list.push(data);
+            });
+
+            this.setState({
+                group_list: group_list,
+                isLoading: false
+            })
+        });        
     }
 
     renderRefreshControl() {
@@ -58,17 +72,17 @@ export default class GroupListPage extends Component {
                     </View>
                     <View style={{width:'100%', marginLeft: 7, paddingVertical: 9}}>
                         <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-                            Downtown Group
+                            {item.group_name}
                         </Text>
 
                         <Text style={{fontSize: 17}}>
-                            Woodside Detroit
+                            {item.group_desc}
                         </Text>
 
                         <View style = {{width: '100%', borderWidth:0.5, borderColor:'lightgray', marginTop: 15, marginBottom: 7}} />
 
                         <Text style={{fontSize: 16, color: 'gray'}}>
-                            Monday, 6:30 PM
+                            {Moment(item.created_at).format('dddd LT')}
                         </Text>
                     </View>    
                 </TouchableOpacity> 
