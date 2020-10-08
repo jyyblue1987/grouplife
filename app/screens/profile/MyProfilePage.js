@@ -24,6 +24,10 @@ export default class MyProfielPage extends Component {
     }
 
     UNSAFE_componentWillMount() {
+        this.getProfile();
+    }
+
+    getProfile() {
         this.setState({                    
             isLoading: true,
         });
@@ -32,7 +36,9 @@ export default class MyProfielPage extends Component {
             .where("user_id", "==", uid)
             .get().then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
-                    this.setState({user: doc.data()});                    
+                    var data = doc.data();
+                    data.id = doc.id;
+                    this.setState({user: data});                    
                 });
 
                 this.setState({                    
@@ -42,7 +48,15 @@ export default class MyProfielPage extends Component {
     }
 
     onEditProfile = () => {
-        this.props.navigation.navigate('MyProfileEdit', {user: this.state.user});
+        this.props.navigation.navigate('MyProfileEdit', {user: this.state.user, onUpdated: this.onUpdated});
+    }
+
+    onUpdated = data => {
+        console.log("Back to Home", JSON.stringify(data));
+        if( data.updated == true )
+        {
+            this.getProfile();
+        }
     }
 
 

@@ -61,7 +61,7 @@ export default class MyProfileEditPage extends Component {
             title: 'Select Image',
             mediaType: 'photo',
             quality: 1.0,
-            allowsEditing: false,
+            allowsEditing: true,
             noData: true,
             storageOptions: {
                 skipBackup: true,
@@ -82,20 +82,19 @@ export default class MyProfileEditPage extends Component {
                 console.log(uri);
                 this.setState({
                     isLoading: true,                    
-                    image_uri: uri,                    
+                    picture: uri,                    
                 });
                 
                 this.uploadImage(uri, 'image/jpeg')
                     .then(url => { 
-                        this.setState({group_image: url, isLoading: false});
+                        this.setState({picture: url, isLoading: false});
                         console.log("Upload URL = ", url);
 
                     })
                     .catch(error => {
-                        this.setState({group_image: '', isLoading: false});
+                        this.setState({picture: '', isLoading: false});
                         console.log(error)
                     });
-
             }
             
         });
@@ -135,84 +134,35 @@ export default class MyProfileEditPage extends Component {
         })
     }
 
-
-
-    setDayFlag(value, num) {
-        console.log(value);
-        var day_flag = [...this.state.day_flag];
-        day_flag[num] = value;
-        this.setState({day_flag: day_flag});
-    }
-
-    showTimepicker() {
-        this.setState({timepicker_show: true});
-    }
-
-    onChangeMeetingTime(selectedDate) 
-    {
-        const currentDate = selectedDate || this.state.date;
-        var meeting_time = Moment(currentDate).format('HH:mm');
-        this.setState({date: currentDate, meeting_time: meeting_time, timepicker_show: false});
-    }
-
-    onCancelMeetingTime() {
-        this.setState({timepicker_show: false});
-    }
-
-    onAddLeader() {
-
-    }
-
-    onCreateGroup = () => {
-        console.log("On Create Group", this.state.group_name);
+    onSaveProfile = () => {
+        console.log("On Save Profile", JSON.stringify(this.state));
         this.setState({isLoading: true});
 
-        console.log("Make Data");
-
-        var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
-
         var data = {
-            group_name: this.state.group_name,
-            group_desc: this.state.group_desc,
-            group_type: this.state.group_type,
-            group_image: this.state.group_image,
-            day_flag: this.state.day_flag,
-            meeting_time: this.state.meeting_time,
-            occurence: this.state.occurence,
-            location: this.state.location,
-            leader_name: this.state.leader_name,
-            leader_phone: this.state.leader_phone,
-            leader_email: this.state.leader_email, 
-            created_by: firebase.auth().currentUser.uid,
-            created_at: cur_time,
+            user_id: this.state.user_id,
+            first_name: this.state.first_name,
+            last_name: this.state.last_name,
+            picture: this.state.picture,
+            email: this.state.email,
+            phone: this.state.phone,
+            address: this.state.address,
+            city: this.state.city,
+            state: this.state.state,
+            country: this.state.country,
+            desc: this.state.desc,
+            role: this.state.role,
         };
 
-        console.log(JSON.stringify(data));
-
         var vm = this;
-        firestore.collection("group_list").add(data).then(function(docRef) {
-            console.log("Group is created with ID:", docRef.id);
-            vm.clearInputData(docRef.id);            
-        }).catch(function(error) {
-            console.error("Error adding group: ", error);
-            vm.clearInputData();            
-        });
-
-        console.log("Make Data End");
-    }
-
-    clearInputData(doc_id)
-    {
-        if( doc_id )
-        {
-            const { navigation, route } = this.props;
+        var userRef = firestore.collection("member_list").doc(this.state.id);        
+        
+        userRef.set(data).then(function(doc) {
+            const { navigation, route } = vm.props;
             navigation.goBack();
-            route.params.onCreated({ created: true, doc_id: doc_id });
-        }
-        else
-        {
-            Alert.alert("Failed to create group!");
-        }
+            route.params.onUpdated({ updated: true });
+        }).catch(function(error) {
+            console.log("Error setting group:", error);
+        }); 
     }
 
     render() {
@@ -227,7 +177,7 @@ export default class MyProfileEditPage extends Component {
                             >
                             My Profile
                         </Text>                            
-                        <Button title="Save" type="clear" titleStyle={{color:stylesGlobal.back_color}} onPress = {() => this.onCreateGroup()} />
+                        <Button title="Save" type="clear" titleStyle={{color:stylesGlobal.back_color}} onPress = {() => this.onSaveProfile()} />
                     </View>
 
                     <View style = {{width: '100%', marginTop: 20, flexDirection: 'row', justifyContent: 'center', alignItems:'center'}}>
