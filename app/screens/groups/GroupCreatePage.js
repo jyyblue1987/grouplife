@@ -236,12 +236,7 @@ export default class GroupCreatePage extends Component {
   
         return (
             <ThemeContext.Provider value={getTheme(uiTheme)}>
-            <View style={styles.container}>
-                {
-                    this.state.isLoading && <View style={stylesGlobal.preloader}>
-                        <ActivityIndicator size="large" color="#9E9E9E"/>
-                    </View>
-                }
+            <View style={styles.container}>                
                 <ScrollView style={{width:'100%'}}>
                     <View style = {{width: '100%', height: 80, marginTop: 10, flexDirection: 'row', justifyContent: 'center'}}>
                         <Text
@@ -419,7 +414,12 @@ export default class GroupCreatePage extends Component {
                         </TouchableOpacity>                        
                     </View>
                    
-                </ScrollView>                
+                </ScrollView>      
+                {
+                    this.state.isLoading && <View style={stylesGlobal.preloader}>
+                        <ActivityIndicator size="large" color="#9E9E9E"/>
+                    </View>
+                }          
             </View>
             </ThemeContext.Provider>
         );
