@@ -79,13 +79,19 @@ export default class SignUpScreen extends Component {
     
                     vm.props.navigation.navigate('Signin');                    
                 }).catch(function(error) {
+                    vm.setState({
+                        isLoading: false,                       
+                    });
                     Alert.alert(error.message);
                 });
 
                 
             })
             .catch(error => {
-                this.setState({errorMessage: error.message});
+                this.setState({
+                        isLoading: false,
+                        errorMessage: error.message
+                    });
                 Alert.alert(error.message);
             }) 
     }

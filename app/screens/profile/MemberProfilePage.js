@@ -1,7 +1,8 @@
 import * as React from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Ionicons from 'react-native-vector-icons/Ionicons'; 
 import { stylesGlobal } from '../../styles/stylesGlobal';
@@ -40,7 +41,7 @@ export default class MemberProfielPage extends Component {
                 <ScrollView style={{width:'100%', paddingHorizontal: 20}}>
                     <View style={{flex:1, flexDirection: 'row', alignItems: 'center', paddingVertical: 10}}>
                         <View style={{justifyContent: "center"}}>
-                            <Image style = {{width: 90, height: 90, borderRadius: 45, borderColor: stylesGlobal.back_color, borderWidth: 2}} source = {require("../../assets/images/group_image.jpg")}/>
+                            <FastImage style = {{width: 90, height: 90, borderRadius: 45, borderColor: stylesGlobal.back_color, borderWidth: 2}} source = {{uri:user.picture}}/>
                         </View>
                         <View style={{width:'100%', marginLeft: 10, paddingVertical: 9}}>
                             <Text style={{fontSize: 20, fontWeight: 'bold'}}>

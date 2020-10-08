@@ -1,7 +1,8 @@
 import * as React from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { Card } from 'react-native-material-ui';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -60,7 +61,9 @@ export default class MemberListPage extends Component {
             <Card style={{container:{borderRadius: 15}}}>
                 <TouchableOpacity style={{flex:1, flexDirection: 'row', padding: 5}} onPress={() => this.props.navigation.navigate('MemberProfile', {user: item})}>
                     <View style={{justifyContent: "center"}}>
-                        <Image style = {{width: 60, height: 60, borderRadius: 30, borderColor: stylesGlobal.back_color, borderWidth: 2}} source = {require("../../assets/images/group_image.jpg")}/>
+                        <FastImage style = {{width: 60, height: 60, borderRadius: 30, borderColor: stylesGlobal.back_color, borderWidth: 2}} 
+                        source = {{uri: item.picture}}
+                        />
                     </View>
                     <View style={{width:'100%', marginLeft: 7, paddingVertical: 9}}>
                         <Text style={{fontSize: 20, fontWeight: 'bold'}}>
@@ -68,7 +71,7 @@ export default class MemberListPage extends Component {
                         </Text>
 
                         <Text style={{fontSize: 17}}>
-                            Group Leader
+                            {item.role}
                         </Text>
                     </View>    
                 </TouchableOpacity> 
