@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Card } from 'react-native-material-ui';
 import { SearchBar } from 'react-native-elements';

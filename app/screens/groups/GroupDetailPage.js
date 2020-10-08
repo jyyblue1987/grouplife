@@ -2,6 +2,7 @@ import * as React from 'react';
 import {Component} from 'react';
 
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { Card } from 'react-native-material-ui';
 import LinearGradient from 'react-native-linear-gradient';
 import firebase from '../../../database/firebase';
@@ -11,6 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Moment from 'moment';
 
 export default class GroupDetailPage extends Component {
     constructor(props) {
@@ -25,12 +27,20 @@ export default class GroupDetailPage extends Component {
     }
 
     UNSAFE_componentWillMount() {
+        this.initListener = this.props.navigation.addListener('focus', this.init_data.bind(this));
     }
 
-    getGroupList() {
+
+    init_data = async() => {
+        console.log("Group Detail Init Data", JSON.stringify(this.state.group));
+
+        var member_count = 0;
+        if( this.state.group.member_list != null )
+            member_count = this.state.group.member_list.length;
+
         this.setState({
-            isLoading: false
-        })
+            member_count: member_count,
+        });
     }
 
 
@@ -45,8 +55,8 @@ export default class GroupDetailPage extends Component {
                 }
                 <ScrollView style={{width:'100%'}}>
                     <View style={{width: '100%', height: 300}}>                        
-                        <Image style = {{width: '100%', height: '100%'}} source = {require("../../assets/images/group_image_detail.jpg")}>                       
-                        </Image>
+                        <FastImage style = {{width: '100%', height: '100%'}} source = {{uri:this.state.group.group_image}}>                       
+                        </FastImage>
                         <LinearGradient colors={["black", "transparent"]} style={styles.linearGradient}>
                         </LinearGradient>                 
                         <View style={{width:'100%', flexDirection:'row', alignItems: 'center', position: 'absolute', paddingVertical: 9, bottom: 0, backgroundColor: stylesGlobal.back_color}}>
@@ -62,22 +72,22 @@ export default class GroupDetailPage extends Component {
 
                     <View style={{paddingHorizontal: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: 'gray'}}>
                         <Text style={{fontWeight: 'bold', fontSize: 22}}>
-                            Downdown Group
+                            {this.state.group.group_name}
                         </Text>
                         <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
-                            <Text style={{flex:1, fontSize: 16}}>Woodside Detroit</Text>
+                            <Text style={{flex:1, fontSize: 16}}>{this.state.group.group_desc}</Text>
                             <View style={{flex:1, flexDirection: 'row', alignItems: 'center', fontSize: 16}}>
                                 <FontAwesome5 name="user" size={18} color={stylesGlobal.back_color} style={{marginLeft: 15}} />
                                 <Text style={{marginLeft: 15, fontSize: 16}}
                                 onPress={() => this.props.navigation.navigate('MemberList', {group: this.state.group})}
                                 >
-                                    31 Members
+                                {this.state.member_count}   Members
                                 </Text>
                             </View>                        
                         </View>
 
-                        <Text style={{fontSize: 15, color: '#383838B2'}}>
-                            Monday's, 6:30 PM
+                        <Text style={{fontSize: 15, color: '#383838B2'}}>                            
+                            {Moment(this.state.group.created_at).format('dddd LT')}
                         </Text>
                     </View>
 
