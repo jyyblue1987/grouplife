@@ -155,25 +155,28 @@ export default class GroupListPage extends Component {
         var vm = this;
         var groupRef = firestore.collection("group_list").doc(item.id);        
         groupRef.get().then(function(doc) {
-                if (doc.exists) 
-                {
-                    var data = doc.data();
-                    if( data.member_list == null )
-                        data.member_list = [];
-            
-                    var user = firebase.auth().currentUser;
-                    data.member_list.push(user.uid);                        
+            if (doc.exists) 
+            {
+                var data = doc.data();
+                if( data.member_list == null )
+                    data.member_list = [];
+        
+                var user = firebase.auth().currentUser;
+                data.member_list.push(user.uid);                        
 
-                    console.log("Document data:", data);
-                    groupRef.set(data);
+                console.log("Document data:", data);
+                groupRef.set(data).then(function(doc) {
                     vm.renderRefreshControl();
-                } else {
-                    // doc.data() will be undefined in this case
-                    console.log("No such document!");
-                }
-            }).catch(function(error) {
-                console.log("Error getting document:", error);
-            });
+                }).catch(function(error) {
+                    console.log("Error setting group:", error);
+                });                    
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+            }
+        }).catch(function(error) {
+            console.log("Error getting document:", error);
+        });
       
     }
 
