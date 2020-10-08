@@ -2,6 +2,7 @@ import * as React from 'react';
 import {Component} from 'react';
 
 import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { Card } from 'react-native-material-ui';
 import { SearchBar } from 'react-native-elements';
 import { stylesGlobal } from '../../styles/stylesGlobal';
@@ -46,6 +47,8 @@ export default class GroupListPage extends Component {
                 var data = doc.data();
                 data.id = doc.id;
 
+                data.group_image = "https://unsplash.it/400/400?image=1";
+
                 if( data.member_list != null )
                 {
                     if(data.member_list.includes(user_id))
@@ -82,6 +85,8 @@ export default class GroupListPage extends Component {
                     console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
                     var data = doc.data();
                     data.id = doc.id;
+
+                    data.group_image = "https://unsplash.it/400/400?image=1";
 
                     if( data.member_list == null || data.member_list.includes(user_id) == false )
                     {                        
@@ -179,7 +184,7 @@ export default class GroupListPage extends Component {
             <Card style={{container:{borderRadius: 6}}}>
                 <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => this.props.navigation.navigate('GroupDetail', {group: item})}>
                     <View style={{justifyContent: "center"}}>
-                        <Image style = {{width: 100, height: '100%'}} source = {{uri: item.group_image}}/>
+                        <FastImage style = {{width: 100, height: '100%'}} source = {{uri: item.group_image}}/>
                     </View>
                     <View style={{width:'100%', marginLeft: 7, paddingVertical: 9}}>
                         <Text style={{fontSize: 20, fontWeight: 'bold'}}>
