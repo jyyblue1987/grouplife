@@ -8,6 +8,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { stylesGlobal } from '../styles/stylesGlobal';
 
 import GroupListPage from './groups/GroupListPage';
+import MyProfilePage from './profile/MyProfilePage';
 const Tab = createBottomTabNavigator();
   
 function NewsPage() {
@@ -84,7 +85,7 @@ export default class MainPage extends Component {
                 />
                 <Tab.Screen
                     name="Profile"
-                    component={ProfilePage}
+                    component={MyProfilePage}
                     options={{                    
                         tabBarIcon: ({ color, size }) => (
                             <FontAwesome5 name="user" color={color} size={size} />

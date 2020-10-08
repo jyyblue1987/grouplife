@@ -1,25 +1,42 @@
 import * as React from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Ionicons from 'react-native-vector-icons/Ionicons'; 
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
-export default class MemberProfielPage extends Component {
+import firebase from '../../../database/firebase';
+import { firestore, storage} from '../../../database/firebase';
+
+export default class MyProfielPage extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            isLoading: false,
-            user: this.props.route.params.user
+            isLoading: false,  
+            user: {},
         }
 
-        console.log(this.state.user);
     }
 
     UNSAFE_componentWillMount() {
+        this.setState({                    
+            isLoading: true,
+        });
+        var uid = firebase.auth().currentUser.uid;
+        firestore.collection("member_list")
+            .where("user_id", "==", uid)
+            .get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    this.setState({user: doc.data()});                    
+                });
+
+                this.setState({                    
+                    isLoading: false,
+                });
+            }); 
     }
 
 
@@ -27,11 +44,6 @@ export default class MemberProfielPage extends Component {
         var user = this.state.user;
         return (
             <View style={styles.container}>
-                {
-                    this.state.isLoading && <View style={stylesGlobal.preloader}>
-                        <ActivityIndicator size="large" color="#9E9E9E"/>
-                    </View>
-                }
                 <ScrollView style={{width:'100%', paddingHorizontal: 20}}>
                     <View style={{flex:1, flexDirection: 'row', alignItems: 'center', paddingVertical: 10}}>
                         <View style={{justifyContent: "center"}}>
@@ -111,6 +123,11 @@ export default class MemberProfielPage extends Component {
                         </View>
                     </View>                 
                 </ScrollView>
+                {
+                    this.state.isLoading && <View style={stylesGlobal.preloader}>
+                        <ActivityIndicator size="large" color="#9E9E9E"/>
+                    </View>
+                }
             </View>
         );
     }
@@ -121,7 +138,7 @@ const styles = StyleSheet.create({
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        paddingBottom: 35,        
+        paddingVertical: 35,          
     }, 
 
     contactPanel: {
@@ -132,6 +149,4 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: 'center'
     }
-    
-    
 });
