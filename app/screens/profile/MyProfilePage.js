@@ -2,10 +2,12 @@ import * as React from 'react';
 import {Component} from 'react';
 
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import {Button, Icon} from 'react-native-elements';
 import FastImage from 'react-native-fast-image';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Ionicons from 'react-native-vector-icons/Ionicons'; 
 import { stylesGlobal } from '../../styles/stylesGlobal';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import firebase from '../../../database/firebase';
 import { firestore, storage} from '../../../database/firebase';
@@ -39,6 +41,10 @@ export default class MyProfielPage extends Component {
             }); 
     }
 
+    onEditProfile = () => {
+        this.props.navigation.navigate('MyProfileEdit', {user: this.state.user});
+    }
+
 
     render() {
         var user = this.state.user;
@@ -58,6 +64,7 @@ export default class MyProfielPage extends Component {
                                 {user.role}
                             </Text>
                         </View>    
+                        
                     </View>
 
                     <View style = {{width: '100%', borderWidth:0.5, borderColor:'lightgray'}} />
@@ -120,9 +127,27 @@ export default class MyProfielPage extends Component {
                                     {user.state} {user.country}                                    
                                 </Text>
                             </View>    
-                        </View>
+                        </View>                        
                     </View>                 
                 </ScrollView>
+                <TouchableOpacity
+                    style={{
+                        borderWidth:1,
+                        borderColor:'rgba(0,0,0,0.2)',
+                        alignItems:'center',
+                        justifyContent:'center',
+                        width:70,
+                        height:70,
+                        position: 'absolute',                                          
+                        bottom: 10,                                                    
+                        right: 10,
+                        backgroundColor:stylesGlobal.back_color,
+                        borderRadius:100,
+                        }}                        
+                        onPress={() => this.onEditProfile()}
+                    >
+                    <FontAwesome5 name="edit"  size={30} color="#fff" />
+                </TouchableOpacity>
                 {
                     this.state.isLoading && <View style={stylesGlobal.preloader}>
                         <ActivityIndicator size="large" color="#9E9E9E"/>

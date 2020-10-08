@@ -21,6 +21,7 @@ import GroupCreatePage from  './app/screens/groups/GroupCreatePage';
 import GroupDetailPage from  './app/screens/groups/GroupDetailPage';
 import MemberListPage from  './app/screens/groups/MemberListPage';
 import MemberProfilePage from  './app/screens/profile/MemberProfilePage';
+import MyProfileEditPage from  './app/screens/profile/MyProfileEditPage';
 
 const Stack = createStackNavigator();
 
@@ -75,6 +76,12 @@ export default class App extends Component {
 							title: 'Member Profile',							
 						}} 
 					/>
+
+					<Stack.Screen name="MyProfileEdit" component={MyProfileEditPage} 
+						options={{
+							title: 'My Profile',							
+						}} 
+					/>     
                 </Stack.Navigator>
             </NavigationContainer>
 
