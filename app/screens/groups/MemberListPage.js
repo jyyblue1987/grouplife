@@ -3,9 +3,11 @@ import {Component} from 'react';
 
 import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-material-ui';
-import firebase from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import firebase from '../../../database/firebase';
+import { firestore, storage} from '../../../database/firebase';
+
 
 export default class MemberListPage extends Component {
     constructor(props) {
@@ -13,6 +15,7 @@ export default class MemberListPage extends Component {
 
         this.state = {
             isLoading: false,
+            group: this.props.route.params.group,
             member_list: [],
         }
     }
@@ -23,9 +26,28 @@ export default class MemberListPage extends Component {
 
     getMemberList() {
         this.setState({
-            member_list: [{id: 1}, {id: 2}, {id: 3}],
-            isLoading: false
-        })
+            member_list: [],
+            isLoading: true
+        });
+
+        firestore.collection("member_list")
+            .where("user_id", "in", this.state.group.member_list)
+            .get().then((querySnapshot) => {
+                var list = [];
+
+                querySnapshot.forEach((doc) => {
+                    console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
+                    var data = doc.data();
+                    data.id = doc.id;
+                    list.push(data);
+                    
+                });
+
+                this.setState({
+                    member_list: list,
+                    isLoading: false,
+                });
+            }); 
     }
 
     renderRefreshControl() {
@@ -36,13 +58,13 @@ export default class MemberListPage extends Component {
     renderRow(item) {
 		return (			
             <Card style={{container:{borderRadius: 15}}}>
-                <TouchableOpacity style={{flex:1, flexDirection: 'row', padding: 5}} onPress={() => this.props.navigation.navigate('MemberProfile', {group: item})}>
+                <TouchableOpacity style={{flex:1, flexDirection: 'row', padding: 5}} onPress={() => this.props.navigation.navigate('MemberProfile', {user: item})}>
                     <View style={{justifyContent: "center"}}>
                         <Image style = {{width: 60, height: 60, borderRadius: 30, borderColor: stylesGlobal.back_color, borderWidth: 2}} source = {require("../../assets/images/group_image.jpg")}/>
                     </View>
                     <View style={{width:'100%', marginLeft: 7, paddingVertical: 9}}>
                         <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-                            Michael Snow
+                            {item.first_name}
                         </Text>
 
                         <Text style={{fontSize: 17}}>
@@ -57,12 +79,7 @@ export default class MemberListPage extends Component {
     render() {
   
         return (
-            <View style={styles.container}>
-                {
-                    this.state.isLoading && <View style={stylesGlobal.preloader}>
-                        <ActivityIndicator size="large" color="#9E9E9E"/>
-                    </View>
-                }              
+            <View style={styles.container}>                
                 <FlatList
                     data={this.state.member_list}
                     renderItem={({item}) => this.renderRow(item)}

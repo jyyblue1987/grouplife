@@ -12,10 +12,10 @@ export default class MemberProfielPage extends Component {
 
         this.state = {
             isLoading: false,
-            group: this.props.route.params.group
+            user: this.props.route.params.user
         }
 
-        console.log(this.state.group);
+        console.log(this.state.user);
     }
 
     UNSAFE_componentWillMount() {
@@ -29,7 +29,7 @@ export default class MemberProfielPage extends Component {
 
 
     render() {
-  
+        var user = this.state.user;
         return (
             <View style={styles.container}>
                 {
@@ -44,11 +44,11 @@ export default class MemberProfielPage extends Component {
                         </View>
                         <View style={{width:'100%', marginLeft: 10, paddingVertical: 9}}>
                             <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-                                Michael Snow
+                                {this.state.user.first_name} {user.last_name}
                             </Text>
 
                             <Text style={{fontSize: 17}}>
-                                Group Leader
+                                {user.role}
                             </Text>
                         </View>    
                     </View>
@@ -59,7 +59,7 @@ export default class MemberProfielPage extends Component {
                         About Me
                     </Text>    
                     <Text style={{fontSize: 17, marginTop: 5}}>
-                        <Text>I have been involved with small groups for almost 15 years. I love running, hiking, and meeting new people.</Text>
+                        <Text>{user.desc}</Text>
                         <Text style={{fontWeight: 'bold', color: stylesGlobal.back_color}}>   Read More</Text>
                     </Text>                      
 
@@ -77,7 +77,7 @@ export default class MemberProfielPage extends Component {
                                     Email Address
                                 </Text>
                                 <Text style={{fontSize: 17}}>
-                                    jason.lowe@gmail.com
+                                    {user.email}
                                 </Text>
                             </View>    
                         </View>
@@ -92,7 +92,7 @@ export default class MemberProfielPage extends Component {
                                     Phone
                                 </Text>
                                 <Text style={{fontSize: 17}}>
-                                    313-31303131
+                                    {user.phone}
                                 </Text>
                             </View>    
                         </View>
@@ -107,10 +107,10 @@ export default class MemberProfielPage extends Component {
                                     Address
                                 </Text>
                                 <Text style={{fontSize: 17}}>
-                                    123 Main Street
+                                    {user.address}, {user.city}
                                 </Text>
                                 <Text style={{fontSize: 17}}>
-                                    Detroit, Mi
+                                    {user.state} {user.country}                                    
                                 </Text>
                             </View>    
                         </View>

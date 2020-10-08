@@ -39,28 +39,30 @@ export default class GroupListPage extends Component {
         var user_id = user.uid;
         console.log("User ID = ", user_id);
         this.setState({ isLoading: true });
-        firestore.collection("group_list").get().then((querySnapshot) => {
-            var group_list = [];
+        firestore.collection("group_list")
+            .where("member_list", "array-contains", user_id)
+            .get().then((querySnapshot) => {
+                var group_list = [];
 
-            querySnapshot.forEach((doc) => {
-                console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
-                var data = doc.data();
-                data.id = doc.id;
+                querySnapshot.forEach((doc) => {
+                    console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
+                    var data = doc.data();
+                    data.id = doc.id;
 
-                data.group_image = "https://unsplash.it/400/400?image=1";
+                    data.group_image = "https://unsplash.it/400/400?image=1";
 
-                if( data.member_list != null )
-                {
-                    if(data.member_list.includes(user_id))
-                        group_list.push(data);
-                }
-            });
+                    // if( data.member_list != null )
+                    // {
+                    //     if(data.member_list.includes(user_id))
+                            group_list.push(data);
+                    // }
+                });
 
-            this.setState({
-                group_list: group_list,
-                isLoading: false
-            })
-        });        
+                this.setState({
+                    group_list: group_list,
+                    isLoading: false
+                })
+            });        
     }
 
     searchGroupList(search) {

@@ -3,6 +3,7 @@ import {Component} from 'react';
 
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import firebase from '../../database/firebase';
+import {firestore} from '../../database/firebase';
 import { stylesGlobal } from '../styles/stylesGlobal';
 
 
@@ -38,6 +39,8 @@ export default class SignUpScreen extends Component {
             });
         }
 
+        var vm = this;
+
         firebase.auth()
             .createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then( (res) => {   
@@ -47,16 +50,44 @@ export default class SignUpScreen extends Component {
 
                 console.log('User registered successfully!');                
                 
-                this.setState({
-                    isLoading: false,
-                    displayName: '',
-                    email: '',
-                    password: ''
+                // create member
+               
+                var data = {
+                    user_id: res.user.uid,
+                    first_name: this.state.displayName,
+                    last_name: '',
+                    picture: '',
+                    email: this.state.email,
+                    phone: '',
+                    address: '',
+                    city: '',
+                    state: '',
+                    country: '',
+                    desc: '',
+                    role: 'Member'
+                };
+
+                firestore.collection("member_list").add(data).then(function(docRef) {
+                    console.log("User is created with ID:", docRef.id);
+
+                    vm.setState({
+                        isLoading: false,
+                        displayName: '',
+                        email: '',
+                        password: ''
+                    });
+    
+                    vm.props.navigation.navigate('Signin');                    
+                }).catch(function(error) {
+                    Alert.alert(error.message);
                 });
 
-                this.props.navigation.navigate('Signin');
+                
             })
-            .catch(error => this.setState({errorMessage: error.message})) 
+            .catch(error => {
+                this.setState({errorMessage: error.message});
+                Alert.alert(error.message);
+            }) 
     }
 
     render() {
