@@ -45,8 +45,7 @@ export default class GroupCreatePage extends Component {
         super(props);
 
         this.state = {
-            isLoading: false,       
-            isUploading: false,      
+            isLoading: false,                        
             group_name: '',      
             group_desc: '',                 
             group_type: '',
@@ -62,6 +61,7 @@ export default class GroupCreatePage extends Component {
             leader_phone: '',
             leader_email: '',      
             created_by: '',     
+            isUploading: false, 
             upload_progress: 0, 
         }
     }
@@ -81,7 +81,7 @@ export default class GroupCreatePage extends Component {
             title: 'Select Image',
             mediaType: 'photo',
             quality: 1.0,
-            allowsEditing: false,
+            allowsEditing: true,
             noData: true,
             storageOptions: {
                 skipBackup: true,

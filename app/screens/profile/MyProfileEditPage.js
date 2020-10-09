@@ -12,6 +12,7 @@ import FastImage from 'react-native-fast-image';
 import { Button } from 'react-native-elements';
 import ImagePicker from 'react-native-image-picker';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import * as Progress from 'react-native-progress';
 
 import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
 
@@ -43,6 +44,8 @@ export default class MyProfileEditPage extends Component {
 
         var state = {...this.props.route.params.user};
         state.isLoading = false;
+        state.isUploading = false;
+        state.upload_progress = 0;
         this.state = state;
     }
 
@@ -81,18 +84,18 @@ export default class MyProfileEditPage extends Component {
                 var uri = response.uri;
                 console.log(uri);
                 this.setState({
-                    isLoading: true,                    
+                    isUploading: true,                    
                     picture: uri,                    
                 });
                 
                 this.uploadImage(uri, 'image/jpeg')
                     .then(url => { 
-                        this.setState({picture: url, isLoading: false});
+                        this.setState({picture: url, isUploading: false});
                         console.log("Upload URL = ", url);
 
                     })
                     .catch(error => {
-                        this.setState({picture: '', isLoading: false});
+                        this.setState({picture: '', isUploading: false});
                         console.log(error)
                     });
             }
@@ -101,6 +104,8 @@ export default class MyProfileEditPage extends Component {
     }
 
     uploadImage(uri, mime = 'application/octet-stream') {
+        var vm = this;
+        
         return new Promise((resolve, reject) => {            
             const filename = uri.substring(uri.lastIndexOf('/') + 1);
             console.log(filename);
@@ -119,7 +124,19 @@ export default class MyProfileEditPage extends Component {
                 })
                 .then((blob) => {
                     uploadBlob = blob
-                    return imageRef.put(blob, { contentType: mime });
+                    var uploadTask = imageRef.put(blob, { contentType: mime });
+
+                    uploadTask.on('state_changed', function(snapshot){
+                        // Observe state change events such as progress, pause, and resume
+                        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                        var progress = (snapshot.bytesTransferred / snapshot.totalBytes);
+                        if( progress <= 1.0 )
+                            vm.setState({upload_progress: progress});
+
+                        console.log(snapshot.bytesTransferred + ' is transferred in total ' + snapshot.totalBytes);                        
+                    });
+
+                    return uploadTask;
                 })
                 .then(() => {
                     uploadBlob.close()
@@ -249,7 +266,12 @@ export default class MyProfileEditPage extends Component {
                     this.state.isLoading && <View style={stylesGlobal.preloader}>
                         <ActivityIndicator size="large" color="#9E9E9E"/>
                     </View>
-                }          
+                }       
+                {
+                    this.state.isUploading && <View style={stylesGlobal.preloader}>
+                        <Progress.Bar progress={this.state.upload_progress} width={200} />
+                    </View>
+                }   
             </View>
             </ThemeContext.Provider>
         );
