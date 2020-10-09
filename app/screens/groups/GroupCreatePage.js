@@ -14,6 +14,7 @@ import { Button } from 'react-native-elements';
 import ImagePicker from 'react-native-image-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import * as Progress from 'react-native-progress';
 
 import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
 
@@ -44,7 +45,8 @@ export default class GroupCreatePage extends Component {
         super(props);
 
         this.state = {
-            isLoading: false,             
+            isLoading: false,       
+            isUploading: false,      
             group_name: '',      
             group_desc: '',                 
             group_type: '',
@@ -59,7 +61,8 @@ export default class GroupCreatePage extends Component {
             leader_name: '',
             leader_phone: '',
             leader_email: '',      
-            created_by: '',      
+            created_by: '',     
+            upload_progress: 0, 
         }
     }
 
@@ -98,18 +101,18 @@ export default class GroupCreatePage extends Component {
                 var uri = response.uri;
                 console.log(uri);
                 this.setState({
-                    isLoading: true,                    
+                    isUploading: true,                    
                     image_uri: uri,                    
                 });
                 
                 this.uploadImage(uri, 'image/jpeg')
                     .then(url => { 
-                        this.setState({group_image: url, isLoading: false});
+                        this.setState({group_image: url, isUploading: false});
                         console.log("Upload URL = ", url);
 
                     })
                     .catch(error => {
-                        this.setState({group_image: '', isLoading: false});
+                        this.setState({group_image: '', isUploading: false});
                         console.log(error)
                     });
 
@@ -119,6 +122,7 @@ export default class GroupCreatePage extends Component {
     }
 
     uploadImage(uri, mime = 'application/octet-stream') {
+        var vm = this;
         return new Promise((resolve, reject) => {            
             const filename = uri.substring(uri.lastIndexOf('/') + 1);
             console.log(filename);
@@ -137,7 +141,19 @@ export default class GroupCreatePage extends Component {
                 })
                 .then((blob) => {
                     uploadBlob = blob
-                    return imageRef.put(blob, { contentType: mime });
+                    var uploadTask = imageRef.put(blob, { contentType: mime });
+
+                    uploadTask.on('state_changed', function(snapshot){
+                        // Observe state change events such as progress, pause, and resume
+                        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                        var progress = (snapshot.bytesTransferred / snapshot.totalBytes);
+                        if( progress <= 1.0 )
+                            vm.setState({upload_progress: progress});
+
+                        console.log(snapshot.bytesTransferred + ' is transferred in total ' + snapshot.totalBytes);                        
+                    });
+
+                    return uploadTask;
                 })
                 .then(() => {
                     uploadBlob.close()
@@ -419,7 +435,12 @@ export default class GroupCreatePage extends Component {
                     this.state.isLoading && <View style={stylesGlobal.preloader}>
                         <ActivityIndicator size="large" color="#9E9E9E"/>
                     </View>
-                }          
+                }        
+                {
+                    this.state.isUploading && <View style={stylesGlobal.preloader}>
+                        <Progress.Bar progress={this.state.upload_progress} width={200} />
+                    </View>
+                }  
             </View>
             </ThemeContext.Provider>
         );
