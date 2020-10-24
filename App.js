@@ -19,6 +19,7 @@ import SignUpScreen from  './app/screens/SignUpScreen';
 import MainPage from  './app/screens/MainPage';
 import GroupCreatePage from  './app/screens/groups/GroupCreatePage';
 import GroupDetailPage from  './app/screens/groups/GroupDetailPage';
+import GroupChatPage from  './app/screens/groups/GroupChatPage';
 import MemberListPage from  './app/screens/groups/MemberListPage';
 import MemberProfilePage from  './app/screens/profile/MemberProfilePage';
 import MyProfileEditPage from  './app/screens/profile/MyProfileEditPage';
@@ -42,12 +43,12 @@ export default class App extends Component {
                 <Stack.Navigator 
                     initialRouteName = "Signin"
                     screenOptions={
-						({ route }) => (
-							stylesGlobal.header_bar
-						)
-					}                    
+										({ route }) => (
+											stylesGlobal.header_bar
+										)
+									}                    
                 >
-                    <Stack.Screen name="Signin" component={SignInScreen} options={{title: 'Login'}} />
+          <Stack.Screen name="Signin" component={SignInScreen} options={{title: 'Login'}} />
 					<Stack.Screen name="Signup" component={SignUpScreen} options={{title: 'Signup'}} />                   
 					<Stack.Screen name="Main" component={MainPage} 
 						options={{							
@@ -64,7 +65,12 @@ export default class App extends Component {
 							title: '',
 							headerShown: false,							
 						}} 
-					/>     
+					/>
+					<Stack.Screen name="GroupChatPage" component={GroupChatPage} 
+						options={{
+							title: 'Chat',
+						}} 
+					/>
 					<Stack.Screen name="MemberList" component={MemberListPage} 
 						options={{
 							title: 'Group Members',							

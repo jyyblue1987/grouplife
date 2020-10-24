@@ -101,7 +101,7 @@ export default class GroupDetailPage extends Component {
 
                     {/* Group Chat */}
                     <Card style={{container: {borderRadius: 10}}}>
-                        <TouchableOpacity style={styles.cardButtonStyle}>
+                        <TouchableOpacity style={styles.cardButtonStyle} onPress={()=> this.props.navigation.navigate('GroupChatPage', {group: this.state.group})}>
                             <Entypo name="chat" size={22} color={stylesGlobal.back_color} />
                             <Text style={styles.textStyle}>Group Chat</Text>
                             <View style={{width: 28, height: 28, borderRadius: 14, position: 'absolute', justifyContent: 'center', alignItems: 'center', right: 10, backgroundColor:'#0AB97A'}}>
