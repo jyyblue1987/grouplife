@@ -19,7 +19,7 @@ export default class MemberProfielPage extends Component {
         console.log(this.state.user);
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
     }
 
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>933642425288-71cipel6bqmm51dj56ru493veatdr91i.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.933642425288-71cipel6bqmm51dj56ru493veatdr91i</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDqW9Uc8sbs08lMw9XCqpcPtJifl1yGFhk</string>
+	<key>GCM_SENDER_ID</key>
+	<string>933642425288</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.infolight.grouplife</string>
+	<key>PROJECT_ID</key>
+	<string>grouplife-dev</string>
+	<key>STORAGE_BUCKET</key>
+	<string>grouplife-dev.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:933642425288:ios:fdbbf43ee004b58a2526fd</string>
+	<key>DATABASE_URL</key>
+	<string>https://grouplife-dev.firebaseio.com</string>
+</dict>
+</plist>

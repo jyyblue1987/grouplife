@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "933642425288",
+    "firebase_url": "https://grouplife-dev.firebaseio.com",
+    "project_id": "grouplife-dev",
+    "storage_bucket": "grouplife-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:933642425288:android:067f203aec8422dc2526fd",
+        "android_client_info": {
+          "package_name": "com.infolight.grouplife"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "933642425288-thoum7gpnnmtiikns01p2qg3tldp56lv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGUGkUlrHs-z3SiL2gBQFs1-KyNhbO0vs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "933642425288-thoum7gpnnmtiikns01p2qg3tldp56lv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "933642425288-71cipel6bqmm51dj56ru493veatdr91i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.infolight.grouplife"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

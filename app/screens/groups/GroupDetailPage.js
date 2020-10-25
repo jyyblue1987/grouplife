@@ -26,7 +26,7 @@ export default class GroupDetailPage extends Component {
         console.log(this.state.group);
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
         this.initListener = this.props.navigation.addListener('focus', this.init_data.bind(this));
     }
 

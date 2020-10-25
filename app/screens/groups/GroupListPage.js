@@ -24,7 +24,7 @@ export default class GroupListPage extends Component {
         }
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
         this.renderRefreshControl();
     }
 

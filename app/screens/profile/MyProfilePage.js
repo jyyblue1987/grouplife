@@ -23,7 +23,7 @@ export default class MyProfielPage extends Component {
 
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
         this.getProfile();
     }
 

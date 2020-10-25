@@ -18,7 +18,7 @@ export default class SignUpScreen extends Component {
         }
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
         
     }
 

@@ -1,4 +1,4 @@
-package com.grouplife;
+package com.infolight.grouplife;
 
 import com.facebook.react.ReactActivity;
 

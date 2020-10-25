@@ -51,7 +51,7 @@ export default class MainPage extends Component {
         }
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
         
     }
 

@@ -13,16 +13,17 @@ import { Button } from 'react-native-elements';
 import ImagePicker from 'react-native-image-picker';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import * as Progress from 'react-native-progress';
+import storage from '@react-native-firebase/storage';
 
 import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
 
-import RNFetchBlob from 'rn-fetch-blob';
+// import RNFetchBlob from 'rn-fetch-blob';
 
-// Prepare Blob support
-const Blob = RNFetchBlob.polyfill.Blob
-const fs = RNFetchBlob.fs
-window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
-window.Blob = Blob;
+// // Prepare Blob support
+// const Blob = RNFetchBlob.polyfill.Blob
+// const fs = RNFetchBlob.fs
+// window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
+// window.Blob = Blob;
 
 // you can set your style right here, it'll be propagated to application
 const uiTheme = {
@@ -34,13 +35,20 @@ const uiTheme = {
     },
 };
 
-import firebase from '../../../database/firebase';
-import { firestore, storage} from '../../../database/firebase';
+import { firestore } from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
 export default class MyProfileEditPage extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            file: null,
+            errors: [],
+            uploadState: null,
+            uploadTask: null,
+            percentUploaded: 0,
+        }
 
         var state = {...this.props.route.params.user};
         state.isLoading = false;
@@ -49,7 +57,7 @@ export default class MyProfileEditPage extends Component {
         this.state = state;
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
         
     }
 
@@ -88,71 +96,113 @@ export default class MyProfileEditPage extends Component {
                     picture: uri,                    
                 });
                 
-                this.uploadImage(uri, 'image/jpeg')
-                    .then(url => { 
-                        this.setState({picture: url, isUploading: false});
-                        console.log("Upload URL = ", url);
+                this.uploadImage(uri)
+                    // .then(url => { 
+                    //     this.setState({picture: url, isUploading: false});
+                    //     console.log("Upload URL = ", url);
 
-                    })
-                    .catch(error => {
-                        this.setState({picture: '', isUploading: false});
-                        console.log(error)
-                    });
+                    // })
+                    // .catch(error => {
+                    //     this.setState({picture: '', isUploading: false});
+                    //     console.log(error)
+                    // });
             }
             
         });
     }
 
-    uploadImage(uri, mime = 'application/octet-stream') {
-        var vm = this;
-        
-        return new Promise((resolve, reject) => {            
-            const filename = uri.substring(uri.lastIndexOf('/') + 1);
-            console.log(filename);
-            const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
-            console.log("uploadUri", uploadUri);
-            // create reference
-            var storageRef = storage.ref();
-            console.log("imageRef");
-            var imageRef = storageRef.child("images/" + filename);
+    uploadImage = (uri) => {
+        const filename = uri.substring(uri.lastIndexOf('/') + 1);
+        console.log('filename------------', filename);
+        const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+        console.log("uploadUri-----------", uploadUri);
 
-            let uploadBlob = null
-    
-            fs.readFile(uploadUri, 'base64')
-                .then((data) => {
-                    return Blob.build(data, { type: `${mime};BASE64` })
-                })
-                .then((blob) => {
-                    uploadBlob = blob
-                    var uploadTask = imageRef.put(blob, { contentType: mime });
+        this.setState({
+            uploadTask: storage().ref("/profileImages/" + filename).putFile(uploadUri)
+        },
+            () => {
+                this.state.uploadTask.on( 'state_changed', snapshot => {
 
-                    uploadTask.on('state_changed', function(snapshot){
-                        // Observe state change events such as progress, pause, and resume
-                        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-                        var progress = (snapshot.bytesTransferred / snapshot.totalBytes);
-                        if( progress <= 1.0 )
-                            vm.setState({upload_progress: progress});
+                        const percentUploaded = Math.round((snapshot.bytesTransferred / snapshot.totalBytes));
+                        this.setState({ upload_progress: percentUploaded });
+                        console.log('---------- progress = ', percentUploaded)
 
-                        console.log(snapshot.bytesTransferred + ' is transferred in total ' + snapshot.totalBytes);                        
-                    });
-
-                    return uploadTask;
-                })
-                .then(() => {
-                    uploadBlob.close()
-                    return imageRef.getDownloadURL();
-                })
-                .then((url) => {
-                    resolve(url);
-                })
-                .catch((error) => {
-                    reject(error);
-                })
-        })
+                        switch (snapshot.state) {
+                            case 'running':
+                                break;
+                            case 'success':
+                                snapshot.ref.getDownloadURL().then(downloadUrl => {
+                                    console.log('---------- success = ', downloadUrl)
+                                    this.setState({ uploadState: 'done', picture: downloadUrl, isUploading: false})
+                                });
+                                break;
+                            default:
+                                break;
+                        }
+                    },
+                    err => {
+                        console.error(err);
+                        this.setState({
+                            uploadState: 'error',
+                            uploadTask: null,
+                            isUploading: false,
+                            picture: ""
+                        });
+                    },
+                )
+            }
+        )
     }
 
+    // uploadImage(uri, mime = 'application/octet-stream') {
+    //     var vm = this;
+        
+    //     return new Promise((resolve, reject) => {            
+    //         const filename = uri.substring(uri.lastIndexOf('/') + 1);
+    //         console.log(filename);
+    //         const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+    //         console.log("uploadUri", uploadUri);
+    //         // create reference
+    //         var storageRef = storage.ref();
+    //         console.log("imageRef");
+    //         var imageRef = storageRef.child("images/" + filename);
+
+    //         let uploadBlob = null
+    
+    //         fs.readFile(uploadUri, 'base64')
+    //             .then((data) => {
+    //                 return Blob.build(data, { type: `${mime};BASE64` })
+    //             })
+    //             .then((blob) => {
+    //                 uploadBlob = blob
+    //                 var uploadTask = imageRef.put(blob, { contentType: mime });
+
+    //                 uploadTask.on('state_changed', function(snapshot){
+    //                     // Observe state change events such as progress, pause, and resume
+    //                     // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+    //                     var progress = (snapshot.bytesTransferred / snapshot.totalBytes);
+    //                     if( progress <= 1.0 )
+    //                         vm.setState({upload_progress: progress});
+
+    //                     console.log(snapshot.bytesTransferred + ' is transferred in total ' + snapshot.totalBytes);                        
+    //                 });
+
+    //                 return uploadTask;
+    //             })
+    //             .then(() => {
+    //                 uploadBlob.close()
+    //                 return imageRef.getDownloadURL();
+    //             })
+    //             .then((url) => {
+    //                 resolve(url);
+    //             })
+    //             .catch((error) => {
+    //                 reject(error);
+    //             })
+    //     })
+    // }
+
     onSaveProfile = () => {
-        console.log("On Save Profile", JSON.stringify(this.state));
         this.setState({isLoading: true});
 
         var data = {

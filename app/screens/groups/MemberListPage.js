@@ -21,7 +21,7 @@ export default class MemberListPage extends Component {
         }
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
         this.renderRefreshControl();
     }
 
