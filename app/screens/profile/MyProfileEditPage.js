@@ -122,13 +122,13 @@ export default class MyProfileEditPage extends Component {
         },
             () => {
                 this.state.uploadTask.on( 'state_changed', snapshot => {
-
-                        const percentUploaded = Math.round((snapshot.bytesTransferred / snapshot.totalBytes));
-                        this.setState({ upload_progress: percentUploaded });
-                        console.log('---------- progress = ', percentUploaded)
-
                         switch (snapshot.state) {
                             case 'running':
+                                var progress = (snapshot.bytesTransferred / snapshot.totalBytes);
+                                if( progress <= 1.0 )
+                                    this.setState({upload_progress: progress});
+
+                                console.log(snapshot.bytesTransferred + ' is transferred in total ' + snapshot.totalBytes);  
                                 break;
                             case 'success':
                                 snapshot.ref.getDownloadURL().then(downloadUrl => {
@@ -153,54 +153,6 @@ export default class MyProfileEditPage extends Component {
             }
         )
     }
-
-    // uploadImage(uri, mime = 'application/octet-stream') {
-    //     var vm = this;
-        
-    //     return new Promise((resolve, reject) => {            
-    //         const filename = uri.substring(uri.lastIndexOf('/') + 1);
-    //         console.log(filename);
-    //         const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
-    //         console.log("uploadUri", uploadUri);
-    //         // create reference
-    //         var storageRef = storage.ref();
-    //         console.log("imageRef");
-    //         var imageRef = storageRef.child("images/" + filename);
-
-    //         let uploadBlob = null
-    
-    //         fs.readFile(uploadUri, 'base64')
-    //             .then((data) => {
-    //                 return Blob.build(data, { type: `${mime};BASE64` })
-    //             })
-    //             .then((blob) => {
-    //                 uploadBlob = blob
-    //                 var uploadTask = imageRef.put(blob, { contentType: mime });
-
-    //                 uploadTask.on('state_changed', function(snapshot){
-    //                     // Observe state change events such as progress, pause, and resume
-    //                     // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-    //                     var progress = (snapshot.bytesTransferred / snapshot.totalBytes);
-    //                     if( progress <= 1.0 )
-    //                         vm.setState({upload_progress: progress});
-
-    //                     console.log(snapshot.bytesTransferred + ' is transferred in total ' + snapshot.totalBytes);                        
-    //                 });
-
-    //                 return uploadTask;
-    //             })
-    //             .then(() => {
-    //                 uploadBlob.close()
-    //                 return imageRef.getDownloadURL();
-    //             })
-    //             .then((url) => {
-    //                 resolve(url);
-    //             })
-    //             .catch((error) => {
-    //                 reject(error);
-    //             })
-    //     })
-    // }
 
     onSaveProfile = () => {
         this.setState({isLoading: true});

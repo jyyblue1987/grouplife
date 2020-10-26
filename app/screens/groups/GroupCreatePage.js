@@ -133,13 +133,13 @@ export default class GroupCreatePage extends Component {
         },
             () => {
                 this.state.uploadTask.on( 'state_changed', snapshot => {
-
-                        const percentUploaded = Math.round((snapshot.bytesTransferred / snapshot.totalBytes));
-                        this.setState({ upload_progress: percentUploaded });
-                        console.log('---------- progress = ', percentUploaded)
-
                         switch (snapshot.state) {
                             case 'running':
+                                var progress = (snapshot.bytesTransferred / snapshot.totalBytes);
+                                if( progress <= 1.0 )
+                                    this.setState({upload_progress: progress});
+
+                                console.log(snapshot.bytesTransferred + ' is transferred in total ' + snapshot.totalBytes);  
                                 break;
                             case 'success':
                                 snapshot.ref.getDownloadURL().then(downloadUrl => {
