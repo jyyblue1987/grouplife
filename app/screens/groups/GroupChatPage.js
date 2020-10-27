@@ -13,12 +13,14 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { TextInput } from "react-native-gesture-handler";
 import moment from "moment";
 import RNUrlPreview from 'react-native-url-preview';
+import { firestore, storage} from '../../../database/firebase';
+import firebase from '../../../database/firebase';
 
 const DATA = {
   senderEmail: "aaa@gmail.com",
   senderName: "JackSon",
   senderPhotoUrl: "https://randomuser.me/api/portraits/men/29.jpg",
-  message: "Hi, nice to meet you",
+  text: "Hi, nice to meet you",
   check: true,
   data: [
     {
@@ -27,7 +29,7 @@ const DATA = {
       senderEmail: "bbb@gmail.com",
       senderName: "Julian",
       senderPhotoUrl: "https://randomuser.me/api/portraits/women/33.jpg",
-      message: "Nice to meet you, William",
+      text: "Nice to meet you, William",
       from: Number(new Date())-900100,
     },
     {
@@ -36,7 +38,7 @@ const DATA = {
       senderEmail: "ccc@gmail.com",
       senderName: "Lucus",
       senderPhotoUrl: "https://randomuser.me/api/portraits/men/24.jpg",
-      message: "how are you, William",
+      text: "how are you, William",
       from: Number(new Date())-1000100,
     },
     {
@@ -46,7 +48,7 @@ const DATA = {
       senderName: "William",
       senderPhotoUrl: "https://randomuser.me/api/portraits/women/68.jpg",
       urlLink: "https://www.linkedin.com/",
-      message: "Hey! how are you. This is William",
+      text: "Hey! how are you. This is William",
       from: Number(new Date())-1900100,
     },
     {
@@ -55,7 +57,7 @@ const DATA = {
       senderEmail: "ddd@gmail.com",
       senderName: "William",
       senderPhotoUrl: "https://randomuser.me/api/portraits/women/68.jpg",
-      message: "Hey! how are you. This is William",
+      text: "Hey! how are you. This is William",
       from: Number(new Date())-2000100,
     },
     {
@@ -64,7 +66,7 @@ const DATA = {
       senderEmail: "aaa@gmail.com",
       senderName: "JackSon",
       senderPhotoUrl: "https://randomuser.me/api/portraits/men/39.jpg",
-      message: "Thank you so much 🎉",
+      text: "Thank you so much 🎉",
       from: Number(new Date())-3000100,
     },
     {
@@ -73,7 +75,7 @@ const DATA = {
       senderEmail: "ccc@gmail.com",
       senderName: "Lucus",
       senderPhotoUrl: "https://randomuser.me/api/portraits/men/49.jpg",
-      message: "me too. Great! 👍",
+      text: "me too. Great! 👍",
       from: Number(new Date())-4000100,
     },
     {
@@ -82,7 +84,7 @@ const DATA = {
       senderEmail: "bbb@gmail.com",
       senderName: "Julian",
       senderPhotoUrl: "https://randomuser.me/api/portraits/women/33.jpg",
-      message: "Really!, Great!. I love Canana",
+      text: "Really!, Great!. I love Canana",
       from: Number(new Date())-5000100,
     },
     {
@@ -91,7 +93,7 @@ const DATA = {
       senderEmail: "aaa@gmail.com",
       senderName: "JackSon",
       senderPhotoUrl: "https://randomuser.me/api/portraits/men/39.jpg",
-      message: "This is JackSon from Canada",
+      text: "This is JackSon from Canada",
       from: Number(new Date())-6000100,
     },
     {
@@ -100,7 +102,7 @@ const DATA = {
       senderEmail: "ccc@gmail.com",
       senderName: "Lucus",
       senderPhotoUrl: "https://randomuser.me/api/portraits/men/49.jpg",
-      message: "that's fine",
+      text: "that's fine",
       from: Number(new Date())-7000100,
     },
     {
@@ -109,7 +111,7 @@ const DATA = {
       senderEmail: "bbb@gmail.com",
       senderName: "Julian",
       senderPhotoUrl: "https://randomuser.me/api/portraits/women/33.jpg",
-      message: "nice to meet you too",
+      text: "nice to meet you too",
       from: Number(new Date())-8000100,
     },
     {
@@ -119,7 +121,7 @@ const DATA = {
       senderName: "JackSon",
       senderPhotoUrl: "https://randomuser.me/api/portraits/men/39.jpg",
       urlLink: "https://www.youtube.com/watch?v=Kmiw4FYTg2U",
-      message: "Hi, nice to meet you. This is my video",
+      text: "Hi, nice to meet you. This is my video",
       from: Number(new Date())-8900100,
     },
     {
@@ -128,15 +130,25 @@ const DATA = {
       senderEmail: "aaa@gmail.com",
       senderName: "JackSon",
       senderPhotoUrl: "https://randomuser.me/api/portraits/men/39.jpg",
-      message: "Hi, nice to meet you. This is my video",
+      text: "Hi, nice to meet you. This is my video",
       from: Number(new Date())-9000100,
     },
   ]
 }
 
-const messageBox = (message, user_id) => {
-  let received = message?.senderid != user_id;
-  let created_at = moment(Number(message.id)).format("DD/M/YYYY HH:mm:ss");
+function validURL(str) {
+  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return !!pattern.test(str);
+}
+
+const messageBox = (message, myuid) => {
+  let received = message?.user?._id != myuid;
+  let created_at = moment(Number(message?.createdAt)).format("DD/M/YYYY HH:mm:ss");
   return (
     <View
         style={{
@@ -151,25 +163,25 @@ const messageBox = (message, user_id) => {
       {received ? (
         <View style={{ width: 40, marginRight: 10, justifyContent: "flex-end" }}>
           <View>
-            { message?.senderPhotoUrl ?
-              <Image source={{ uri: message?.senderPhotoUrl }} style={styles.chatimg} />
+            { message?.user?.senderPhotoUrl ?
+              <Image source={{ uri: message?.user?.senderPhotoUrl }} style={styles.chatimg} />
                 :
                 <Image style={styles.img} />
             }
             <Text style={{fontSize: 12, fontWeight: 'bold'}} numberOfLines={1}>
-              {message.senderName}
+              {message?.user?.displayName}
             </Text>
           </View>
         </View>
       ) : null}
-      { message.urlLink != undefined &&
+      { validURL(message?.text) == true &&
         <TouchableOpacity style={{flex: 1, width: "100%", flexDirection: "column"}}>
           <RNUrlPreview
-            text={message.urlLink}
+            text={message?.text}
           />
         </TouchableOpacity>
       }
-      { message.urlLink == undefined &&
+      { validURL(message?.text) == false &&
         <View
             style={{
               width: "100%",
@@ -187,7 +199,7 @@ const messageBox = (message, user_id) => {
               lineHeight: 20,
             }}
           >
-            {message.message}
+            {message?.text}
           </Text>
           <View
               style={{
@@ -203,83 +215,159 @@ const messageBox = (message, user_id) => {
   );
 };
 
-class GroupChatPage extends React.Component {
+export default function GroupChatPage(props) {
 
-  constructor (props) {
-    super(props);
-    this.state = {
-      messageModal: false,
-      messages: DATA,
-      message: "",
-      loading: false,
-      group: this.props.route.params?.group
-    };
-  }
+  const [initialize, setInitialize] = useState(false)
+  const [userMe, setUserMe] = useState(null)
+  const [threads, setThreads] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [messageModal, setMessageModal] = useState(false)
+  const [messages, setMessages] = useState(DATA)
+  const [newtext, setMessage] = useState("")
+  const [group, setGroup] = useState(props.route.params?.group)
 
-  componentDidMount () {
-    let title = this.state.group?.group_name;
-    this.props.navigation.setOptions({ title: title });
-  }
+  useEffect(() => {
+    if(!initialize)
+      getProfile()
+    setInitialize(true)
 
-  onPressSendMessage () {
+    let title = group?.group_name
+    props.navigation.setOptions({ title: title })
 
-  }
+    const unsubscribeListener = firestore
+    .collection('MESSAGE_THREADS')
+    .doc(group?.threadId)
+    .collection('MESSAGES')
+    .orderBy('createdAt', 'desc')
+    .onSnapshot(querySnapshot => {
+      const messages = querySnapshot.docs.map(doc => {
+        const firebaseData = doc.data()
 
-  onChangeMessage = (text) => {
-    this.setState({
-      message: text,
-    })
-  }
-
-  render () {
-    const { messages, message } = this.state;
-    
-    return (
-      <View style={{ flex: 1, backgroundColor: 'white' }}>
-        { Platform.OS === 'ios' && 
-          <View style={{height: 20}}/>
+        const data = {
+          _id: doc.id,
+          text: '',
+          createdAt: new Date().getTime(),
+          ...firebaseData
         }
-        <View style={styles.body}>
 
-          <FlatList
-            style={{
-              width: '100%'
-            }}
-            inverted
-            contentContainerStyle={{ paddingHorizontal: 20 }}
-            data={messages?.data}
-            renderItem={({ item }) => {
-              return messageBox(item, 11 );
-            }}
-          />
+        // if (!firebaseData.system) {
+        //   data.user = {
+        //     ...firebaseData.user,
+        //     name: firebaseData.user.displayName
+        //   }
+        // }
+        return data
+      })
 
-          <View style={styles.inputBoxWrapper}>
-              <View style={styles.inputBox}>
-                <TextInput
-                    style={{
-                      width:'90%',
-                      paddingVertical:5,
-                    }}
-                    value={message}
-                    placeholder="Type a message..."
-                    onChangeText={(text) => this.onChangeMessage(text)}
-                />
-              </View>
-              <TouchableOpacity
-                  onPress={() => this.onPressSendMessage() }
-                  style={styles.buttonSend}
-                >
-                <MaterialCommunityIcons name="arrow-right-thick" size={20} color="white" />
-              </TouchableOpacity>
-            </View>
-        </View>
+      console.log('messages=============', messages)
+      setMessages(messages)
+    })
 
-      </View>
-    );
+    return () => unsubscribeListener()
+
+  }, [])
+  
+  const getProfile = () => {
+    
+    let user = firebase.auth().currentUser
+    let uid = user.uid
+
+    firestore.collection("member_list")
+        .where("user_id", "==", uid)
+        .get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                let userMe = doc.data();
+                userMe.id = doc.id
+                userMe.displayName = user.displayName
+                setUserMe(userMe)
+            });
+        });
   }
-};
 
-export default GroupChatPage;
+  const onPressSendMessage = () => {
+    if(newtext == "")
+      return;
+
+    let text = newtext
+    setMessage("")
+
+    firestore
+      .collection('MESSAGE_THREADS')
+      .doc(group?.threadId)
+      .collection('MESSAGES')
+      .add({
+        text,
+        createdAt: new Date().getTime(),
+        user: {
+          _id: userMe.user_id,
+          displayName: userMe.displayName,
+          senderPhotoUrl: userMe.picture
+        }
+      }).then( async docref => {
+        await firestore
+        .collection('MESSAGE_THREADS')
+        .doc(group?.threadId)
+        .set(
+          {
+            latestMessage: {
+              text,
+              createdAt: new Date().getTime()
+            }
+          },
+          { merge: true }
+        )
+
+      })
+  }
+
+  const onChangeMessage = (text) => {
+    setMessage(text)
+  }
+
+  return (
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
+      { Platform.OS === 'ios' && 
+        <View style={{height: 20}}/>
+      }
+      <View style={styles.body}>
+
+        <FlatList
+          style={{
+            width: '100%'
+          }}
+          inverted
+          contentContainerStyle={{ paddingHorizontal: 20 }}
+          data={messages}
+          renderItem={({ item }) => {
+            return messageBox(item, userMe?.user_id);
+          }}
+          keyExtractor={item => item._id}
+        />
+
+        <View style={styles.inputBoxWrapper}>
+            <View style={styles.inputBox}>
+              <TextInput
+                  style={{
+                    width:'90%',
+                    paddingVertical:5,
+                  }}
+                  value={newtext}
+                  placeholder="Type a message..."
+                  onChangeText={(text) => onChangeMessage(text)}
+              />
+            </View>
+            <TouchableOpacity
+                onPress={() => onPressSendMessage() }
+                style={styles.buttonSend}
+              >
+              <MaterialCommunityIcons name="arrow-right-thick" size={20} color="white" />
+            </TouchableOpacity>
+          </View>
+      </View>
+
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -296,9 +384,9 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0,0,0,0.1)',
     borderWidth: 1,
     backgroundColor: 'white',
-    borderRadius: 60,
-    width: 60,
-    height: 60,
+    borderRadius: 20,
+    width: 40,
+    height: 40,
   },
   chatimg: {
     borderColor: 'rgba(0,0,0,0.1)',

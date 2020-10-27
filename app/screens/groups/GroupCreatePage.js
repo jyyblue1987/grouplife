@@ -15,7 +15,7 @@ import ImagePicker from 'react-native-image-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import * as Progress from 'react-native-progress';
-
+// import firestore from '@react-native-firebase/firestore'
 import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
 
 //import RNFetchBlob from 'rn-fetch-blob';
@@ -37,8 +37,9 @@ const uiTheme = {
 };
 
 import firebase from '../../../database/firebase';
-import { firestore, storage} from '../../../database/firebase';
+import { firestore} from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
+import storage from '@react-native-firebase/storage';
 
 export default class GroupCreatePage extends Component {
     constructor(props) {
@@ -239,7 +240,39 @@ export default class GroupCreatePage extends Component {
 
     }
 
-    onCreateGroup = () => {
+    onPressCreateGroup () {
+        this.createChatRoom()
+    }
+
+    createChatRoom () {
+        const { group_name } = this.state
+        let member_list = []
+        member_list.push(firebase.auth().currentUser.uid)
+        if (group_name.length > 0) {
+          // create new thread using firebase & firestore
+          firestore
+            .collection('MESSAGE_THREADS')
+            .add({
+              name: group_name,
+              latestMessage: {
+                text: `${group_name} created. Welcome!`,
+                createdAt: new Date().getTime()
+              },
+              member_list,
+            })
+            .then(docRef => {
+                docRef.collection('MESSAGES').add({
+                  text: `${group_name} created. Welcome!`,
+                  createdAt: new Date().getTime(),
+                  system: true
+                })
+                
+                this.onCreateGroup(docRef.id)
+            })
+        }
+    }
+
+    onCreateGroup = (threadId) => {
         console.log("On Create Group", this.state.group_name);
         this.setState({isLoading: true});
 
@@ -261,6 +294,7 @@ export default class GroupCreatePage extends Component {
             leader_email: this.state.leader_email, 
             created_by: firebase.auth().currentUser.uid,
             created_at: cur_time,
+            threadId,
         };
 
         console.log(JSON.stringify(data));
@@ -268,7 +302,7 @@ export default class GroupCreatePage extends Component {
         var vm = this;
         firestore.collection("group_list").add(data).then(function(docRef) {
             console.log("Group is created with ID:", docRef.id);
-            vm.clearInputData(docRef.id);            
+            vm.clearInputData(docRef.id);
         }).catch(function(error) {
             console.error("Error adding group: ", error);
             vm.clearInputData();            
@@ -303,7 +337,7 @@ export default class GroupCreatePage extends Component {
                             >
                             Create Group
                         </Text>                            
-                        <Button title="CREATE" type="clear" titleStyle={{color:stylesGlobal.back_color}} onPress = {() => this.onCreateGroup()} />
+                        <Button title="CREATE" type="clear" titleStyle={{color:stylesGlobal.back_color}} onPress = {() => this.onPressCreateGroup()} />
                     </View>
 
                     <TextInput

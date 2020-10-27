@@ -20,7 +20,9 @@ export default class GroupDetailPage extends Component {
 
         this.state = {
             isLoading: false,
-            group: this.props.route.params.group
+            member_count: 0,
+            group: this.props.route.params.group,
+            isMember : false,
         }
 
         console.log(this.state.group);
@@ -33,16 +35,41 @@ export default class GroupDetailPage extends Component {
 
     init_data = async() => {
         console.log("Group Detail Init Data", JSON.stringify(this.state.group));
+        
+        let uid = firebase.auth().currentUser.uid
+        let member_count = 0
+        let isMember = false
 
-        var member_count = 0;
-        if( this.state.group.member_list != null )
+        if( this.state.group.member_list != null ) {
             member_count = this.state.group.member_list.length;
 
+            this.state.group?.member_list?.forEach(userid => {
+                
+                if (userid == uid ) {
+
+                    console.log('---------- uid ', uid)
+                    isMember = true
+
+                }
+                console.log('---------- true ', userid)
+
+            });
+        }
+        
         this.setState({
-            member_count: member_count,
+            member_count,
+            isMember
         });
     }
 
+    onPressGroupChat = () => {
+        const { isMember } = this.state
+        if (!isMember) {
+            alert("You are not a member of this group. Please join to this group")
+            return
+        }
+        this.props.navigation.navigate('GroupChatPage', {group: this.state.group})
+    }
 
     render() {
   
@@ -101,7 +128,7 @@ export default class GroupDetailPage extends Component {
 
                     {/* Group Chat */}
                     <Card style={{container: {borderRadius: 10}}}>
-                        <TouchableOpacity style={styles.cardButtonStyle} onPress={()=> this.props.navigation.navigate('GroupChatPage', {group: this.state.group})}>
+                        <TouchableOpacity style={styles.cardButtonStyle} onPress={()=> this.onPressGroupChat()}>
                             <Entypo name="chat" size={22} color={stylesGlobal.back_color} />
                             <Text style={styles.textStyle}>Group Chat</Text>
                             <View style={{width: 28, height: 28, borderRadius: 14, position: 'absolute', justifyContent: 'center', alignItems: 'center', right: 10, backgroundColor:'#0AB97A'}}>

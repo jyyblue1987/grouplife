@@ -1,5 +1,4 @@
-import * as React from 'react';
-import {Component} from 'react';
+import React, { Component, useState, useEffect } from "react";
 
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -12,23 +11,46 @@ import firebase from '../../../database/firebase';
 import { firestore, storage} from '../../../database/firebase';
 import Moment from 'moment';
 
-export default class GroupListPage extends Component {
-    constructor(props) {
-        super(props);
+export default function GroupListPage(props) {
 
-        this.state = {
-            isLoading: false,
-            group_list: [],
-            isSearchVisible: false,
-            search: '',            
-        }
-    }
+    const [initialize, setInitialize] = useState(false)
+    const [threads, setThreads] = useState([])
+    const [isLoading, setLoading] = useState(false)
+    const [group_list, setGroup_list] = useState([])
+    const [isSearchVisible, setIsSearchVisible] = useState(false)
+    const [search, setSearch] = useState("")
+  
+    useEffect(() => {
+        if(!initialize)
+            renderRefreshControl();
 
-    componentDidMount() {
-        this.renderRefreshControl();
-    }
+        setInitialize(true)
 
-    getMyGroupList() {
+        const unsubscribe = firestore
+        .collection('MESSAGE_THREADS')
+        .orderBy('latestMessage.createdAt', 'desc')
+        .onSnapshot(querySnapshot => {
+            const threads = querySnapshot.docs.map(documentSnapshot => {
+                return {
+                _id: documentSnapshot.id,
+                name: '',
+                latestMessage: { text: '' },
+                ...documentSnapshot.data()
+                }
+            })
+
+            setThreads(threads)
+            console.log(threads)
+            if (isLoading) {
+                setLoading(false)
+            }
+        })
+
+        return () => unsubscribe()
+
+    }, [])
+
+    const getMyGroupList = () => {
         var user = firebase.auth().currentUser;
         if( user == null )
         {
@@ -38,7 +60,7 @@ export default class GroupListPage extends Component {
 
         var user_id = user.uid;
         console.log("User ID = ", user_id);
-        this.setState({ isLoading: true });
+        
         firestore.collection("group_list")
             .where("member_list", "array-contains", user_id)
             .get().then((querySnapshot) => {
@@ -52,14 +74,12 @@ export default class GroupListPage extends Component {
                     group_list.push(data);                    
                 });
 
-                this.setState({
-                    group_list: group_list,
-                    isLoading: false
-                })
-            });        
+                setGroup_list(group_list)
+                setLoading(false)
+            });
     }
 
-    searchGroupList(search) {
+    const searchGroupList = (search) => {
         var user = firebase.auth().currentUser;
         if( user == null )
         {
@@ -70,7 +90,9 @@ export default class GroupListPage extends Component {
         var user_id = user.uid;
         console.log("User ID = ", user_id);
 
-        this.setState({ isLoading: true, group_list: [] });
+        setLoading(true)
+        setGroup_list([])
+
         firestore.collection("group_list")
             .where('group_name', '>=', search)
             .where('group_name', '<=', search + '~')
@@ -88,65 +110,86 @@ export default class GroupListPage extends Component {
                     }
                 });
 
-                this.setState({
-                    group_list: group_list,
-                    isLoading: false
-                })
+                setGroup_list(group_list)
+                setLoading(false)
             });
     }
 
-    renderRefreshControl() {
-        this.setState({ isLoading: true });
-        if( this.state.isSearchVisible == false )
-            this.getMyGroupList();
+    const renderRefreshControl = () => {
+        setLoading(true)
+        if( isSearchVisible == false )
+            getMyGroupList();
         else
-            this.searchGroupList(this.state.search);
+            searchGroupList(search);
     }
 
-    onShowSearch() {
+    const onShowSearch = () => {
         console.log("onShowSearch");
-        this.setState({
-            isSearchVisible: true,
-        });
-        this.searchGroupList(this.state.search);
+        setIsSearchVisible(true)
+        searchGroupList(search);
     }
 
-    updateSearch = (search) => {        
-        this.setState({search: search});
+    const updateSearch = (search) => {        
+        setSearch(search)
     }
 
-    onSubmitSearch = () => {
-        console.log("Submit", this.state.search);
-        this.searchGroupList(this.state.search);
+    const onSubmitSearch = () => {
+        console.log("Submit", search);
+        searchGroupList(search);
     }
 
-    onCancelSearch = () => {
-        this.setState({isSearchVisible: false, search: '', group_list: []});
-        this.renderRefreshControl();
+    const onCancelSearch = () => {
+
+        setIsSearchVisible(false)
+        setSearch('')
+        setGroup_list([])
+
+        renderRefreshControl();
     }
 
-    onClearSearch = () => {
-        this.onSubmitSearch();
+    const onClearSearch = () => {
+        onSubmitSearch();
     }
 
-    onCreated = data => {
+    const onCreated = data => {
         console.log("Back to Home", JSON.stringify(data));
         if( data.created == true )
         {
             var doc = {id: data.doc_id};
-            this.onJoinGroup(doc);            
+            onJoinGroup(doc);            
         }
     }
 
-    onGoCreate = () => {
-        if( this.state.isSearchVisible )
-            this.onCancelSearch();
+    const onGoCreate = () => {
+        if( isSearchVisible )
+            onCancelSearch();
 
-        this.props.navigation.navigate('GroupCreate', { onCreated: this.onCreated });
+        props.navigation.navigate('GroupCreate', { onCreated: onCreated });
     }
 
-    onJoinGroup = (item) => {
-        var vm = this;
+    const joinChatRoom = (group) => {
+
+        var messageThreadRef = firestore.collection("MESSAGE_THREADS").doc(group.threadId);
+        messageThreadRef.get().then(function(doc) {
+            if (doc.exists) 
+            {
+                var data = doc.data();
+                data.member_list = group.member_list;
+                messageThreadRef.set(data).then(function(doc) {
+                    console.log("succeed joining to group chat room!");
+                }).catch(function(error) {
+                    console.log("Error joinning message thread:", error);
+                });
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+            }
+        }).catch(function(error) {
+            console.log("Error getting document:", error);
+        });
+    }
+
+    const onJoinGroup = (item) => {
         var groupRef = firestore.collection("group_list").doc(item.id);        
         groupRef.get().then(function(doc) {
             if (doc.exists) 
@@ -156,11 +199,14 @@ export default class GroupListPage extends Component {
                     data.member_list = [];
         
                 var user = firebase.auth().currentUser;
-                data.member_list.push(user.uid);                        
+                data.member_list.push(user.uid);
 
                 console.log("Document data:", data);
                 groupRef.set(data).then(function(doc) {
-                    vm.renderRefreshControl();
+
+                    joinChatRoom(data);
+                    renderRefreshControl();
+
                 }).catch(function(error) {
                     console.log("Error setting group:", error);
                 });                    
@@ -174,12 +220,10 @@ export default class GroupListPage extends Component {
       
     }
 
-
-
-    renderRow(item) {
+    const renderRow = (item) => {
 		return (			
             <Card style={{container:{borderRadius: 6}}}>
-                <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => this.props.navigation.navigate('GroupDetail', {group: item})}>
+                <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => props.navigation.navigate('GroupDetail', {group: item})}>
                     <View style={{justifyContent: "center"}}>
                         <FastImage style = {{width: 100, height: '100%'}} 
                             source = {{uri: item.group_image}}
@@ -203,9 +247,9 @@ export default class GroupListPage extends Component {
                                 {Moment(item.created_at).format('dddd LT')}
                             </Text>      
                             {
-                                this.state.isSearchVisible &&        
+                                isSearchVisible &&        
                                 <TouchableOpacity style = {{width: 60, height: 20, marginLeft: 30, borderRadius: 3, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
-                                    onPress = {() => this.onJoinGroup(item)}>
+                                    onPress = {() => onJoinGroup(item)}>
                                     <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 12}]}>Join</Text>
                                 </TouchableOpacity>
                             }
@@ -217,85 +261,82 @@ export default class GroupListPage extends Component {
 		)
 	}
 
-    render() {
-  
-        return (
-            <View style={styles.container}>
-                <View style = {{width: '100%', height: 80, justifyContent: 'center'}}>
-                    <Text
-                        style={styles.header}
-                        >
-                        {this.state.isSearchVisible ? 'Search Groups' : 'My Groups'}
-                    </Text>
-                </View>
-
-                {
-                    this.state.isSearchVisible && <SearchBar 
-                        placeholder="group..."
-                        searchIcon={{size: 28}}
-                        containerStyle={stylesGlobal.searchcontainer}                               
-                        inputContainerStyle={{backgroundColor: 'white', borderWidth: 1, borderRadius: 15}}                    
-                        placeholderTextColor={'gray'}
-                        platform="ios"
-                        autoCapitalize='none'
-                        showCancel={true}
-                        onChangeText={this.updateSearch}
-                        onSubmitEditing={this.onSubmitSearch}                        
-                        onCancel={this.onCancelSearch}
-                        onClear={this.onClearSearch}
-                        value={this.state.search}
-                    />
-                }
-
-                <FlatList
-                    data={this.state.group_list}
-                    renderItem={({item}) => this.renderRow(item)}
-                    keyExtractor={(item, index) => item.id}
-                    onRefresh={() => this.renderRefreshControl()}
-                    refreshing={this.state.isLoading}
-                    initialNumToRender={8}
-                />
-
-                <TouchableOpacity
-                    style={{
-                        borderWidth:1,
-                        borderColor:'rgba(0,0,0,0.2)',
-                        alignItems:'center',
-                        justifyContent:'center',
-                        width:70,
-                        height:70,
-                        position: 'absolute',                                          
-                        bottom: 10,                                                    
-                        left: 10,
-                        backgroundColor:stylesGlobal.back_color,
-                        borderRadius:100,
-                        }}
-                        onPress={() => this.onGoCreate()}
+    return (
+        <View style={styles.container}>
+            <View style = {{width: '100%', height: 80, justifyContent: 'center'}}>
+                <Text
+                    style={styles.header}
                     >
-                    <FontAwesome5 name="plus"  size={30} color="#fff" />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={{
-                        borderWidth:1,
-                        borderColor:'rgba(0,0,0,0.2)',
-                        alignItems:'center',
-                        justifyContent:'center',
-                        width:70,
-                        height:70,
-                        position: 'absolute',                                          
-                        bottom: 10,                                                    
-                        right: 10,
-                        backgroundColor:stylesGlobal.back_color,
-                        borderRadius:100,
-                        }}                        
-                        onPress={() => this.onShowSearch()}
-                    >
-                    <FontAwesome5 name="search"  size={30} color="#fff" />
-                </TouchableOpacity>
+                    {isSearchVisible ? 'Search Groups' : 'My Groups'}
+                </Text>
             </View>
-        );
-    }
+
+            {
+                isSearchVisible && <SearchBar 
+                    placeholder="group..."
+                    searchIcon={{size: 28}}
+                    containerStyle={stylesGlobal.searchcontainer}                               
+                    inputContainerStyle={{backgroundColor: 'white', borderWidth: 1, borderRadius: 15}}                    
+                    placeholderTextColor={'gray'}
+                    platform="ios"
+                    autoCapitalize='none'
+                    showCancel={true}
+                    onChangeText={updateSearch}
+                    onSubmitEditing={onSubmitSearch}                        
+                    onCancel={onCancelSearch}
+                    onClear={onClearSearch}
+                    value={search}
+                />
+            }
+
+            <FlatList
+                data={group_list}
+                renderItem={({item}) => renderRow(item)}
+                keyExtractor={(item, index) => item.id}
+                onRefresh={() => renderRefreshControl()}
+                refreshing={isLoading}
+                initialNumToRender={8}
+            />
+
+            <TouchableOpacity
+                style={{
+                    borderWidth:1,
+                    borderColor:'rgba(0,0,0,0.2)',
+                    alignItems:'center',
+                    justifyContent:'center',
+                    width:70,
+                    height:70,
+                    position: 'absolute',                                          
+                    bottom: 10,                                                    
+                    left: 10,
+                    backgroundColor:stylesGlobal.back_color,
+                    borderRadius:100,
+                    }}
+                    onPress={() => onGoCreate()}
+                >
+                <FontAwesome5 name="plus"  size={30} color="#fff" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                style={{
+                    borderWidth:1,
+                    borderColor:'rgba(0,0,0,0.2)',
+                    alignItems:'center',
+                    justifyContent:'center',
+                    width:70,
+                    height:70,
+                    position: 'absolute',                                          
+                    bottom: 10,                                                    
+                    right: 10,
+                    backgroundColor:stylesGlobal.back_color,
+                    borderRadius:100,
+                    }}                        
+                    onPress={() => onShowSearch()}
+                >
+                <FontAwesome5 name="search"  size={30} color="#fff" />
+            </TouchableOpacity>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

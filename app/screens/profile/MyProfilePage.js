@@ -10,7 +10,7 @@ import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import firebase from '../../../database/firebase';
-import { firestore, storage} from '../../../database/firebase';
+import { firestore } from '../../../database/firebase';
 
 export default class MyProfielPage extends Component {
     constructor(props) {
@@ -38,13 +38,13 @@ export default class MyProfielPage extends Component {
                 querySnapshot.forEach((doc) => {
                     var data = doc.data();
                     data.id = doc.id;
-                    this.setState({user: data});                    
+                    this.setState({user: data});             
                 });
 
                 this.setState({                    
                     isLoading: false,
                 });
-            }); 
+            });
     }
 
     onEditProfile = () => {
