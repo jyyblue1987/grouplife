@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Image,
   Platform,
+  ActivityIndicator,
+  BackHandler
 } from "react-native";
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,6 +17,13 @@ import moment from "moment";
 import RNUrlPreview from 'react-native-url-preview';
 import { firestore, storage} from '../../../database/firebase';
 import firebase from '../../../database/firebase';
+import {stylesGlobal} from '../../../app/styles/stylesGlobal';
+import {
+  useFocusEffect
+ } from '@react-navigation/native';
+
+ 
+const maxLoadData = 10
 
 const DATA = {
   senderEmail: "aaa@gmail.com",
@@ -222,23 +231,62 @@ export default function GroupChatPage(props) {
   const [threads, setThreads] = useState([])
   const [loading, setLoading] = useState(false)
   const [messageModal, setMessageModal] = useState(false)
-  const [messages, setMessages] = useState(DATA)
+  const [messages, setMessages] = useState(null)
   const [newtext, setMessage] = useState("")
   const [group, setGroup] = useState(props.route.params?.group)
+  const [limitCount, setLimitCount] = useState(maxLoadData)
+  const [showLoadMore, setShowLoadMore] = useState(true)
+  
+  const navigationiOptions = () => {
+    
+    props.navigation.setOptions({
+        title: group?.group_name,
+        headerLeft: () => (
+          <TouchableOpacity
+              onPress={() => onPressBack() }
+              style={{paddingLeft: 16}}
+          >
+            <MaterialCommunityIcons name="arrow-left" size={25} color="white" />
+          </TouchableOpacity>
+        )
+    })
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        return true;
+      };
+  
+      BackHandler.addEventListener(
+        'hardwareBackPress', onBackPress
+      );
+  
+      return () =>
+        BackHandler.removeEventListener(
+          'hardwareBackPress', onBackPress
+        );
+    }, [])
+  );
 
   useEffect(() => {
-    if(!initialize)
+    if(!initialize) {
       getProfile()
+      InitializeMyUnreadMessageCount(group)
+    }
+
+    navigationiOptions();
+
     setInitialize(true)
 
-    let title = group?.group_name
-    props.navigation.setOptions({ title: title })
+    setLoading(true)
 
     const unsubscribeListener = firestore
     .collection('MESSAGE_THREADS')
     .doc(group?.threadId)
     .collection('MESSAGES')
     .orderBy('createdAt', 'desc')
+    .limit(limitCount)
     .onSnapshot(querySnapshot => {
       const messages = querySnapshot.docs.map(doc => {
         const firebaseData = doc.data()
@@ -250,6 +298,9 @@ export default function GroupChatPage(props) {
           ...firebaseData
         }
 
+        if (firebaseData?.system == true)
+          setShowLoadMore(false)
+
         // if (!firebaseData.system) {
         //   data.user = {
         //     ...firebaseData.user,
@@ -259,8 +310,11 @@ export default function GroupChatPage(props) {
         return data
       })
 
-      console.log('messages=============', messages)
+
       setMessages(messages)
+      setLimitCount(messages.length)
+
+      setLoading(false)
     })
 
     return () => unsubscribeListener()
@@ -284,6 +338,11 @@ export default function GroupChatPage(props) {
         });
   }
 
+  const onPressBack = () => {
+    InitializeMyUnreadMessageCount(group)
+    props.navigation.goBack()
+  }
+
   const onPressSendMessage = () => {
     if(newtext == "")
       return;
@@ -304,30 +363,154 @@ export default function GroupChatPage(props) {
           senderPhotoUrl: userMe.picture
         }
       }).then( async docref => {
-        await firestore
-        .collection('MESSAGE_THREADS')
-        .doc(group?.threadId)
-        .set(
-          {
-            latestMessage: {
-              text,
-              createdAt: new Date().getTime()
-            }
-          },
-          { merge: true }
-        )
 
+        updateUnreadMessageCount(group, text)
+        
       })
+  }
+
+  const updateUnreadMessageCount = async (group, text) => {
+    let new_unread_msg_count_list = []
+    var messageThreadRef = firestore.collection("MESSAGE_THREADS").doc(group?.threadId);
+    messageThreadRef.get().then(async(doc) => {
+        if (doc.exists)
+        {
+            var data = doc.data();
+            // checking if user is existing in this group
+            data?.unread_msg_count_list.forEach( item => {
+                let newItem = {
+                  ...item,
+                }
+                if (item._id != userMe.user_id) {
+                    newItem = {
+                      ...item,
+                     count: item.count+1 
+                    }
+                }
+                new_unread_msg_count_list.push(newItem)
+            })
+            await firestore
+                  .collection('MESSAGE_THREADS')
+                  .doc(group?.threadId)
+                  .set(
+                    {
+                      latestMessage: {
+                        text,
+                        createdAt: new Date().getTime()
+                      },
+                      unread_msg_count_list: new_unread_msg_count_list
+                    },
+                    { merge: true }
+                  )
+
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+  }
+
+  const InitializeMyUnreadMessageCount = async(group) => {
+    let new_unread_msg_count_list = []
+    let uid = firebase.auth().currentUser.uid
+
+    let messageThreadRef = firestore.collection("MESSAGE_THREADS").doc(group?.threadId);
+
+    messageThreadRef.get().then(async(doc) => {
+        if (doc.exists)
+        {
+            let data = doc.data();
+            // checking if user is existing in this group
+            data?.unread_msg_count_list.forEach( item => {
+                let newItem = {
+                  ...item,
+                }
+                if (item._id == uid) {
+                    newItem = {
+                      ...item,
+                     count: 0
+                    }
+                }
+                new_unread_msg_count_list.push(newItem)
+            })
+            await firestore
+                  .collection('MESSAGE_THREADS')
+                  .doc(group?.threadId)
+                  .set(
+                    {
+                      unread_msg_count_list: new_unread_msg_count_list
+                    },
+                    { merge: true }
+                  )
+
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
   }
 
   const onChangeMessage = (text) => {
     setMessage(text)
   }
 
+  const handleLoadMore = () => {
+    setLoading(true)
+
+    firestore
+    .collection('MESSAGE_THREADS')
+    .doc(group?.threadId)
+    .collection('MESSAGES')
+    .orderBy('createdAt', 'desc')
+    .limit(limitCount+maxLoadData)
+    .onSnapshot(querySnapshot => {
+      const messages = querySnapshot.docs.map(doc => {
+        const firebaseData = doc.data()
+
+        const data = {
+          _id: doc.id,
+          text: '',
+          createdAt: new Date().getTime(),
+          ...firebaseData
+        }
+
+        if (firebaseData?.system == true)
+          setShowLoadMore(false)
+
+        return data
+      })
+
+      setMessages(messages)
+      setLimitCount(messages.length)
+      
+      setLoading(false)
+
+    })
+  }
+
+  const headerList = () => {
+    return (
+      <View>
+          { showLoadMore && 
+            <TouchableOpacity style={{paddingTop: 10, justifyContent: "center", alignItems: "center"}} onPress={() => handleLoadMore()}>
+              <Text style={{fontSize: 14, color: stylesGlobal.back_color}}>Load more...</Text>
+            </TouchableOpacity>
+          }
+    </View>
+    )
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       { Platform.OS === 'ios' && 
         <View style={{height: 20}}/>
+      }
+      { loading && 
+        <ActivityIndicator style={styles.spinnerStyle} animating={loading} size="large" color={'#9E9E9E'} />
       }
       <View style={styles.body}>
 
@@ -336,12 +519,20 @@ export default function GroupChatPage(props) {
             width: '100%'
           }}
           inverted
+          ListFooterComponent={headerList()}
           contentContainerStyle={{ paddingHorizontal: 20 }}
           data={messages}
-          renderItem={({ item }) => {
+          renderItem={({ item, index }) => {
             return messageBox(item, userMe?.user_id);
           }}
           keyExtractor={item => item._id}
+
+          // // initialNumToRender={5}   // how many item to display first
+          // onEndReachedThreshold={5} // so when you are at 5 pixel from the bottom react run onEndReached function
+          // onEndReached={() => {
+          //     handleLoadMore();
+          // }}
+
         />
 
         <View style={styles.inputBoxWrapper}>
@@ -426,5 +617,13 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(85,170,255,1)",
     justifyContent: "center",
     alignItems: "center",
-  }
+  },
+  spinnerStyle: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    zIndex: 1,
+    justifyContent: "center",
+  },
 });

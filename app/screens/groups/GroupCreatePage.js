@@ -247,7 +247,17 @@ export default class GroupCreatePage extends Component {
     createChatRoom () {
         const { group_name } = this.state
         let member_list = []
+        let unread_msg_count_list  = []
+        
         member_list.push(firebase.auth().currentUser.uid)
+
+        let unreadMsgCountData = {
+            _id: firebase.auth().currentUser.uid,
+            count: 0,
+        }
+
+        unread_msg_count_list.push(unreadMsgCountData)
+
         if (group_name.length > 0) {
           // create new thread using firebase & firestore
           firestore
@@ -259,6 +269,7 @@ export default class GroupCreatePage extends Component {
                 createdAt: new Date().getTime()
               },
               member_list,
+              unread_msg_count_list,
             })
             .then(docRef => {
                 docRef.collection('MESSAGES').add({

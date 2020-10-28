@@ -13,6 +13,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Moment from 'moment';
+import { firestore, storage} from '../../../database/firebase';
 
 export default class GroupDetailPage extends Component {
     constructor(props) {
@@ -23,15 +24,16 @@ export default class GroupDetailPage extends Component {
             member_count: 0,
             group: this.props.route.params.group,
             isMember : false,
+            unreadMessage: 0,
         }
 
         console.log(this.state.group);
     }
 
     componentDidMount() {
+
         this.initListener = this.props.navigation.addListener('focus', this.init_data.bind(this));
     }
-
 
     init_data = async() => {
         console.log("Group Detail Init Data", JSON.stringify(this.state.group));
@@ -46,16 +48,14 @@ export default class GroupDetailPage extends Component {
             this.state.group?.member_list?.forEach(userid => {
                 
                 if (userid == uid ) {
-
-                    console.log('---------- uid ', uid)
                     isMember = true
-
                 }
-                console.log('---------- true ', userid)
 
             });
         }
-        
+
+        this.getUnreadMessageCount()   // only when enter from grup page not but chat page
+
         this.setState({
             member_count,
             isMember
@@ -69,6 +69,28 @@ export default class GroupDetailPage extends Component {
             return
         }
         this.props.navigation.navigate('GroupChatPage', {group: this.state.group})
+    }
+
+    getUnreadMessageCount = () => {
+        const { group } = this.state
+        let uid = firebase.auth().currentUser.uid
+
+        var messageThreadRef = firestore.collection("MESSAGE_THREADS").doc(group?.threadId);
+        messageThreadRef.get().then(async(doc) => {
+            if (doc.exists)
+            {
+                var data = doc.data();
+                let myUnreadMsgCountData = data?.unread_msg_count_list.find( item => item._id == uid)
+
+                this.setState({unreadMessage: myUnreadMsgCountData?.count == undefined ? 0: myUnreadMsgCountData?.count})
+
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+            }
+        }).catch(function(error) {
+            console.log("Error getting document:", error);
+        });
     }
 
     render() {
@@ -131,9 +153,12 @@ export default class GroupDetailPage extends Component {
                         <TouchableOpacity style={styles.cardButtonStyle} onPress={()=> this.onPressGroupChat()}>
                             <Entypo name="chat" size={22} color={stylesGlobal.back_color} />
                             <Text style={styles.textStyle}>Group Chat</Text>
-                            <View style={{width: 28, height: 28, borderRadius: 14, position: 'absolute', justifyContent: 'center', alignItems: 'center', right: 10, backgroundColor:'#0AB97A'}}>
-                                <Text style={{color:'white', fontSize: 17}}>2</Text>
-                            </View>                        
+
+                            {this.state.unreadMessage != 0 &&
+                                <View style={{width: 28, height: 28, borderRadius: 14, position: 'absolute', justifyContent: 'center', alignItems: 'center', right: 10, backgroundColor:'#0AB97A'}}>
+                                    <Text style={{color:'white', fontSize: 17}}>{this.state.unreadMessage}</Text>
+                                </View>                        
+                            }
                         </TouchableOpacity>
                     </Card>
 

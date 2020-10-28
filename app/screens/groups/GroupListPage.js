@@ -175,11 +175,30 @@ export default function GroupListPage(props) {
             {
                 var data = doc.data();
                 data.member_list = group.member_list;
+
+                let unreadMsgCountData = {
+                    _id: firebase.auth().currentUser.uid,
+                    count: 0,
+                }
+
+                // checking if user is existing in this group
+                let isExisted = false
+                data?.unread_msg_count_list.forEach( item => {
+                    if (item._id == unreadMsgCountData._id) {
+                        isExisted = true
+                    }
+                })
+
+                if (isExisted == false ) {
+                    data.unread_msg_count_list.push(unreadMsgCountData)
+                }
+
                 messageThreadRef.set(data).then(function(doc) {
                     console.log("succeed joining to group chat room!");
                 }).catch(function(error) {
                     console.log("Error joinning message thread:", error);
                 });
+
             } else {
                 // doc.data() will be undefined in this case
                 console.log("No such document!");
