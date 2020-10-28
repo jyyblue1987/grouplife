@@ -25,126 +25,6 @@ import {
  
 const maxLoadData = 10
 
-const DATA = {
-  senderEmail: "aaa@gmail.com",
-  senderName: "JackSon",
-  senderPhotoUrl: "https://randomuser.me/api/portraits/men/29.jpg",
-  text: "Hi, nice to meet you",
-  check: true,
-  data: [
-    {
-      id: Number(new Date())-900100,
-      senderid: 22,
-      senderEmail: "bbb@gmail.com",
-      senderName: "Julian",
-      senderPhotoUrl: "https://randomuser.me/api/portraits/women/33.jpg",
-      text: "Nice to meet you, William",
-      from: Number(new Date())-900100,
-    },
-    {
-      id: Number(new Date())-1000100,
-      senderid: 22,
-      senderEmail: "ccc@gmail.com",
-      senderName: "Lucus",
-      senderPhotoUrl: "https://randomuser.me/api/portraits/men/24.jpg",
-      text: "how are you, William",
-      from: Number(new Date())-1000100,
-    },
-    {
-      id: Number(new Date())-1900100,
-      senderid: 22,
-      senderEmail: "ddd@gmail.com",
-      senderName: "William",
-      senderPhotoUrl: "https://randomuser.me/api/portraits/women/68.jpg",
-      urlLink: "https://www.linkedin.com/",
-      text: "Hey! how are you. This is William",
-      from: Number(new Date())-1900100,
-    },
-    {
-      id: Number(new Date())-2000100,
-      senderid: 22,
-      senderEmail: "ddd@gmail.com",
-      senderName: "William",
-      senderPhotoUrl: "https://randomuser.me/api/portraits/women/68.jpg",
-      text: "Hey! how are you. This is William",
-      from: Number(new Date())-2000100,
-    },
-    {
-      id: Number(new Date())-3000100,
-      senderid: 11,
-      senderEmail: "aaa@gmail.com",
-      senderName: "JackSon",
-      senderPhotoUrl: "https://randomuser.me/api/portraits/men/39.jpg",
-      text: "Thank you so much 🎉",
-      from: Number(new Date())-3000100,
-    },
-    {
-      id: Number(new Date())-4000100,
-      senderid: 22,
-      senderEmail: "ccc@gmail.com",
-      senderName: "Lucus",
-      senderPhotoUrl: "https://randomuser.me/api/portraits/men/49.jpg",
-      text: "me too. Great! 👍",
-      from: Number(new Date())-4000100,
-    },
-    {
-      id: Number(new Date())-5000100,
-      senderid: 22,
-      senderEmail: "bbb@gmail.com",
-      senderName: "Julian",
-      senderPhotoUrl: "https://randomuser.me/api/portraits/women/33.jpg",
-      text: "Really!, Great!. I love Canana",
-      from: Number(new Date())-5000100,
-    },
-    {
-      id: Number(new Date())-6000100,
-      senderid: 11,
-      senderEmail: "aaa@gmail.com",
-      senderName: "JackSon",
-      senderPhotoUrl: "https://randomuser.me/api/portraits/men/39.jpg",
-      text: "This is JackSon from Canada",
-      from: Number(new Date())-6000100,
-    },
-    {
-      id: Number(new Date())-7000100,
-      senderid: 22,
-      senderEmail: "ccc@gmail.com",
-      senderName: "Lucus",
-      senderPhotoUrl: "https://randomuser.me/api/portraits/men/49.jpg",
-      text: "that's fine",
-      from: Number(new Date())-7000100,
-    },
-    {
-      id: Number(new Date())-8000100,
-      senderid: 22,
-      senderEmail: "bbb@gmail.com",
-      senderName: "Julian",
-      senderPhotoUrl: "https://randomuser.me/api/portraits/women/33.jpg",
-      text: "nice to meet you too",
-      from: Number(new Date())-8000100,
-    },
-    {
-      id: Number(new Date())-8900100,
-      senderid: 11,
-      senderEmail: "aaa@gmail.com",
-      senderName: "JackSon",
-      senderPhotoUrl: "https://randomuser.me/api/portraits/men/39.jpg",
-      urlLink: "https://www.youtube.com/watch?v=Kmiw4FYTg2U",
-      text: "Hi, nice to meet you. This is my video",
-      from: Number(new Date())-8900100,
-    },
-    {
-      id: Number(new Date())-9000100,
-      senderid: 11,
-      senderEmail: "aaa@gmail.com",
-      senderName: "JackSon",
-      senderPhotoUrl: "https://randomuser.me/api/portraits/men/39.jpg",
-      text: "Hi, nice to meet you. This is my video",
-      from: Number(new Date())-9000100,
-    },
-  ]
-}
-
 function validURL(str) {
   var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
     '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
@@ -526,13 +406,6 @@ export default function GroupChatPage(props) {
             return messageBox(item, userMe?.user_id);
           }}
           keyExtractor={item => item._id}
-
-          // // initialNumToRender={5}   // how many item to display first
-          // onEndReachedThreshold={5} // so when you are at 5 pixel from the bottom react run onEndReached function
-          // onEndReached={() => {
-          //     handleLoadMore();
-          // }}
-
         />
 
         <View style={styles.inputBoxWrapper}>
@@ -542,6 +415,7 @@ export default function GroupChatPage(props) {
                     width:'90%',
                     paddingVertical:5,
                   }}
+                  autoCapitalize="none"
                   value={newtext}
                   placeholder="Type a message..."
                   onChangeText={(text) => onChangeMessage(text)}

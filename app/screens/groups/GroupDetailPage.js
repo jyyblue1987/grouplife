@@ -1,5 +1,4 @@
-import * as React from 'react';
-import {Component} from 'react';
+import React, { Component, useState, useEffect } from "react";
 
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -14,65 +13,83 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Moment from 'moment';
 import { firestore, storage} from '../../../database/firebase';
+import {
+    useFocusEffect
+   } from '@react-navigation/native';
+  
 
-export default class GroupDetailPage extends Component {
-    constructor(props) {
-        super(props);
+export default function GroupDetailPage(props) {
 
-        this.state = {
-            isLoading: false,
-            member_count: 0,
-            group: this.props.route.params.group,
-            isMember : false,
-            unreadMessage: 0,
+    const [initialize, setInitialize] = useState(false)
+    const [isLoading, setLoading] = useState(false)
+    const [member_count, setMemberCount] = useState(0)
+    const [group, setGroup] = useState(props.route.params.group)
+    const [isMember, setIsMember] = useState(false)
+    const [unreadMessage, setUnreadMessage] = useState(0)
+
+    useFocusEffect(() => {
+        if(!initialize) {
+
         }
+        setInitialize(true)
+    
+        init_data()
 
-        console.log(this.state.group);
-    }
+        let uid = firebase.auth().currentUser.uid
+        
+        const subscriber = firestore
+            .collection('MESSAGE_THREADS')
+            .doc(group?.threadId)
+            .onSnapshot(documentSnapshot  => {
+                const data = documentSnapshot.data()
+                
+                let myUnreadMsgCountData = data?.unread_msg_count_list.find( item => item._id == uid)
+                setUnreadMessage(myUnreadMsgCountData?.count == undefined ? 0: myUnreadMsgCountData?.count)
+            })
+    
+        return () => subscriber()
 
-    componentDidMount() {
+      }, [])
+  
+      
+    // componentDidMount() {
+    //     this.initListener = this.props.navigation.addListener('focus', this.init_data.bind(this));
+    // }
 
-        this.initListener = this.props.navigation.addListener('focus', this.init_data.bind(this));
-    }
-
-    init_data = async() => {
-        console.log("Group Detail Init Data", JSON.stringify(this.state.group));
+    const init_data = () => {
+        console.log("Group Detail Init Data", JSON.stringify(group));
         
         let uid = firebase.auth().currentUser.uid
         let member_count = 0
         let isMember = false
 
-        if( this.state.group.member_list != null ) {
-            member_count = this.state.group.member_list.length;
+        if( group.member_list != null ) {
+            member_count = group.member_list.length;
 
-            this.state.group?.member_list?.forEach(userid => {
+            group?.member_list?.forEach(userid => {
                 
                 if (userid == uid ) {
                     isMember = true
                 }
-
             });
         }
 
-        this.getUnreadMessageCount()   // only when enter from grup page not but chat page
+        // getUnreadMessageCount()   // only when enter from grup page not but chat page
 
-        this.setState({
-            member_count,
-            isMember
-        });
+        setMemberCount(member_count)
+        setIsMember(isMember)
     }
 
-    onPressGroupChat = () => {
-        const { isMember } = this.state
+    const onPressGroupChat = () => {
         if (!isMember) {
             alert("You are not a member of this group. Please join to this group")
             return
         }
-        this.props.navigation.navigate('GroupChatPage', {group: this.state.group})
+        props.navigation.navigate('GroupChatPage', {group: group})
     }
 
-    getUnreadMessageCount = () => {
-        const { group } = this.state
+    const getUnreadMessageCount = () => {
+
         let uid = firebase.auth().currentUser.uid
 
         var messageThreadRef = firestore.collection("MESSAGE_THREADS").doc(group?.threadId);
@@ -82,7 +99,7 @@ export default class GroupDetailPage extends Component {
                 var data = doc.data();
                 let myUnreadMsgCountData = data?.unread_msg_count_list.find( item => item._id == uid)
 
-                this.setState({unreadMessage: myUnreadMsgCountData?.count == undefined ? 0: myUnreadMsgCountData?.count})
+                setUnreadMessage(myUnreadMsgCountData?.count == undefined ? 0: myUnreadMsgCountData?.count)
 
             } else {
                 // doc.data() will be undefined in this case
@@ -93,126 +110,123 @@ export default class GroupDetailPage extends Component {
         });
     }
 
-    render() {
-  
-        return (
-            <View style={styles.container}>
-                {
-                    this.state.isLoading && <View style={stylesGlobal.preloader}>
-                        <ActivityIndicator size="large" color="#9E9E9E"/>
+    return (
+        <View style={styles.container}>
+            {
+                isLoading && <View style={stylesGlobal.preloader}>
+                    <ActivityIndicator size="large" color="#9E9E9E"/>
+                </View>
+            }
+            <ScrollView style={{width:'100%'}}>
+                <View style={{width: '100%', height: 300}}>                        
+                    <FastImage style = {{width: '100%', height: '100%'}} source = {{uri: group.group_image}}>                       
+                    </FastImage>
+                    <LinearGradient colors={["black", "transparent"]} style={styles.linearGradient}>
+                    </LinearGradient>                 
+                    <View style={{width:'100%', flexDirection:'row', alignItems: 'center', position: 'absolute', paddingVertical: 9, bottom: 0, backgroundColor: stylesGlobal.back_color}}>
+                        <FontAwesome5 name="calendar" size={22} color={'#fff'} style={{marginLeft: 15}} />
+                        <Text style={{marginLeft: 10, color: '#fff'}}>Next group meeting in 2 days, 3 hours</Text>
                     </View>
-                }
-                <ScrollView style={{width:'100%'}}>
-                    <View style={{width: '100%', height: 300}}>                        
-                        <FastImage style = {{width: '100%', height: '100%'}} source = {{uri:this.state.group.group_image}}>                       
-                        </FastImage>
-                        <LinearGradient colors={["black", "transparent"]} style={styles.linearGradient}>
-                        </LinearGradient>                 
-                        <View style={{width:'100%', flexDirection:'row', alignItems: 'center', position: 'absolute', paddingVertical: 9, bottom: 0, backgroundColor: stylesGlobal.back_color}}>
-                            <FontAwesome5 name="calendar" size={22} color={'#fff'} style={{marginLeft: 15}} />
-                            <Text style={{marginLeft: 10, color: '#fff'}}>Next group meeting in 2 days, 3 hours</Text>
-                        </View>
-                        <TouchableOpacity style={{position: 'absolute', left: 20, top: 45}}
-                            onPress={() => this.props.navigation.goBack()}
+                    <TouchableOpacity style={{position: 'absolute', left: 20, top: 45}}
+                        onPress={() => props.navigation.goBack()}
+                        >
+                        <Ionicons name="arrow-back" size={30} color={'#fff'} />
+                    </TouchableOpacity>
+                </View>
+
+                <View style={{paddingHorizontal: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: 'gray'}}>
+                    <Text style={{fontWeight: 'bold', fontSize: 22}}>
+                        {group.group_name}
+                    </Text>
+                    <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
+                        <Text style={{flex:1, fontSize: 16}}>{group.group_desc}</Text>
+                        <View style={{flex:1, flexDirection: 'row', alignItems: 'center', fontSize: 16}}>
+                            <FontAwesome5 name="user" size={18} color={stylesGlobal.back_color} style={{marginLeft: 15}} />
+                            <Text style={{marginLeft: 15, fontSize: 16}}
+                            onPress={() => props.navigation.navigate('MemberList', {group: group})}
                             >
-                            <Ionicons name="arrow-back" size={30} color={'#fff'} />
-                        </TouchableOpacity>
+                            {member_count}   Members
+                            </Text>
+                        </View>                        
                     </View>
 
-                    <View style={{paddingHorizontal: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: 'gray'}}>
-                        <Text style={{fontWeight: 'bold', fontSize: 22}}>
-                            {this.state.group.group_name}
-                        </Text>
-                        <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
-                            <Text style={{flex:1, fontSize: 16}}>{this.state.group.group_desc}</Text>
-                            <View style={{flex:1, flexDirection: 'row', alignItems: 'center', fontSize: 16}}>
-                                <FontAwesome5 name="user" size={18} color={stylesGlobal.back_color} style={{marginLeft: 15}} />
-                                <Text style={{marginLeft: 15, fontSize: 16}}
-                                onPress={() => this.props.navigation.navigate('MemberList', {group: this.state.group})}
-                                >
-                                {this.state.member_count}   Members
-                                </Text>
+                    <Text style={{fontSize: 15, color: '#383838B2'}}>                            
+                        {Moment(group.created_at).format('dddd LT')}
+                    </Text>
+                </View>
+
+                {/* Overview */}
+                <Card style={{container: {borderRadius: 10}}}>
+                    <TouchableOpacity style={styles.cardButtonStyle}>
+                        <Ionicons name="ios-information-circle-outline" size={22} color={stylesGlobal.back_color} />
+                        <Text style={styles.textStyle}>Overview</Text>
+                    </TouchableOpacity>
+                </Card>
+
+                {/* Group Chat */}
+                <Card style={{container: {borderRadius: 10}}}>
+                    <TouchableOpacity style={styles.cardButtonStyle} onPress={()=> onPressGroupChat()}>
+                        <Entypo name="chat" size={22} color={stylesGlobal.back_color} />
+                        <Text style={styles.textStyle}>Group Chat</Text>
+
+                        {unreadMessage != 0 &&
+                            <View style={{width: 28, height: 28, borderRadius: 14, position: 'absolute', justifyContent: 'center', alignItems: 'center', right: 10, backgroundColor:'#0AB97A'}}>
+                                <Text style={{color:'white', fontSize: 17}}>{unreadMessage}</Text>
                             </View>                        
-                        </View>
+                        }
+                    </TouchableOpacity>
+                </Card>
 
-                        <Text style={{fontSize: 15, color: '#383838B2'}}>                            
-                            {Moment(this.state.group.created_at).format('dddd LT')}
-                        </Text>
-                    </View>
+                {/* Material */}
+                <Card style={{container: {borderRadius: 10}}}>
+                    <TouchableOpacity style={styles.cardButtonStyle}>
+                        <FontAwesome5 name="book-open" size={22} color={stylesGlobal.back_color} />
+                        <Text style={styles.textStyle}>Materials</Text>
+                    </TouchableOpacity>
+                </Card>
 
-                    {/* Overview */}
-                    <Card style={{container: {borderRadius: 10}}}>
-                        <TouchableOpacity style={styles.cardButtonStyle}>
-                            <Ionicons name="ios-information-circle-outline" size={22} color={stylesGlobal.back_color} />
-                            <Text style={styles.textStyle}>Overview</Text>
-                        </TouchableOpacity>
-                    </Card>
+                {/* Group Poll */}
+                <Card style={{container: {borderRadius: 10}}}>
+                    <TouchableOpacity style={styles.cardButtonStyle}>
+                        <Fontisto name="checkbox-active" size={22} color={stylesGlobal.back_color} />
+                        <Text style={styles.textStyle}>Group Poll</Text>
+                    </TouchableOpacity>
+                </Card>
 
-                    {/* Group Chat */}
-                    <Card style={{container: {borderRadius: 10}}}>
-                        <TouchableOpacity style={styles.cardButtonStyle} onPress={()=> this.onPressGroupChat()}>
-                            <Entypo name="chat" size={22} color={stylesGlobal.back_color} />
-                            <Text style={styles.textStyle}>Group Chat</Text>
+                {/* Group Poll */}
+                <Card style={{container: {borderRadius: 10}}}>
+                    <TouchableOpacity style={styles.cardButtonStyle}>
+                        <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
+                        <Text style={styles.textStyle}>Schedule</Text>
+                    </TouchableOpacity>
+                </Card>
 
-                            {this.state.unreadMessage != 0 &&
-                                <View style={{width: 28, height: 28, borderRadius: 14, position: 'absolute', justifyContent: 'center', alignItems: 'center', right: 10, backgroundColor:'#0AB97A'}}>
-                                    <Text style={{color:'white', fontSize: 17}}>{this.state.unreadMessage}</Text>
-                                </View>                        
-                            }
-                        </TouchableOpacity>
-                    </Card>
+                {/* Prayer Requests */}
+                <Card style={{container: {borderRadius: 10}}}>
+                    <TouchableOpacity style={styles.cardButtonStyle}>
+                        <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
+                        <Text style={styles.textStyle}>Prayer Requests</Text>
+                    </TouchableOpacity>
+                </Card>
 
-                    {/* Material */}
-                    <Card style={{container: {borderRadius: 10}}}>
-                        <TouchableOpacity style={styles.cardButtonStyle}>
-                            <FontAwesome5 name="book-open" size={22} color={stylesGlobal.back_color} />
-                            <Text style={styles.textStyle}>Materials</Text>
-                        </TouchableOpacity>
-                    </Card>
+                {/* Testimonials */}
+                <Card style={{container: {borderRadius: 10}}}>
+                    <TouchableOpacity style={styles.cardButtonStyle}>
+                        <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
+                        <Text style={styles.textStyle}>Testimonials</Text>
+                    </TouchableOpacity>
+                </Card>
 
-                    {/* Group Poll */}
-                    <Card style={{container: {borderRadius: 10}}}>
-                        <TouchableOpacity style={styles.cardButtonStyle}>
-                            <Fontisto name="checkbox-active" size={22} color={stylesGlobal.back_color} />
-                            <Text style={styles.textStyle}>Group Poll</Text>
-                        </TouchableOpacity>
-                    </Card>
-
-                    {/* Group Poll */}
-                    <Card style={{container: {borderRadius: 10}}}>
-                        <TouchableOpacity style={styles.cardButtonStyle}>
-                            <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
-                            <Text style={styles.textStyle}>Schedule</Text>
-                        </TouchableOpacity>
-                    </Card>
-
-                    {/* Prayer Requests */}
-                    <Card style={{container: {borderRadius: 10}}}>
-                        <TouchableOpacity style={styles.cardButtonStyle}>
-                            <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
-                            <Text style={styles.textStyle}>Prayer Requests</Text>
-                        </TouchableOpacity>
-                    </Card>
-
-                    {/* Testimonials */}
-                    <Card style={{container: {borderRadius: 10}}}>
-                        <TouchableOpacity style={styles.cardButtonStyle}>
-                            <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
-                            <Text style={styles.textStyle}>Testimonials</Text>
-                        </TouchableOpacity>
-                    </Card>
-
-                    {/* Freedback */}
-                    <Card style={{container: {borderRadius: 10}}}>
-                        <TouchableOpacity style={styles.cardButtonStyle}>
-                            <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
-                            <Text style={styles.textStyle}>Freedback</Text>
-                        </TouchableOpacity>
-                    </Card>
-                </ScrollView>
-            </View>
-        );
-    }
+                {/* Freedback */}
+                <Card style={{container: {borderRadius: 10}}}>
+                    <TouchableOpacity style={styles.cardButtonStyle}>
+                        <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
+                        <Text style={styles.textStyle}>Freedback</Text>
+                    </TouchableOpacity>
+                </Card>
+            </ScrollView>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
