@@ -8,6 +8,7 @@ import {
 import Moment from 'moment';
 
 import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Checkbox } from 'react-native-material-ui';
 import { Button } from 'react-native-elements';
@@ -341,7 +342,7 @@ export default class GroupCreatePage extends Component {
         return (
             <ThemeContext.Provider value={getTheme(uiTheme)}>
             <View style={styles.container}>                
-                <ScrollView style={{width:'100%'}}>
+                <KeyboardAwareScrollView style={{width:'100%'}}>
                     <View style = {{width: '100%', height: 80, marginTop: 10, flexDirection: 'row', justifyContent: 'center'}}>
                         <Text
                             style={[styles.header, {flex: 1}]}
@@ -518,7 +519,7 @@ export default class GroupCreatePage extends Component {
                         </TouchableOpacity>                        
                     </View>
                    
-                </ScrollView>      
+                </KeyboardAwareScrollView>      
                 {
                     this.state.isLoading && <View style={stylesGlobal.preloader}>
                         <ActivityIndicator size="large" color="#9E9E9E"/>
