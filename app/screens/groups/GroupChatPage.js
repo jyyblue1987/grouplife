@@ -8,7 +8,7 @@ import {
   Image,
   Platform,
   ActivityIndicator,
-  BackHandler
+  BackHandler,
 } from "react-native";
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,12 +18,9 @@ import RNUrlPreview from 'react-native-url-preview';
 import { firestore, storage} from '../../../database/firebase';
 import firebase from '../../../database/firebase';
 import {stylesGlobal} from '../../../app/styles/stylesGlobal';
-import {
-  useFocusEffect
- } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
- 
-const maxLoadData = 10
+const maxLoadData = 7
 
 function validURL(str) {
   var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
@@ -116,7 +113,7 @@ export default function GroupChatPage(props) {
   const [group, setGroup] = useState(props.route.params?.group)
   const [limitCount, setLimitCount] = useState(maxLoadData)
   const [showLoadMore, setShowLoadMore] = useState(true)
-  
+
   const navigationiOptions = () => {
     
     props.navigation.setOptions({
@@ -339,6 +336,9 @@ export default function GroupChatPage(props) {
   }
 
   const handleLoadMore = () => {
+    if(!showLoadMore)
+      return
+
     setLoading(true)
 
     firestore
@@ -372,6 +372,23 @@ export default function GroupChatPage(props) {
     })
   }
 
+  const endScroll = (event) => {
+    const {contentOffset, layoutMeasurement, contentSize, velocity} = event.nativeEvent
+    const paddingToTop = 20
+
+    if( velocity.y < 0 && 
+      (layoutMeasurement.height + contentOffset.y) >= (contentSize.height - paddingToTop)
+      ) // scroll up
+    {
+      console.log('---------- ready to start load more  -----------')
+      handleLoadMore()
+    }
+  };
+
+  const beginScroll = (event) => {
+
+  };
+  
   const headerList = () => {
     return (
       <View>
@@ -399,13 +416,17 @@ export default function GroupChatPage(props) {
             width: '100%'
           }}
           inverted
-          ListFooterComponent={headerList()}
+          // ListFooterComponent={() => headerList()}
           contentContainerStyle={{ paddingHorizontal: 20 }}
           data={messages}
           renderItem={({ item, index }) => {
             return messageBox(item, userMe?.user_id);
           }}
-          keyExtractor={item => item._id}
+          keyExtractor={(item, index) => index.toString()}
+          enableEmptySections={true}
+          onScrollEndDrag={endScroll}
+          onScrollBeginDrag={beginScroll}
+          scrollEventThrottle={16}
         />
 
         <View style={styles.inputBoxWrapper}>
