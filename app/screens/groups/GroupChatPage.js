@@ -9,6 +9,8 @@ import {
   Platform,
   ActivityIndicator,
   BackHandler,
+  RefreshControl,
+  ScrollView
 } from "react-native";
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,7 +22,7 @@ import firebase from '../../../database/firebase';
 import {stylesGlobal} from '../../../app/styles/stylesGlobal';
 import { useFocusEffect } from '@react-navigation/native';
 
-const maxLoadData = 10
+const maxLoadData = 15
 
 function validURL(str) {
   var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
@@ -373,21 +375,20 @@ export default function GroupChatPage(props) {
   }
 
   const endScroll = (event) => {
-    const {contentOffset, layoutMeasurement, contentSize, velocity} = event.nativeEvent
-    const paddingToTop = 20
 
-    if( velocity.y < 0 && 
-      (layoutMeasurement.height + contentOffset.y) >= (contentSize.height - paddingToTop)
-      ) // scroll up
-    {
-      console.log('---------- ready to start load more  -----------')
-      handleLoadMore()
-    }
   };
 
   const beginScroll = (event) => {
 
   };
+
+  const endReached = (event) => {
+    handleLoadMore()
+  };
+
+  const renderRefreshControl = () => {
+    // handleLoadMore()
+  }
   
   const headerList = () => {
     return (
@@ -411,24 +412,40 @@ export default function GroupChatPage(props) {
       }
       <View style={styles.body}>
 
-        <FlatList
-          style={{
-            width: '100%'
-          }}
-          inverted
-          // ListFooterComponent={() => headerList()}
-          contentContainerStyle={{ paddingHorizontal: 20 }}
-          data={messages}
-          renderItem={({ item, index }) => {
-            return messageBox(item, userMe?.user_id);
-          }}
-          keyExtractor={(item, index) => index.toString()}
-          enableEmptySections={true}
-          onScrollEndDrag={endScroll}
-          onScrollBeginDrag={beginScroll}
-          scrollEventThrottle={16}
-        />
-
+        {/* <ScrollView
+            contentContainerStyle={{
+              flexDirection: 'row',
+              alignSelf: 'flex-end',
+              flexGrow: 1
+            }}
+            refreshControl={<RefreshControl refreshing={loading} onRefresh={() => renderRefreshControl()} />}
+          > */}
+          <FlatList
+            style={{
+              width: '100%',
+              lexDirection: 'row',
+              alignSelf: 'flex-end',
+              flexGrow: 1
+            }}
+            inverted
+            // ListFooterComponent={() => headerList()}
+            contentContainerStyle={{ paddingHorizontal: 20 }}
+            data={messages}
+            renderItem={({ item, index }) => {
+              return messageBox(item, userMe?.user_id);
+            }}
+            keyExtractor={(item, index) => index.toString()}
+            onEndReached={() => endReached()}
+            onEndReachedThreshold={0.2}
+            // enableEmptySections={true}
+            // onScrollEndDrag={endScroll}
+            // onScrollBeginDrag={beginScroll}
+            // scrollEventThrottle={16}
+            // onRefresh={() => renderRefreshControl()}
+            // refreshing={loading}
+          />
+        {/* </ScrollView> */}
+      
         <View style={styles.inputBoxWrapper}>
             <View style={styles.inputBox}>
               <TextInput
