@@ -10,7 +10,9 @@ import {
   ActivityIndicator,
   BackHandler,
   RefreshControl,
-  ScrollView
+  Keyboard,
+  LayoutAnimation,
+  Dimensions
 } from "react-native";
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -22,7 +24,9 @@ import firebase from '../../../database/firebase';
 import {stylesGlobal} from '../../../app/styles/stylesGlobal';
 import { useFocusEffect } from '@react-navigation/native';
 
-const maxLoadData = 15
+const {width, height} = Dimensions.get("screen")
+
+const maxLoadData = 10
 
 function validURL(str) {
   var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
@@ -115,6 +119,7 @@ export default function GroupChatPage(props) {
   const [group, setGroup] = useState(props.route.params?.group)
   const [limitCount, setLimitCount] = useState(maxLoadData)
   const [showLoadMore, setShowLoadMore] = useState(true)
+  const [keyBoardheight, setKeyBoardheight] = useState(0);
 
   const navigationiOptions = () => {
     
@@ -145,7 +150,7 @@ export default function GroupChatPage(props) {
         BackHandler.removeEventListener(
           'hardwareBackPress', onBackPress
         );
-    }, [])
+    }, []),
   );
 
   useEffect(() => {
@@ -180,12 +185,6 @@ export default function GroupChatPage(props) {
         if (firebaseData?.system == true)
           setShowLoadMore(false)
 
-        // if (!firebaseData.system) {
-        //   data.user = {
-        //     ...firebaseData.user,
-        //     name: firebaseData.user.displayName
-        //   }
-        // }
         return data
       })
 
@@ -196,7 +195,19 @@ export default function GroupChatPage(props) {
       setLoading(false)
     })
 
-    return () => unsubscribeListener()
+    Keyboard.addListener("keyboardDidShow", (e) => {
+      setKeyBoardheight(e.endCoordinates.height - height * 0.005)
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    });
+    Keyboard.addListener("keyboardDidHide", (e) => {
+      setKeyBoardheight(0)
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    });
+
+    return () => {
+      Keyboard.removeAllListeners,
+      unsubscribeListener()
+    }
 
   }, [])
   
@@ -403,7 +414,7 @@ export default function GroupChatPage(props) {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
+    <View  style={{ flex: 1, backgroundColor: 'white' }}>
       { Platform.OS === 'ios' && 
         <View style={{height: 20}}/>
       }
@@ -411,15 +422,7 @@ export default function GroupChatPage(props) {
         <ActivityIndicator style={styles.spinnerStyle} animating={loading} size="large" color={'#9E9E9E'} />
       }
       <View style={styles.body}>
-
-        {/* <ScrollView
-            contentContainerStyle={{
-              flexDirection: 'row',
-              alignSelf: 'flex-end',
-              flexGrow: 1
-            }}
-            refreshControl={<RefreshControl refreshing={loading} onRefresh={() => renderRefreshControl()} />}
-          > */}
+        <View style={{ flex: 1 }}>
           <FlatList
             style={{
               width: '100%',
@@ -437,37 +440,44 @@ export default function GroupChatPage(props) {
             keyExtractor={(item, index) => index.toString()}
             onEndReached={() => endReached()}
             onEndReachedThreshold={0.2}
-            // enableEmptySections={true}
-            // onScrollEndDrag={endScroll}
-            // onScrollBeginDrag={beginScroll}
-            // scrollEventThrottle={16}
-            // onRefresh={() => renderRefreshControl()}
-            // refreshing={loading}
+            initialNumToRender={10}
+            ListHeaderComponent={<View style={{height: 10}}></View>}
           />
-        {/* </ScrollView> */}
-      
-        <View style={styles.inputBoxWrapper}>
-            <View style={styles.inputBox}>
-              <TextInput
-                  style={{
-                    width:'90%',
-                    paddingVertical:5,
-                  }}
-                  autoCapitalize="none"
-                  value={newtext}
-                  placeholder="Type a message..."
-                  onChangeText={(text) => onChangeMessage(text)}
-              />
-            </View>
-            <TouchableOpacity
-                onPress={() => onPressSendMessage() }
-                style={styles.buttonSend}
-              >
-              <MaterialCommunityIcons name="arrow-right-thick" size={20} color="white" />
-            </TouchableOpacity>
-          </View>
-      </View>
-
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-around",
+                borderColor: "#e5e5e5",
+                borderWidth: 1,
+                marginTop: 5,
+                // backgroundColor:"red",
+                paddingHorizontal: 20,
+                paddingVertical: 5,
+                alignItems: "center",
+                paddingBottom: 29+keyBoardheight,
+              }}
+            >
+              <View style={styles.inputBox}>
+                <TextInput
+                    style={{
+                      width:'90%',
+                      paddingVertical:5,
+                    }}
+                    autoCapitalize="none"
+                    value={newtext}
+                    placeholder="Type a message..."
+                    onChangeText={(text) => onChangeMessage(text)}
+                />
+              </View>
+              <TouchableOpacity
+                  onPress={() => onPressSendMessage() }
+                  style={styles.buttonSend}
+                >
+                <MaterialCommunityIcons name="arrow-right-thick" size={20} color="white" />
+              </TouchableOpacity>
+              </View>
+              </View>
+        </View>
     </View>
   );
 };
@@ -504,7 +514,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     borderColor: "#e5e5e5",
     borderWidth: 1,
-    marginTop: 5,
+    marginTop: 25,
     paddingHorizontal: 20,
     paddingVertical: 5,
     alignItems: "center",
