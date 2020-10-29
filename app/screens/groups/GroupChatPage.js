@@ -182,12 +182,12 @@ export default function GroupChatPage(props) {
           ...firebaseData
         }
 
-        if (firebaseData?.system == true)
+        if (firebaseData?.system == true) {
           setShowLoadMore(false)
+        }
 
         return data
       })
-
 
       setMessages(messages)
       setLimitCount(messages.length)
@@ -195,17 +195,20 @@ export default function GroupChatPage(props) {
       setLoading(false)
     })
 
-    Keyboard.addListener("keyboardDidShow", (e) => {
-      setKeyBoardheight(e.endCoordinates.height - height * 0.005)
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    });
-    Keyboard.addListener("keyboardDidHide", (e) => {
-      setKeyBoardheight(0)
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    });
+    if( Platform.OS == "ios" ) {
+      Keyboard.addListener("keyboardDidShow", (e) => {
+        setKeyBoardheight(e.endCoordinates.height - height * 0.005)
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      });
+      Keyboard.addListener("keyboardDidHide", (e) => {
+        setKeyBoardheight(0)
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      });
+  
+    }
 
     return () => {
-      Keyboard.removeAllListeners,
+      Keyboard.removeAllListeners
       unsubscribeListener()
     }
 
@@ -349,18 +352,19 @@ export default function GroupChatPage(props) {
   }
 
   const handleLoadMore = () => {
+    
     if(!showLoadMore)
       return
 
     setLoading(true)
-
+    
     firestore
     .collection('MESSAGE_THREADS')
     .doc(group?.threadId)
     .collection('MESSAGES')
     .orderBy('createdAt', 'desc')
     .limit(limitCount+maxLoadData)
-    .onSnapshot(querySnapshot => {
+    .get().then((querySnapshot) => {
       const messages = querySnapshot.docs.map(doc => {
         const firebaseData = doc.data()
 
@@ -371,8 +375,9 @@ export default function GroupChatPage(props) {
           ...firebaseData
         }
 
-        if (firebaseData?.system == true)
+        if (firebaseData?.system == true) {
           setShowLoadMore(false)
+        }
 
         return data
       })
@@ -454,7 +459,7 @@ export default function GroupChatPage(props) {
                 paddingHorizontal: 20,
                 paddingVertical: 5,
                 alignItems: "center",
-                paddingBottom: 29+keyBoardheight,
+                paddingBottom: Platform.OS == "ios" ? 29+keyBoardheight : 10,
               }}
             >
               <View style={styles.inputBox}>
