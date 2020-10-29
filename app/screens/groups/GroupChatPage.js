@@ -20,7 +20,7 @@ import firebase from '../../../database/firebase';
 import {stylesGlobal} from '../../../app/styles/stylesGlobal';
 import { useFocusEffect } from '@react-navigation/native';
 
-const maxLoadData = 7
+const maxLoadData = 10
 
 function validURL(str) {
   var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
