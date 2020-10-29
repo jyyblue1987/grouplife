@@ -8,6 +8,7 @@ import {
 import Moment from 'moment';
 
 import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
 import { Button } from 'react-native-elements';
 import ImagePicker from 'react-native-image-picker';
@@ -189,7 +190,7 @@ export default class MyProfileEditPage extends Component {
         return (
             <ThemeContext.Provider value={getTheme(uiTheme)}>
             <View style={styles.container}>                
-                <ScrollView style={{width:'100%'}}>
+                <KeyboardAwareScrollView style={{width:'100%'}}>
                     <View style = {{width: '100%', marginTop: 10, flexDirection: 'row', justifyContent: 'center'}}>
                         <Text
                             style={[styles.header, {flex: 1}]}
@@ -263,7 +264,7 @@ export default class MyProfileEditPage extends Component {
                             onChangeText={(val) => this.updateInputVal(val, 'desc')}
                         />
                    
-                </ScrollView>      
+                </KeyboardAwareScrollView>      
                 {
                     this.state.isLoading && <View style={stylesGlobal.preloader}>
                         <ActivityIndicator size="large" color="#9E9E9E"/>
