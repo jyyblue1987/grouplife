@@ -14,7 +14,6 @@ import Moment from 'moment';
 export default function GroupListPage(props) {
 
     const [initialize, setInitialize] = useState(false)
-    const [threads, setThreads] = useState([])
     const [isLoading, setLoading] = useState(false)
     const [group_list, setGroup_list] = useState([])
     const [isSearchVisible, setIsSearchVisible] = useState(false)
@@ -23,31 +22,7 @@ export default function GroupListPage(props) {
     useEffect(() => {
         if(!initialize)
             renderRefreshControl();
-
         setInitialize(true)
-
-        const unsubscribe = firestore
-        .collection('MESSAGE_THREADS')
-        .orderBy('latestMessage.createdAt', 'desc')
-        .onSnapshot(querySnapshot => {
-            const threads = querySnapshot.docs.map(documentSnapshot => {
-                return {
-                _id: documentSnapshot.id,
-                name: '',
-                latestMessage: { text: '' },
-                ...documentSnapshot.data()
-                }
-            })
-
-            setThreads(threads)
-            console.log(threads)
-            if (isLoading) {
-                setLoading(false)
-            }
-        })
-
-        return () => unsubscribe()
-
     }, [])
 
     const getMyGroupList = () => {
