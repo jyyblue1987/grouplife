@@ -180,21 +180,23 @@ export default class EventListPage extends Component {
 		return (			
             <Card style={{container:{borderRadius: 6}}}>
                 <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => this.props.navigation.navigate('GroupDetail', {group: item})}>
-                    <View style={{justifyContent: "center"}}>
-                        <FastImage style = {{width: 100, height: '100%'}} 
-                            source = {{uri: item.group_image}}
-                            />
+                    <View style={{justifyContent: "center", alignItems:"center", width: 80, backgroundColor: stylesGlobal.back_color}}>
+                        <Text style={{fontSize:38, color: 'white', fontWeight: 'bold'}}>
+                            9
+                        </Text>
+
+                        <Text style={{fontSize:20, color: 'white'}}>
+                            SEP
+                        </Text>
                     </View>
                     <View style={{width:'100%', marginLeft: 7, paddingVertical: 9}}>
                         <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-                            {item.group_name}
+                            Event Name
                         </Text>
 
-                        <Text style={{fontSize: 17}}>
-                            {item.group_desc}
+                        <Text style={{fontSize: 17, color:'gray'}}>
+                            Event Location
                         </Text>
-
-                        <View style = {{width: '100%', borderWidth:0.5, borderColor:'lightgray', marginTop: 15, marginBottom: 7}} />
 
                         <View style={{width: '100%',marginTop: 3, flexDirection:'row'}}>
                             <Text
