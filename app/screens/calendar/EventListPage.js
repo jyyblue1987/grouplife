@@ -198,19 +198,17 @@ export default class EventListPage extends Component {
                             Event Location
                         </Text>
 
-                        <View style={{width: '100%',marginTop: 3, flexDirection:'row'}}>
-                            <Text
-                                style={{fontSize: 16, color:'gray'}}
-                                >
-                                {Moment(item.created_at).format('dddd LT')}
-                            </Text>      
-                            {
-                                this.state.isSearchVisible &&        
-                                <TouchableOpacity style = {{width: 60, height: 20, marginLeft: 30, borderRadius: 3, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
-                                    onPress = {() => this.onJoinGroup(item)}>
-                                    <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 12}]}>Join</Text>
-                                </TouchableOpacity>
-                            }
+                        <View style={{width: '100%', height: 30, marginTop: 10, flexDirection:'row', alignContent: 'center'}}>
+                            <View style={{width:80}}>
+                                <FastImage style = {[styles.member_icon, {left: 0}]} source = {require("../../assets/images/group_image_detail.jpg")}/>
+                                <FastImage style = {[styles.member_icon, {left: 20}]} source = {require("../../assets/images/group_image_detail.jpg")}/>
+                                <FastImage style = {[styles.member_icon, {left: 40}]} source = {require("../../assets/images/group_image_detail.jpg")}/>
+                            </View>
+                            <View>
+                                <Text style={{fontSize: 17, color:'gray'}}>
+                                    +8 Others RSVP'd
+                                </Text>
+                            </View>
                         </View>
                         
                     </View>    
@@ -267,7 +265,18 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 30,
         fontWeight: 'bold'
+    },
+
+    member_icon: {
+        width: 30, 
+        height: 30, 
+        borderRadius: 15, 
+        borderColor: stylesGlobal.back_color, 
+        borderWidth: 2, 
+        position: 'absolute'
     }
+
+
     
 });
 
