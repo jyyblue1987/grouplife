@@ -158,7 +158,7 @@ export default function GroupDetailPage(props) {
                 {/* Overview */}
                 <Card style={{container: {borderRadius: 10}}}>
                     <TouchableOpacity style={styles.cardButtonStyle}>
-                        <Ionicons name="ios-information-circle-outline" size={22} color={stylesGlobal.back_color} />
+                        <Ionicons name="ios-information-circle-outline" size={22} style={styles.iconStyle}/>
                         <Text style={styles.textStyle}>Overview</Text>
                     </TouchableOpacity>
                 </Card>
@@ -166,7 +166,7 @@ export default function GroupDetailPage(props) {
                 {/* Group Chat */}
                 <Card style={{container: {borderRadius: 10}}}>
                     <TouchableOpacity style={styles.cardButtonStyle} onPress={()=> onPressGroupChat()}>
-                        <Entypo name="chat" size={22} color={stylesGlobal.back_color} />
+                        <Entypo name="chat" size={22} style={styles.iconStyle} />
                         <Text style={styles.textStyle}>Group Chat</Text>
 
                         {unreadMessage != 0 &&
@@ -180,31 +180,26 @@ export default function GroupDetailPage(props) {
                 {/* Material */}
                 <Card style={{container: {borderRadius: 10}}}>
                     <TouchableOpacity style={styles.cardButtonStyle}>
-                        <FontAwesome5 name="book-open" size={22} color={stylesGlobal.back_color} />
+                        <FontAwesome5 name="book-open" size={22} style={styles.iconStyle} />
                         <Text style={styles.textStyle}>Materials</Text>
                     </TouchableOpacity>
                 </Card>
 
-                {/* Group Poll */}
+                {/* Schedule */}
                 <Card style={{container: {borderRadius: 10}}}>
-                    <TouchableOpacity style={styles.cardButtonStyle}>
-                        <Fontisto name="checkbox-active" size={22} color={stylesGlobal.back_color} />
-                        <Text style={styles.textStyle}>Group Poll</Text>
-                    </TouchableOpacity>
-                </Card>
-
-                {/* Group Poll */}
-                <Card style={{container: {borderRadius: 10}}}>
-                    <TouchableOpacity style={styles.cardButtonStyle}>
-                        <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
-                        <Text style={styles.textStyle}>Schedule</Text>
+                    <TouchableOpacity style={styles.cardButtonStyle}
+                        onPress={() => props.navigation.navigate('MemberList', {group: group})}
+                        >
+                        <FontAwesome5 name="calendar" size={22} style={styles.iconStyle} />
+                        <Text style={styles.textStyle}>Calendar</Text>
                     </TouchableOpacity>
                 </Card>
 
                 {/* Prayer Requests */}
                 <Card style={{container: {borderRadius: 10}}}>
-                    <TouchableOpacity style={styles.cardButtonStyle}>
-                        <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
+                    <TouchableOpacity style={styles.cardButtonStyle}                    
+                    >
+                        <MaterialIcons name="schedule" size={22} style={styles.iconStyle} />
                         <Text style={styles.textStyle}>Prayer Requests</Text>
                     </TouchableOpacity>
                 </Card>
@@ -212,7 +207,7 @@ export default function GroupDetailPage(props) {
                 {/* Testimonials */}
                 <Card style={{container: {borderRadius: 10}}}>
                     <TouchableOpacity style={styles.cardButtonStyle}>
-                        <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
+                        <MaterialIcons name="schedule" size={22} style={styles.iconStyle} />
                         <Text style={styles.textStyle}>Testimonials</Text>
                     </TouchableOpacity>
                 </Card>
@@ -220,7 +215,7 @@ export default function GroupDetailPage(props) {
                 {/* Freedback */}
                 <Card style={{container: {borderRadius: 10}}}>
                     <TouchableOpacity style={styles.cardButtonStyle}>
-                        <MaterialIcons name="schedule" size={22} color={stylesGlobal.back_color} />
+                        <MaterialIcons name="schedule" size={22} style={styles.iconStyle} />
                         <Text style={styles.textStyle}>Freedback</Text>
                     </TouchableOpacity>
                 </Card>
@@ -245,6 +240,12 @@ const styles = StyleSheet.create({
     textStyle: {
         marginLeft: 18,
     },
+
+    iconStyle: {
+        width: 25,  
+        color: stylesGlobal.back_color  
+    },
+
     linearGradient: {
         position: 'absolute',
         width: '100%',
