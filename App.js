@@ -23,6 +23,7 @@ import GroupChatPage from  './app/screens/groups/GroupChatPage';
 import MemberListPage from  './app/screens/groups/MemberListPage';
 import MemberProfilePage from  './app/screens/profile/MemberProfilePage';
 import MyProfileEditPage from  './app/screens/profile/MyProfileEditPage';
+import EventListPage from './app/screens/calendar/EventListPage';
 
 const Stack = createStackNavigator();
 
@@ -85,9 +86,17 @@ export default class App extends Component {
 
 					<Stack.Screen name="MyProfileEdit" component={MyProfileEditPage} 
 						options={{
-							title: 'My Profile',							
+							title: 'Event Calendar',							
 						}} 
 					/>     
+
+					<Stack.Screen name="EventList" component={EventListPage} 
+						options={{
+							title: 'Event Calendar',							
+						}} 
+					/>    
+
+
                 </Stack.Navigator>
             </NavigationContainer>
 

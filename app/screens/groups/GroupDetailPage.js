@@ -188,7 +188,7 @@ export default function GroupDetailPage(props) {
                 {/* Schedule */}
                 <Card style={{container: {borderRadius: 10}}}>
                     <TouchableOpacity style={styles.cardButtonStyle}
-                        onPress={() => props.navigation.navigate('MemberList', {group: group})}
+                        onPress={() => props.navigation.navigate('EventList', {group: group})}
                         >
                         <FontAwesome5 name="calendar" size={22} style={styles.iconStyle} />
                         <Text style={styles.textStyle}>Calendar</Text>
