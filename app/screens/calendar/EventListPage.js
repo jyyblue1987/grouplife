@@ -81,10 +81,6 @@ export default class EventListPage extends Component {
     } 
 
     onGoDetailPage = (event) => {        
-        var user = firebase.auth().currentUser;
-        if( event.created_by != user.uid ) // not created by
-            return;
-
         var group = this.props.route.params.group;
         this.props.navigation.navigate('EventDetail', { onCreated: this.onCreated, group: group, event: event, title: event.name });
     }

@@ -2,13 +2,14 @@ import * as React from 'react';
 import {Component} from 'react';
 import { Button, ButtonGroup } from 'react-native-elements';
 
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Moment from 'moment';
 
 import firebase from '../../../database/firebase';
+import { firestore} from '../../../database/firebase';
 
 export default class EventDetailPage extends Component {
     constructor(props) {
@@ -21,6 +22,7 @@ export default class EventDetailPage extends Component {
             isLoading: false,
             event: this.props.route.params.event,
             edit_flag: event.created_by == user.uid,
+            attendant_list: [],
             attend_index: 1
         }
 
@@ -28,10 +30,57 @@ export default class EventDetailPage extends Component {
     }
 
     componentDidMount() {
+        console.log('componentDidMount');
+        this.initListener = this.props.navigation.addListener('focus', this.initData.bind(this));
+    }
+
+    initData = async() => {
+        console.log('initData');
+        this.getEventData();                
     }
 
     onCreated = data => {
 
+    }
+
+    getEventData() {
+        this.setState({            
+            isLoading: true,
+            attendant_list: [],
+        });
+
+        var group = this.props.route.params.group;
+        var event = this.props.route.params.event;
+        firestore.collection("group_list")
+            .doc(group.id)
+            .collection("event_list")
+            .doc(event.id)
+            .onSnapshot(documentSnapshot  => {
+                const data = documentSnapshot.data();     
+                console.log("Event Data", JSON.stringify(data));           
+                this.setState({event: data});
+                this.getAttendantList();
+            })
+    }
+
+    getAttendantList() {
+        firestore.collection("member_list")
+            .where("user_id", "in", this.state.event.member_list)
+            .get().then((querySnapshot) => {
+                var list = [];
+
+                querySnapshot.forEach((doc) => {
+                    console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
+                    var data = doc.data();
+                    data.id = doc.id;
+                    list.push(data);                    
+                });
+
+                this.setState({
+                    attendant_list: list,
+                    isLoading: false,
+                });
+            }); 
     }
 
     onUpdateAttend = index => {        
@@ -162,9 +211,9 @@ export default class EventDetailPage extends Component {
 
                         <View style={{marginLeft:20}}>
                             {
-                                this.state.event.member_list.map((item) => (
+                                this.state.attendant_list.map((item) => (
                                     <Text style={{fontSize: 20, marginLeft: 20}}>
-                                        Member
+                                        {item.first_name} {item.last_name}
                                     </Text>
                                 ))
                             }

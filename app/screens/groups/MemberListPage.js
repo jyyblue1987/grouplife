@@ -5,10 +5,7 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native
 import FastImage from 'react-native-fast-image';
 import { Card } from 'react-native-material-ui';
 import { stylesGlobal } from '../../styles/stylesGlobal';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import firebase from '../../../database/firebase';
-import { firestore, storage} from '../../../database/firebase';
-
+import { firestore} from '../../../database/firebase';
 
 export default class MemberListPage extends Component {
     constructor(props) {
