@@ -26,6 +26,8 @@ export default class EventDetailPage extends Component {
             attend_index: 0
         }
 
+        this.attendant_id = '';
+
         console.log(this.state.event);
     }
 
@@ -68,6 +70,8 @@ export default class EventDetailPage extends Component {
         var user = firebase.auth().currentUser;
         var group = this.props.route.params.group;
         var event = this.props.route.params.event;
+        var vm = this;
+        console.log("User ID =", user.uid);
         firestore.collection("group_list")
             .doc(group.id)
             .collection("event_list")
@@ -77,8 +81,15 @@ export default class EventDetailPage extends Component {
                 var list = [];
 
                 querySnapshot.forEach((doc) => {
-                    console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
+                    console.log("Attendant list feteched", doc.id, JSON.stringify(doc.data()));                
                     var data = doc.data();
+                    if( data.user_id == user.uid)
+                    {                        
+                        vm.attendant_id = doc.id;
+                        vm.setState({attend_index: data.status});
+                        console.log("Attendant ID =", vm.attendant_id);
+                    }
+
                     data.id = doc.id;
                     list.push(data);                    
                 });
@@ -90,27 +101,23 @@ export default class EventDetailPage extends Component {
             }); 
     }
 
-    onUpdateAttend = index => {        
+    onUpdateAttend = status => {        
         var group = this.props.route.params.group;
         var event = this.props.route.params.event;
-
-        var user = firebase.auth().currentUser;
-        var attendant_list = this.state.event.attendant_list.map((item) => (
-            {
-                user_id: item.user_id,
-                status: item.user_id == user.uid ? index : item.status
-            }
-        ));
+        console.log("Attendant ID = ", this.attendant_id);
 
         firestore.collection("group_list")
             .doc(group.id)
             .collection("event_list")
             .doc(event.id)
+            .collection("attendant_list")
+            // .where('user_id', '==', user.uid)
+            .doc(this.attendant_id)
             .update({
-                attendant_list: attendant_list
+                status: status
             });
 
-        this.setState({attend_index: index});           
+        this.setState({attend_index: status});           
     }
 
     onGoEditPage = () => {        
@@ -238,7 +245,7 @@ export default class EventDetailPage extends Component {
                         <View style={{marginLeft:20}}>
                             {
                                 this.state.attendant_list.map((item) => (
-                                    <Text style={{fontSize: 20, marginLeft: 20}}>
+                                    <Text style={{fontSize: 20}}>
                                         {item.first_name} {item.last_name} {"<"}{item.status == 0 ? 'Yes': ''}{item.status == 1 ? 'Maybe': ''}{item.status == 2 ? 'No': ''}{">"} 
                                     </Text>
                                 ))
