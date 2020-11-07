@@ -9,9 +9,7 @@ import Moment from 'moment';
 
 import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import FastImage from 'react-native-fast-image';
-import { Button } from 'react-native-elements';
-import ImagePicker from 'react-native-image-picker';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import * as Progress from 'react-native-progress';
 import storage from '@react-native-firebase/storage';
@@ -36,18 +34,20 @@ export default class EventEditPage extends Component {
         super(props);
 
         this.state = {
-            file: null,
-            errors: [],
-            uploadState: null,
-            uploadTask: null,
-            percentUploaded: 0,
+            isLoading: false,                        
+            name: '',      
+            date: new Date(),
+            date_str: '',
+            time_str: '',
+            host: '',
+            location: '',
+            detail: '',
+            food: '',      
+            video_conf_link: '',
+            phone: '',
+            datepicker_show: false,
+            picker_mode: 'time'
         }
-
-        var state = {...this.props.route.params.user};
-        state.isLoading = false;
-        state.isUploading = false;
-        state.upload_progress = 0;
-        this.state = state;
     }
 
     componentDidMount() {
@@ -60,91 +60,33 @@ export default class EventEditPage extends Component {
         this.setState(state);
     }
 
-    showImagePicker = async() => {
-        var options = {
-            title: 'Select Image',
-            mediaType: 'photo',
-            quality: 1.0,
-            allowsEditing: true,
-            noData: true,
-            storageOptions: {
-                skipBackup: true,
-                path: 'images'
-            }
-        };
-
-        ImagePicker.showImagePicker(options, (response) => {
-
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            } else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-            } else {
-                var uri = response.uri;
-                console.log(uri);
-                this.setState({
-                    isUploading: true,                    
-                    picture: uri,                    
-                });
-                
-                this.uploadImage(uri)
-                    // .then(url => { 
-                    //     this.setState({picture: url, isUploading: false});
-                    //     console.log("Upload URL = ", url);
-
-                    // })
-                    // .catch(error => {
-                    //     this.setState({picture: '', isUploading: false});
-                    //     console.log(error)
-                    // });
-            }
-            
-        });
+    showDatePicker() {
+        this.setState({datepicker_show: true, picker_mode: 'date'});
     }
 
-    uploadImage = (uri) => {
-        const filename = uri.substring(uri.lastIndexOf('/') + 1);
-        console.log('filename------------', filename);
-        const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
-        console.log("uploadUri-----------", uploadUri);
+    showTimePicker() {
+        this.setState({datepicker_show: true, picker_mode: 'time'});
+    }
 
-        this.setState({
-            uploadTask: storage().ref("/profileImages/" + filename).putFile(uploadUri)
-        },
-            () => {
-                this.state.uploadTask.on( 'state_changed', snapshot => {
-                        switch (snapshot.state) {
-                            case 'running':
-                                var progress = (snapshot.bytesTransferred / snapshot.totalBytes);
-                                if( progress <= 1.0 )
-                                    this.setState({upload_progress: progress});
+    onChangeEventDate(selectedDate) 
+    {
+        this.setState({date: currentDate, datepicker_show: false});
+        
+        const currentDate = selectedDate || this.state.date;
+        if( this.state.picker_mode == 'date' )
+        {
+            var date_str = Moment(currentDate).format('d MMM Y');
+            this.setState({date_str: date_str});
+        }
+        if( this.state.picker_mode == 'time' )
+        {
+            var time_str = Moment(currentDate).format('HH:mm');
+            this.setState({time_str: time_str});
+        }
+    }
 
-                                console.log(snapshot.bytesTransferred + ' is transferred in total ' + snapshot.totalBytes);  
-                                break;
-                            case 'success':
-                                snapshot.ref.getDownloadURL().then(downloadUrl => {
-                                    console.log('---------- success = ', downloadUrl)
-                                    this.setState({ uploadState: 'done', picture: downloadUrl, isUploading: false})
-                                });
-                                break;
-                            default:
-                                break;
-                        }
-                    },
-                    err => {
-                        console.error(err);
-                        this.setState({
-                            uploadState: 'error',
-                            uploadTask: null,
-                            isUploading: false,
-                            picture: ""
-                        });
-                    },
-                )
-            }
-        )
+    onCancelEventDate() {
+        this.setState({datepicker_show: false});
     }
 
     onSaveEvent = () => {
@@ -190,6 +132,31 @@ export default class EventEditPage extends Component {
                             value={this.state.name}
                             onChangeText={(val) => this.updateInputVal(val, 'name')}
                         />
+
+                    <View style={{width: '100%', flexDirection: 'row', marginTop: 15}}>                        
+                        <TouchableOpacity style = {[{width:'100%'}, styles.roundButton]} 
+                        onPress = {() => this.showDatePicker()}
+                        >
+                            <FontAwesome5 name="calendar-alt"  size={22} color={stylesGlobal.back_color} />
+                            <Text style={{flex:1, color: '#383838B2', fontSize: 18, marginLeft: 20}}>{this.state.date_str}</Text>                            
+                        </TouchableOpacity>                        
+                    </View>
+
+                    <View style={{width: '100%', flexDirection: 'row', marginTop: 15}}>                        
+                        <TouchableOpacity style = {[{width:'100%'}, styles.roundButton]} 
+                        onPress = {() => this.showTimePicker()}
+                        >
+                            <FontAwesome5 name="clock"  size={22} color={stylesGlobal.back_color} />
+                            <Text style={{flex:1, color: '#383838B2', fontSize: 18, marginLeft: 20}}>{this.state.time_str}</Text>                            
+                        </TouchableOpacity>                        
+                    </View>
+
+                    <DateTimePickerModal
+                        isVisible={this.state.datepicker_show}
+                        mode={this.state.picker_mode}
+                        onConfirm = {(date) => this.onChangeEventDate(date)}
+                        onCancel = {() =>this.onCancelEventDate()}
+                    />
                     <TextInput
                             style={[stylesGlobal.inputStyle, {marginTop: 35}]}
                             placeholder="Event Host"
@@ -232,8 +199,8 @@ export default class EventEditPage extends Component {
                             style={[stylesGlobal.inputStyle, {marginTop: 35}]}
                             placeholder="Phone conferece dial-in info"
                             autoCapitalize = 'none'
-                            value={this.state.video_conf_link}
-                            onChangeText={(val) => this.updateInputVal(val, 'video_conf_link')}
+                            value={this.state.phone}
+                            onChangeText={(val) => this.updateInputVal(val, 'phone')}
                         />
 
                     <View style = {{width: '100%', alignItems: 'center', marginTop: 50}}>
