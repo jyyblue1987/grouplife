@@ -138,12 +138,10 @@ export default class EventListPage extends Component {
         }
     }
 
-    onGoCreate = () => {
-        if( this.state.isSearchVisible )
-            this.onCancelSearch();
-
-        this.props.navigation.navigate('GroupCreate', { onCreated: this.onCreated });
+    onGoCreate = () => {        
+        this.props.navigation.navigate('EventEdit', { onCreated: this.onCreated });
     }
+
 
     onJoinGroup = (item) => {
         var vm = this;
@@ -204,7 +202,7 @@ export default class EventListPage extends Component {
                                 <FastImage style = {[styles.member_icon, {left: 20}]} source = {require("../../assets/images/group_image_detail.jpg")}/>
                                 <FastImage style = {[styles.member_icon, {left: 40}]} source = {require("../../assets/images/group_image_detail.jpg")}/>
                             </View>
-                            <View>
+                            <View style={{lexDirection:'row', alignContent: 'center'}}>
                                 <Text style={{fontSize: 17, color:'gray'}}>
                                     +8 Others RSVP'd
                                 </Text>
