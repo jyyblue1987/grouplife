@@ -7,9 +7,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import firebase from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
-import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Moment from 'moment';
 import { firestore, storage} from '../../../database/firebase';
@@ -190,7 +190,7 @@ export default function GroupDetailPage(props) {
                     <TouchableOpacity style={styles.cardButtonStyle}
                         onPress={() => props.navigation.navigate('EventList', {group: group})}
                         >
-                        <FontAwesome5 name="calendar" size={22} style={styles.iconStyle} />
+                        <FontAwesome name="calendar" size={22} style={styles.iconStyle} />
                         <Text style={styles.textStyle}>Calendar</Text>
                     </TouchableOpacity>
                 </Card>
