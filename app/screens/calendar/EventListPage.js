@@ -77,23 +77,23 @@ export default class EventListPage extends Component {
 
     onGoCreate = () => {        
         var group = this.props.route.params.group;
-        this.props.navigation.navigate('EventEdit', { onCreated: this.onCreated, group: group, event: null });
+        this.props.navigation.navigate('EventEdit', { onCreated: this.onCreated, group: group, event: null, title: 'Create Calendar Event' });
     } 
 
-    onGoEdit = (event) => {        
+    onGoDetailPage = (event) => {        
         var user = firebase.auth().currentUser;
         if( event.created_by != user.uid ) // not created by
             return;
-            
+
         var group = this.props.route.params.group;
-        this.props.navigation.navigate('EventEdit', { onCreated: this.onCreated, group: group, event: event });
+        this.props.navigation.navigate('EventDetail', { onCreated: this.onCreated, group: group, event: event, title: event.name });
     }
 
     renderRow(item) {
         var group = this.props.route.params.group;
 		return (			
             <Card style={{container:{borderRadius: 6}}}>
-                <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => this.onGoEdit(item)}>
+                <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => this.onGoDetailPage(item)}>
                     <View style={{justifyContent: "center", alignItems:"center", width: 80, backgroundColor: stylesGlobal.back_color}}>
                         <Text style={{fontSize:38, color: 'white', fontWeight: 'bold'}}>
                             {Moment(item.event_time).format('d')}

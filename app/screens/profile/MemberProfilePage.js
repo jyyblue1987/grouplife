@@ -7,7 +7,7 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import Ionicons from 'react-native-vector-icons/Ionicons'; 
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
-export default class MemberProfielPage extends Component {
+export default class MemberProfilePage extends Component {
     constructor(props) {
         super(props);
 

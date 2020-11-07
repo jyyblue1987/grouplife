@@ -25,6 +25,7 @@ import MemberProfilePage from  './app/screens/profile/MemberProfilePage';
 import MyProfileEditPage from  './app/screens/profile/MyProfileEditPage';
 import EventListPage from './app/screens/calendar/EventListPage';
 import EventEditPage from './app/screens/calendar/EventEditPage';
+import EventDetailPage from './app/screens/calendar/EventDetailPage';
 
 const Stack = createStackNavigator();
 
@@ -50,7 +51,7 @@ export default class App extends Component {
 										)
 									}                    
                 >
-          <Stack.Screen name="Signin" component={SignInScreen} options={{title: 'Login'}} />
+          			<Stack.Screen name="Signin" component={SignInScreen} options={{title: 'Login'}} />
 					<Stack.Screen name="Signup" component={SignUpScreen} options={{title: 'Signup'}} />                   
 					<Stack.Screen name="Main" component={MainPage} 
 						options={{							
@@ -98,10 +99,18 @@ export default class App extends Component {
 					/>    
 
 					<Stack.Screen name="EventEdit" component={EventEditPage} 
-						options={{
-							title: 'Create Calendar Event',							
-						}} 
+						options={({ route }) => ({ 
+							title: route.params.title,
+							headerBackTitle: 'Back' 
+						})}
 					/>    
+
+					<Stack.Screen name="EventDetail" component={EventDetailPage} 
+						options={({ route }) => ({ 
+							title: route.params.title,
+							headerBackTitle: 'Back' 
+						})} 					
+					/> 
 
 
                 </Stack.Navigator>
