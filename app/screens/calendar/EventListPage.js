@@ -44,20 +44,59 @@ export default class EventListPage extends Component {
             .collection('event_list')
             .get().then((querySnapshot) => {
                 var event_list = [];
-
-                querySnapshot.forEach((doc) => {
-                    console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
+                
+                querySnapshot.forEach((doc) => {                                
                     var data = doc.data();
                     data.id = doc.id;
-
+                    
                     event_list.push(data);                    
                 });
 
-                this.setState({
-                    event_list: event_list,
-                    isLoading: false
-                })
+                console.log("Event List", JSON.stringify(event_list));    
+
+                this.getAttendantListForEvent(event_list);                
             });        
+    }
+
+    getAttendantListForEvent(event_list)
+    {
+        var total_count = event_list.length;
+        var count = 0;
+        var group = this.props.route.params.group;
+        event_list.forEach((item) => {              
+            firestore.collection("group_list")
+                .doc(group.id)
+                .collection('event_list')
+                .doc(item.id)
+                .collection('attendant_list')
+                .get().then((snapshot) => {
+                    var attendant_list = [];
+                    snapshot.forEach((doc) => {
+                        var data1 = doc.data();
+                        data1.id = doc.id;
+                        attendant_list.push(data1);                                                                
+                    });
+
+                    console.log("Attendant List", JSON.stringify(attendant_list));   
+
+                    item.attendant_list = attendant_list;
+                    count++;
+                    if( count >= total_count )
+                    {
+                        console.log("Detail Event List", JSON.stringify(event_list)); 
+                        this.setState({
+                            event_list: event_list,
+                            isLoading: false
+                        });
+                    }
+                });         
+        });
+
+        // this.setState({
+        //     event_list: event_list,
+        //     isLoading: false
+        // });
+        
     }
 
     renderRefreshControl() {
@@ -85,8 +124,7 @@ export default class EventListPage extends Component {
         this.props.navigation.navigate('EventDetail', { onCreated: this.onCreated, group: group, event: event, title: event.name });
     }
 
-    renderRow(item) {
-        var group = this.props.route.params.group;
+    renderRow(item) {        
 		return (			
             <Card style={{container:{borderRadius: 6}}}>
                 <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => this.onGoDetailPage(item)}>
@@ -108,15 +146,17 @@ export default class EventListPage extends Component {
                             {item.location}
                         </Text>
 
-                        <View style={{width: '100%', height: 30, marginTop: 10, flexDirection:'row', alignContent: 'center'}}>
-                            <View style={{width:80}}>
-                                <FastImage style = {[styles.member_icon, {left: 0}]} source = {require("../../assets/images/group_image_detail.jpg")}/>
-                                <FastImage style = {[styles.member_icon, {left: 20}]} source = {require("../../assets/images/group_image_detail.jpg")}/>
-                                <FastImage style = {[styles.member_icon, {left: 40}]} source = {require("../../assets/images/group_image_detail.jpg")}/>
+                        <View style={{width: '100%', height: 30, marginTop: 10, flexDirection:'row'}}>
+                            <View style={{width:(40 + 20 * (item.attendant_list.length - 1))}}>
+                                {
+                                    item.attendant_list.map((row, index) => (
+                                        <FastImage style = {[styles.member_icon, {left: 20 * index}]} source = {{uri: row.picture}}/>
+                                    ))
+                                }                                
                             </View>
-                            <View style={{flexDirection:'row', alignContent: 'center'}}>
+                            <View style={{flexDirection:'row', marginTop: 3}}>
                                 <Text style={{fontSize: 17, color:'gray'}}>
-                                    + 1 Others RSVP'd
+                                    + {item.attendant_list.length} Others RSVP'd
                                 </Text>
                             </View>
                         </View>
