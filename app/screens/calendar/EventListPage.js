@@ -114,9 +114,9 @@ export default class EventListPage extends Component {
                                 <FastImage style = {[styles.member_icon, {left: 20}]} source = {require("../../assets/images/group_image_detail.jpg")}/>
                                 <FastImage style = {[styles.member_icon, {left: 40}]} source = {require("../../assets/images/group_image_detail.jpg")}/>
                             </View>
-                            <View style={{lexDirection:'row', alignContent: 'center'}}>
+                            <View style={{flexDirection:'row', alignContent: 'center'}}>
                                 <Text style={{fontSize: 17, color:'gray'}}>
-                                    +{item.member_list.length} Others RSVP'd
+                                    + 1 Others RSVP'd
                                 </Text>
                             </View>
                         </View>

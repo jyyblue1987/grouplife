@@ -104,7 +104,7 @@ export default class EventEditPage extends Component {
 
         var vm = this;
 
-        let uid = firebase.auth().currentUser.uid;
+        var user = firebase.auth().currentUser;
         var group = this.props.route.params.group;
         var event = this.props.route.params.event;
         var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
@@ -119,7 +119,7 @@ export default class EventEditPage extends Component {
             food: this.state.food,      
             video_conf_link: this.state.video_conf_link,
             phone: this.state.phone,          
-            created_by: uid,   
+            created_by: user.uid,   
             updated_at: cur_time           
         }
 
@@ -131,14 +131,25 @@ export default class EventEditPage extends Component {
           
         if( event == null )
         {
-            var member_list = [uid];
-            event_data.member_list = member_list;
             event_data.created_at = cur_time;
             
             // create event
             eventRef.add(event_data).then(function(docRef) {
                 console.log("Event is created with ID:", docRef.id);
-                vm.clearInputData(docRef.id);
+
+                firestore.collection("member_list")
+                    .where("user_id", "==", user.uid)
+                    .get().then((querySnapshot) => {
+                        querySnapshot.forEach((doc) => {
+                            var data = doc.data();
+                            data.status = 0;
+
+                            // attendant with profile
+                            docRef.collection("attendant_list").add(data);                            
+                        });
+                        vm.clearInputData(docRef.id);
+                    });
+                
             }).catch(function(error) {
                 console.error("Error adding event: ", error);
                 vm.clearInputData();            
@@ -146,11 +157,9 @@ export default class EventEditPage extends Component {
         }
         else
         {
-            event_data.member_list = event.member_list;
-            event_data.created_at = event.created_at;
             // update event
             eventRef = eventRef.doc(event.id);
-            eventRef.set(event_data).then(function(doc) {
+            eventRef.update(event_data).then(function(doc) {
                 vm.clearInputData(event.id);
             }).catch(function(error) {
                 console.log("Error setting group:", error);
@@ -160,14 +169,14 @@ export default class EventEditPage extends Component {
 
         console.log("Event Data", JSON.stringify(event_data));
            
-
         this.setState({isLoading: false});
-        
-    
     }
 
     clearInputData(doc_id)
     {
+        this.setState({                    
+            isLoading: false,
+        });
         if( doc_id )
         {
             const { navigation, route } = this.props;
@@ -184,8 +193,15 @@ export default class EventEditPage extends Component {
   
         return (
            
-            <View style={styles.container}>                
-                <KeyboardAwareScrollView style={{width:'100%'}}>                 
+            <View style={styles.container}>      
+                {
+                    this.state.isLoading && <View style={stylesGlobal.preloader}>
+                        <ActivityIndicator size="large" color="#9E9E9E"/>
+                    </View>
+                }          
+                <KeyboardAwareScrollView style={{width:'100%'}}
+                    keyboardShouldPersistTaps="handled"
+                    >                 
                     <TextInput
                             style={[stylesGlobal.inputStyle, {marginTop: 35}]}
                             placeholder="Event Name"

@@ -23,7 +23,7 @@ export default class EventDetailPage extends Component {
             event: this.props.route.params.event,
             edit_flag: event.created_by == user.uid,
             attendant_list: [],
-            attend_index: 1
+            attend_index: 0
         }
 
         console.log(this.state.event);
@@ -60,12 +60,19 @@ export default class EventDetailPage extends Component {
                 console.log("Event Data", JSON.stringify(data));           
                 this.setState({event: data});
                 this.getAttendantList();
-            })
+            });
     }
 
     getAttendantList() {
-        firestore.collection("member_list")
-            .where("user_id", "in", this.state.event.member_list)
+        // get attendant status of current user
+        var user = firebase.auth().currentUser;
+        var group = this.props.route.params.group;
+        var event = this.props.route.params.event;
+        firestore.collection("group_list")
+            .doc(group.id)
+            .collection("event_list")
+            .doc(event.id)
+            .collection("attendant_list")
             .get().then((querySnapshot) => {
                 var list = [];
 
@@ -84,7 +91,26 @@ export default class EventDetailPage extends Component {
     }
 
     onUpdateAttend = index => {        
-        this.setState({attend_index: index});
+        var group = this.props.route.params.group;
+        var event = this.props.route.params.event;
+
+        var user = firebase.auth().currentUser;
+        var attendant_list = this.state.event.attendant_list.map((item) => (
+            {
+                user_id: item.user_id,
+                status: item.user_id == user.uid ? index : item.status
+            }
+        ));
+
+        firestore.collection("group_list")
+            .doc(group.id)
+            .collection("event_list")
+            .doc(event.id)
+            .update({
+                attendant_list: attendant_list
+            });
+
+        this.setState({attend_index: index});           
     }
 
     onGoEditPage = () => {        
@@ -213,7 +239,7 @@ export default class EventDetailPage extends Component {
                             {
                                 this.state.attendant_list.map((item) => (
                                     <Text style={{fontSize: 20, marginLeft: 20}}>
-                                        {item.first_name} {item.last_name}
+                                        {item.first_name} {item.last_name} {"<"}{item.status == 0 ? 'Yes': ''}{item.status == 1 ? 'Maybe': ''}{item.status == 2 ? 'No': ''}{">"} 
                                     </Text>
                                 ))
                             }
