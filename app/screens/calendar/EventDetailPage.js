@@ -94,7 +94,84 @@ export default class EventDetailPage extends Component {
                                 buttons={buttons}                                
                                 />
                         </View>
-                    </View>              
+                    </View>      
+
+                    <View style={{flexDirection: 'row', alignItems: 'center', paddingVertical: 10}}>
+                        <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+                            Host:
+                        </Text>
+                        <Text style={{fontSize: 20, marginLeft: 20}}>
+                            {this.state.event.host}
+                        </Text>
+                    </View>    
+
+                    <View style={{flexDirection: 'row', alignItems: 'center', paddingVertical: 10}}>
+                        <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+                            Location:
+                        </Text>
+                        <Text style={{fontSize: 20, marginLeft: 20}}>
+                            {this.state.event.location}
+                        </Text>
+                    </View>    
+                    {
+                        this.state.event.video_conf_link != "" &&
+                        <View style={{paddingVertical: 10}}>
+                            <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+                                Video Conference Link:
+                            </Text>
+                            <Text style={{fontSize: 20, marginLeft: 20}}>
+                                {this.state.event.video_conf_link}
+                            </Text>
+                        </View>          
+                    }
+
+                    {
+                        this.state.event.phone != "" &&
+                        <View style={{paddingVertical: 10}}>
+                            <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+                                Phone Conference:
+                            </Text>
+                            <Text style={{fontSize: 20, marginLeft: 20}}>
+                                {this.state.event.phone}
+                            </Text>
+                        </View>          
+                    }
+                        
+                    <View style={{paddingVertical: 10}}>
+                        <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+                            Event Details:
+                        </Text>
+                        <Text style={{fontSize: 20, marginLeft: 20}}>
+                            {this.state.event.detail}
+                        </Text>
+                    </View>    
+
+                    <View style={{flexDirection: 'row', alignItems: 'center', paddingVertical: 10}}>
+                        <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+                            Food:
+                        </Text>
+                        <Text style={{fontSize: 20, marginLeft: 20}}>
+                            {this.state.event.food}
+                        </Text>
+                    </View>        
+
+                    <View style={{alignContent: 'center', paddingVertical: 10}}>
+                        <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+                            Attendees:
+                        </Text>
+
+                        <View style={{marginLeft:20}}>
+                            {
+                                this.state.event.member_list.map((item) => (
+                                    <Text style={{fontSize: 20, marginLeft: 20}}>
+                                        Member
+                                    </Text>
+                                ))
+                            }
+                        </View>                       
+                    </View>          
+                    
+                    
                 </ScrollView>
             </View>
         );
