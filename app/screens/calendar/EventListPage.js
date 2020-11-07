@@ -80,11 +80,20 @@ export default class EventListPage extends Component {
         this.props.navigation.navigate('EventEdit', { onCreated: this.onCreated, group: group, event: null });
     } 
 
+    onGoEdit = (event) => {        
+        var user = firebase.auth().currentUser;
+        if( event.created_by != user.uid ) // not created by
+            return;
+            
+        var group = this.props.route.params.group;
+        this.props.navigation.navigate('EventEdit', { onCreated: this.onCreated, group: group, event: event });
+    }
+
     renderRow(item) {
         var group = this.props.route.params.group;
 		return (			
             <Card style={{container:{borderRadius: 6}}}>
-                <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => this.props.navigation.navigate('EventEdit', {group: group, event: item, onCreated: this.onCreated})}>
+                <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => this.onGoEdit(item)}>
                     <View style={{justifyContent: "center", alignItems:"center", width: 80, backgroundColor: stylesGlobal.back_color}}>
                         <Text style={{fontSize:38, color: 'white', fontWeight: 'bold'}}>
                             {Moment(item.event_time).format('d')}

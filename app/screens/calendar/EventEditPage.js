@@ -118,7 +118,8 @@ export default class EventEditPage extends Component {
             detail: this.state.detail,
             food: this.state.food,      
             video_conf_link: this.state.video_conf_link,
-            phone: this.state.phone,             
+            phone: this.state.phone,          
+            created_by: uid,   
             updated_at: cur_time           
         }
 
