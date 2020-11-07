@@ -18,9 +18,7 @@ export default class EventListPage extends Component {
 
         this.state = {
             isLoading: false,
-            group_list: [],
-            isSearchVisible: false,
-            search: '',            
+            event_list: [],          
         }
     }
 
@@ -28,7 +26,7 @@ export default class EventListPage extends Component {
         this.renderRefreshControl();
     }
 
-    getMyGroupList() {
+    getEventList() {
         var user = firebase.auth().currentUser;
         if( user == null )
         {
@@ -36,164 +34,73 @@ export default class EventListPage extends Component {
             return;    
         }
 
+        var group = this.props.route.params.group;
+
         var user_id = user.uid;
         console.log("User ID = ", user_id);
         this.setState({ isLoading: true });
         firestore.collection("group_list")
-            .where("member_list", "array-contains", user_id)
+            .doc(group.id)
+            .collection('event_list')
             .get().then((querySnapshot) => {
-                var group_list = [];
+                var event_list = [];
 
                 querySnapshot.forEach((doc) => {
                     console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
                     var data = doc.data();
                     data.id = doc.id;
 
-                    group_list.push(data);                    
+                    event_list.push(data);                    
                 });
 
                 this.setState({
-                    group_list: group_list,
+                    event_list: event_list,
                     isLoading: false
                 })
             });        
     }
 
-    searchGroupList(search) {
-        var user = firebase.auth().currentUser;
-        if( user == null )
-        {
-            console.log("Invalid User");
-            return;    
-        }
-
-        var user_id = user.uid;
-        console.log("User ID = ", user_id);
-
-        this.setState({ isLoading: true, group_list: [] });
-        firestore.collection("group_list")
-            .where('group_name', '>=', search)
-            .where('group_name', '<=', search + '~')
-            .get().then((querySnapshot) => {
-                var group_list = [];
-
-                querySnapshot.forEach((doc) => {
-                    console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
-                    var data = doc.data();
-                    data.id = doc.id;
-
-                    if( data.member_list == null || data.member_list.includes(user_id) == false )
-                    {                        
-                        group_list.push(data);
-                    }
-                });
-
-                this.setState({
-                    group_list: group_list,
-                    isLoading: false
-                })
-            });
-    }
-
     renderRefreshControl() {
         this.setState({ isLoading: true });
-        if( this.state.isSearchVisible == false )
-            this.getMyGroupList();
-        else
-            this.searchGroupList(this.state.search);
+        this.getEventList();        
     }
 
-    onShowSearch() {
-        console.log("onShowSearch");
-        this.setState({
-            isSearchVisible: true,
-        });
-        this.searchGroupList(this.state.search);
-    }
-
-    updateSearch = (search) => {        
-        this.setState({search: search});
-    }
-
-    onSubmitSearch = () => {
-        console.log("Submit", this.state.search);
-        this.searchGroupList(this.state.search);
-    }
-
-    onCancelSearch = () => {
-        this.setState({isSearchVisible: false, search: '', group_list: []});
-        this.renderRefreshControl();
-    }
-
-    onClearSearch = () => {
-        this.onSubmitSearch();
-    }
+ 
 
     onCreated = data => {
-        console.log("Back to Home", JSON.stringify(data));
+        console.log("Back to Eventlist", JSON.stringify(data));
         if( data.created == true )
         {
-            var doc = {id: data.doc_id};
-            this.onJoinGroup(doc);            
+            this.renderRefreshControl();    
         }
     }
 
     onGoCreate = () => {        
-        this.props.navigation.navigate('EventEdit', { onCreated: this.onCreated });
-    }
-
-
-    onJoinGroup = (item) => {
-        var vm = this;
-        var groupRef = firestore.collection("group_list").doc(item.id);        
-        groupRef.get().then(function(doc) {
-            if (doc.exists) 
-            {
-                var data = doc.data();
-                if( data.member_list == null )
-                    data.member_list = [];
-        
-                var user = firebase.auth().currentUser;
-                data.member_list.push(user.uid);                        
-
-                console.log("Document data:", data);
-                groupRef.set(data).then(function(doc) {
-                    vm.renderRefreshControl();
-                }).catch(function(error) {
-                    console.log("Error setting group:", error);
-                });                    
-            } else {
-                // doc.data() will be undefined in this case
-                console.log("No such document!");
-            }
-        }).catch(function(error) {
-            console.log("Error getting document:", error);
-        });
-      
-    }
-
-
+        var group = this.props.route.params.group;
+        this.props.navigation.navigate('EventEdit', { onCreated: this.onCreated, group: group, event: null });
+    } 
 
     renderRow(item) {
+        var group = this.props.route.params.group;
 		return (			
             <Card style={{container:{borderRadius: 6}}}>
-                <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => this.props.navigation.navigate('GroupDetail', {group: item})}>
+                <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => this.props.navigation.navigate('EventEdit', {group: group, event: item, onCreated: this.onCreated})}>
                     <View style={{justifyContent: "center", alignItems:"center", width: 80, backgroundColor: stylesGlobal.back_color}}>
                         <Text style={{fontSize:38, color: 'white', fontWeight: 'bold'}}>
-                            9
+                            {Moment(item.event_time).format('d')}
                         </Text>
 
                         <Text style={{fontSize:20, color: 'white'}}>
-                            SEP
+                            {Moment(item.event_time).format('MMM')}
                         </Text>
                     </View>
                     <View style={{width:'100%', marginLeft: 7, paddingVertical: 9}}>
                         <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-                            Event Name
+                            {item.name}
                         </Text>
 
                         <Text style={{fontSize: 17, color:'gray'}}>
-                            Event Location
+                            {item.location}
                         </Text>
 
                         <View style={{width: '100%', height: 30, marginTop: 10, flexDirection:'row', alignContent: 'center'}}>
@@ -204,7 +111,7 @@ export default class EventListPage extends Component {
                             </View>
                             <View style={{lexDirection:'row', alignContent: 'center'}}>
                                 <Text style={{fontSize: 17, color:'gray'}}>
-                                    +8 Others RSVP'd
+                                    +{item.member_list.length} Others RSVP'd
                                 </Text>
                             </View>
                         </View>
@@ -220,7 +127,7 @@ export default class EventListPage extends Component {
         return (
             <View style={styles.container}>          
                 <FlatList
-                    data={this.state.group_list}
+                    data={this.state.event_list}
                     renderItem={({item}) => this.renderRow(item)}
                     keyExtractor={(item, index) => item.id}
                     onRefresh={() => this.renderRefreshControl()}

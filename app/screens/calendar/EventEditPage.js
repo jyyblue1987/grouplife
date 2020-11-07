@@ -12,20 +12,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import * as Progress from 'react-native-progress';
-import storage from '@react-native-firebase/storage';
-
-import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
-
-// you can set your style right here, it'll be propagated to application
-const uiTheme = {
-    palette: {
-        primaryColor: stylesGlobal.back_color,
-    },
-    button: {
-        upperCase: false,
-    },
-};
-
+import firebase from '../../../database/firebase';
 import { firestore } from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
@@ -33,20 +20,42 @@ export default class EventEditPage extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            isLoading: false,                        
-            name: '',      
-            date: new Date(),
-            date_str: '',
-            time_str: '',
-            host: '',
-            location: '',
-            detail: '',
-            food: '',      
-            video_conf_link: '',
-            phone: '',
-            datepicker_show: false,
-            picker_mode: 'time'
+        var event = this.props.route.params.event;
+        if( event == null )
+        {
+            this.state = {
+                isLoading: false,                        
+                name: '',      
+                date: new Date(),
+                date_str: '',
+                time_str: '',
+                host: '',
+                location: '',
+                detail: '',
+                food: '',      
+                video_conf_link: '',
+                phone: '',
+                datepicker_show: false,
+                picker_mode: 'time'
+            }
+        }
+        else
+        {
+            this.state = {
+                isLoading: false,                        
+                name: event.name,      
+                date: new Date(Moment(event.event_time)),
+                date_str: Moment(event.event_time).format('d MMM Y'),
+                time_str: Moment(event.event_time).format('HH:mm'),
+                host: event.host,
+                location: event.location,
+                detail: event.detail,
+                food: event.food,      
+                video_conf_link: event.video_conf_link,
+                phone: event.phone,
+                datepicker_show: false,
+                picker_mode: 'time'
+            }
         }
     }
 
@@ -90,39 +99,90 @@ export default class EventEditPage extends Component {
     }
 
     onSaveEvent = () => {
+        console.log("On Save Event");
         this.setState({isLoading: true});
 
-        var data = {
-            user_id: this.state.user_id,
-            first_name: this.state.first_name,
-            last_name: this.state.last_name,
-            picture: this.state.picture,
-            email: this.state.email,
-            phone: this.state.phone,
-            address: this.state.address,
-            city: this.state.city,
-            state: this.state.state,
-            country: this.state.country,
-            desc: this.state.desc,
-            role: this.state.role,
-        };
-
         var vm = this;
-        var userRef = firestore.collection("member_list").doc(this.state.id);        
+
+        let uid = firebase.auth().currentUser.uid;
+        var group = this.props.route.params.group;
+        var event = this.props.route.params.event;
+        var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
+        var event_time = Moment(this.state.date).format('YYYY-MM-DD HH:mm:ss');
+
+        var event_data = {
+            name: this.state.name,      
+            event_time: event_time,
+            host: this.state.host,
+            location: this.state.location,
+            detail: this.state.detail,
+            food: this.state.food,      
+            video_conf_link: this.state.video_conf_link,
+            phone: this.state.phone,             
+            updated_at: cur_time           
+        }
+
+        // find event for selected grouop
+        var eventRef = firestore.collection("group_list")
+            .doc(group.id)
+            .collection('event_list');
+
+          
+        if( event == null )
+        {
+            var member_list = [uid];
+            event_data.member_list = member_list;
+            event_data.created_at = cur_time;
+            
+            // create event
+            eventRef.add(event_data).then(function(docRef) {
+                console.log("Event is created with ID:", docRef.id);
+                vm.clearInputData(docRef.id);
+            }).catch(function(error) {
+                console.error("Error adding event: ", error);
+                vm.clearInputData();            
+            });
+        }
+        else
+        {
+            event_data.member_list = event.member_list;
+            event_data.created_at = event.created_at;
+            // update event
+            eventRef = eventRef.doc(event.id);
+            eventRef.set(event_data).then(function(doc) {
+                vm.clearInputData(event.id);
+            }).catch(function(error) {
+                console.log("Error setting group:", error);
+                vm.clearInputData();  
+            }); 
+        }
+
+        console.log("Event Data", JSON.stringify(event_data));
+           
+
+        this.setState({isLoading: false});
         
-        userRef.set(data).then(function(doc) {
-            const { navigation, route } = vm.props;
+    
+    }
+
+    clearInputData(doc_id)
+    {
+        if( doc_id )
+        {
+            const { navigation, route } = this.props;
             navigation.goBack();
-            route.params.onUpdated({ updated: true });
-        }).catch(function(error) {
-            console.log("Error setting group:", error);
-        }); 
+            route.params.onCreated({ created: true, doc_id: doc_id });
+        }
+        else
+        {
+            Alert.alert("Failed to create event!");
+        }
     }
 
     render() {
   
         return (
-            <ThemeContext.Provider value={getTheme(uiTheme)}>
+           
             <View style={styles.container}>                
                 <KeyboardAwareScrollView style={{width:'100%'}}>                 
                     <TextInput
@@ -205,7 +265,7 @@ export default class EventEditPage extends Component {
 
                     <View style = {{width: '100%', alignItems: 'center', marginTop: 50}}>
                     <TouchableOpacity style = {{width: '90%', height: 40, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
-                        onPress = {() => this.saveEvent()}>
+                        onPress = {() => this.onSaveEvent()}>
                         <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 16}]}>Save Event</Text>
                     </TouchableOpacity>
                 </View>
@@ -221,7 +281,7 @@ export default class EventEditPage extends Component {
                     </View>
                 }   
             </View>
-            </ThemeContext.Provider>
+           
         );
     }
 }
@@ -238,19 +298,7 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 30,
         fontWeight: 'bold'
-    },
-
-
-    paraText2: {
-        color: '#383838B2',        
-        fontSize: 17,        
-    },
-
-    paraText3: {
-        color: '#383838',        
-        marginTop: 20,
-        fontSize: 17,        
-    },
+    },    
 
     roundButton: {
         flexDirection: 'row', 
@@ -261,19 +309,4 @@ const styles = StyleSheet.create({
         borderColor: '#383838B2', 
         borderWidth: 1,        
     },
-
-    addButton: {
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        height: 32, 
-        paddingHorizontal: 8, 
-        borderRadius:20, 
-        borderColor: stylesGlobal.back_color, 
-        borderWidth: 1,        
-    },
-
-    checkBox: {
-        
-    }
-    
 });
