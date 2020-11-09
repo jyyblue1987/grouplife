@@ -122,7 +122,7 @@ export default class EventDetailPage extends Component {
                         data.status = status;
 
                         // attendant with profile
-                        docRef.collection("attendant_list").add(data).then((doc) => {
+                        attendant_ref.add(data).then((doc) => {
                             vm.attendant_id = doc.id;
                         });                            
                     });                    
@@ -132,9 +132,9 @@ export default class EventDetailPage extends Component {
         {
             // .where('user_id', '==', user.uid)
             attendant_ref.doc(this.attendant_id)
-            .update({
-                status: status
-            });
+                .update({
+                    status: status
+                });
         }
 
         this.setState({attend_index: status});           

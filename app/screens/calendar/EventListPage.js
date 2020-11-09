@@ -4,7 +4,7 @@ import {Component} from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Card } from 'react-native-material-ui';
-import { SearchBar } from 'react-native-elements';
+import { Button } from 'react-native-elements';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
@@ -60,6 +60,8 @@ export default class EventListPage extends Component {
 
     getAttendantListForEvent(event_list)
     {
+        var user = firebase.auth().currentUser;
+
         var total_count = event_list.length;
         var count = 0;
         var group = this.props.route.params.group;
@@ -71,10 +73,13 @@ export default class EventListPage extends Component {
                 .collection('attendant_list')
                 .get().then((snapshot) => {
                     var attendant_list = [];
+                    item.attendant_id = '';
                     snapshot.forEach((doc) => {
                         var data1 = doc.data();
                         data1.id = doc.id;
                         attendant_list.push(data1);                                                                
+                        if( data1.user_id == user.uid )
+                            item.attendant_id = doc.id;                        
                     });
 
                     console.log("Attendant List", JSON.stringify(attendant_list));   
@@ -104,8 +109,6 @@ export default class EventListPage extends Component {
         this.getEventList();        
     }
 
- 
-
     onCreated = data => {
         console.log("Back to Eventlist", JSON.stringify(data));
         if( data.created == true )
@@ -124,10 +127,49 @@ export default class EventListPage extends Component {
         this.props.navigation.navigate('EventDetail', { onCreated: this.onCreated, group: group, event: event, title: event.name });
     }
 
+    onJoinEvent = (event) => {
+        var vm = this;
+        var user = firebase.auth().currentUser;
+        var group = this.props.route.params.group;          
+        var attendant_ref = firestore.collection("group_list")
+            .doc(group.id)
+            .collection("event_list")
+            .doc(event.id)
+            .collection("attendant_list");
+
+        if( event.attendant_id == '' )
+        {
+            firestore.collection("member_list")
+                .where("user_id", "==", user.uid)
+                .get().then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        var data = doc.data();
+                        data.status = 0;
+
+                        // attendant with profile
+                        attendant_ref.add(data)
+                            .then((doc) => {
+                                vm.renderRefreshControl();
+                            });                    
+                    });
+                });
+        }
+        else
+        {
+            // .where('user_id', '==', user.uid)
+            attendant_ref.doc(event.attendant_id)
+                .update({
+                    status: 0
+                }).then((doc) => {
+                    vm.renderRefreshControl();
+                });  
+        }
+    }
+
     renderRow(item) {        
 		return (			
             <Card style={{container:{borderRadius: 6}}}>
-                <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={() => this.onGoDetailPage(item)}>
+                <TouchableOpacity style={{flexDirection: 'row'}} onPress={() => this.onGoDetailPage(item)}>
                     <View style={{justifyContent: "center", alignItems:"center", width: 80, backgroundColor: stylesGlobal.back_color}}>
                         <Text style={{fontSize:38, color: 'white', fontWeight: 'bold'}}>
                             {Moment(item.event_time).format('d')}
@@ -137,10 +179,18 @@ export default class EventListPage extends Component {
                             {Moment(item.event_time).format('MMM')}
                         </Text>
                     </View>
-                    <View style={{width:'100%', marginLeft: 7, paddingVertical: 9}}>
-                        <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-                            {item.name}
-                        </Text>
+                    <View style={{flex:1, marginLeft: 7, paddingVertical: 9}}>
+                        <View style={{flexDirection: 'row', width: '100%', alignItems: 'center'}}>
+                            <Text style={{flex:1,fontSize: 20, fontWeight: 'bold'}}>
+                                {item.name}
+                            </Text>
+                            {
+                                <TouchableOpacity style = {{width: 60, height: 20, marginRight: 5, borderRadius: 3, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
+                                        onPress = {() => this.onJoinEvent(item)}>
+                                    <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 12}]}>RSVP</Text>
+                                </TouchableOpacity>
+                            }
+                        </View>
 
                         <Text style={{fontSize: 17, color:'gray'}}>
                             {item.location}

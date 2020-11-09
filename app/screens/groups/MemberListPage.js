@@ -56,7 +56,7 @@ export default class MemberListPage extends Component {
     renderRow(item) {
 		return (			
             <Card style={{container:{borderRadius: 15}}}>
-                <TouchableOpacity style={{flex:1, flexDirection: 'row', padding: 5}} onPress={() => this.props.navigation.navigate('MemberProfile', {user: item})}>
+                <TouchableOpacity style={{flexDirection: 'row', padding: 5}} onPress={() => this.props.navigation.navigate('MemberProfile', {user: item})}>
                     <View style={{justifyContent: "center"}}>
                         <FastImage style = {{width: 60, height: 60, borderRadius: 30, borderColor: stylesGlobal.back_color, borderWidth: 2}} 
                         source = {{uri: item.picture}}
