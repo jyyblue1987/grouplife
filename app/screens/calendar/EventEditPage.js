@@ -27,8 +27,6 @@ export default class EventEditPage extends Component {
                 isLoading: false,                        
                 name: '',      
                 date: new Date(),
-                date_str: '',
-                time_str: '',
                 host: '',
                 location: '',
                 detail: '',
@@ -45,8 +43,6 @@ export default class EventEditPage extends Component {
                 isLoading: false,                        
                 name: event.name,      
                 date: new Date(Moment(event.event_time)),
-                date_str: Moment(event.event_time).format('d MMM Y'),
-                time_str: Moment(event.event_time).format('HH:mm'),
                 host: event.host,
                 location: event.location,
                 detail: event.detail,
@@ -79,12 +75,17 @@ export default class EventEditPage extends Component {
 
     onChangeEventDate(selectedDate) 
     {
-        this.setState({date: currentDate, datepicker_show: false});
-        
+        console.log("selectedDate", selectedDate);
         const currentDate = selectedDate || this.state.date;
+
+        this.setState({date: currentDate, datepicker_show: false});
+
+        console.log("currentDate", currentDate);
+        console.log("setDate", this.state.date);
+
         if( this.state.picker_mode == 'date' )
         {
-            var date_str = Moment(currentDate).format('d MMM Y');
+            var date_str = Moment(currentDate).format('D MMM Y');            
             this.setState({date_str: date_str});
         }
         if( this.state.picker_mode == 'time' )
@@ -92,6 +93,9 @@ export default class EventEditPage extends Component {
             var time_str = Moment(currentDate).format('HH:mm');
             this.setState({time_str: time_str});
         }
+
+        var event_time = Moment(this.state.date).format('YYYY-MM-DD HH:mm:ss');
+        console.log("Event Time", event_time);
     }
 
     onCancelEventDate() {
@@ -168,8 +172,6 @@ export default class EventEditPage extends Component {
         }
 
         console.log("Event Data", JSON.stringify(event_data));
-           
-        this.setState({isLoading: false});
     }
 
     clearInputData(doc_id)
@@ -180,8 +182,7 @@ export default class EventEditPage extends Component {
         if( doc_id )
         {
             const { navigation, route } = this.props;
-            navigation.goBack();
-            route.params.onCreated({ created: true, doc_id: doc_id });
+            navigation.goBack();            
         }
         else
         {
@@ -215,7 +216,7 @@ export default class EventEditPage extends Component {
                         onPress = {() => this.showDatePicker()}
                         >
                             <FontAwesome5 name="calendar-alt"  size={22} color={stylesGlobal.back_color} />
-                            <Text style={{flex:1, color: '#383838B2', fontSize: 18, marginLeft: 20}}>{this.state.date_str}</Text>                            
+                            <Text style={{flex:1, color: '#383838B2', fontSize: 18, marginLeft: 20}}>{Moment(this.state.date).format('D MMM Y')}</Text>                            
                         </TouchableOpacity>                        
                     </View>
 
@@ -224,13 +225,14 @@ export default class EventEditPage extends Component {
                         onPress = {() => this.showTimePicker()}
                         >
                             <FontAwesome5 name="clock"  size={22} color={stylesGlobal.back_color} />
-                            <Text style={{flex:1, color: '#383838B2', fontSize: 18, marginLeft: 20}}>{this.state.time_str}</Text>                            
+                            <Text style={{flex:1, color: '#383838B2', fontSize: 18, marginLeft: 20}}>{Moment(this.state.date).format('HH:mm')}</Text>                            
                         </TouchableOpacity>                        
                     </View>
 
                     <DateTimePickerModal
                         isVisible={this.state.datepicker_show}
                         mode={this.state.picker_mode}
+                        date={this.state.date}
                         onConfirm = {(date) => this.onChangeEventDate(date)}
                         onCancel = {() =>this.onCancelEventDate()}
                     />

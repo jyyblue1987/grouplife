@@ -23,6 +23,11 @@ export default class EventListPage extends Component {
     }
 
     componentDidMount() {
+        this.initListener = this.props.navigation.addListener('focus', this.initData.bind(this));        
+    }
+
+    initData = async() => {
+        console.log('EventListPage initData');
         this.renderRefreshControl();
     }
 
@@ -42,6 +47,7 @@ export default class EventListPage extends Component {
         firestore.collection("group_list")
             .doc(group.id)
             .collection('event_list')
+            .orderBy('created_at', 'asc')
             .get().then((querySnapshot) => {
                 var event_list = [];
                 
@@ -109,22 +115,15 @@ export default class EventListPage extends Component {
         this.getEventList();        
     }
 
-    onCreated = data => {
-        console.log("Back to Eventlist", JSON.stringify(data));
-        if( data.created == true )
-        {
-            this.renderRefreshControl();    
-        }
-    }
 
     onGoCreate = () => {        
         var group = this.props.route.params.group;
-        this.props.navigation.navigate('EventEdit', { onCreated: this.onCreated, group: group, event: null, title: 'Create Calendar Event' });
+        this.props.navigation.navigate('EventEdit', { group: group, event: null, title: 'Create Calendar Event' });
     } 
 
     onGoDetailPage = (event) => {        
         var group = this.props.route.params.group;
-        this.props.navigation.navigate('EventDetail', { onCreated: this.onCreated, group: group, event: event, title: event.name });
+        this.props.navigation.navigate('EventDetail', { group: group, event: event, title: event.name });
     }
 
     onJoinEvent = (event) => {
@@ -172,7 +171,7 @@ export default class EventListPage extends Component {
                 <TouchableOpacity style={{flexDirection: 'row'}} onPress={() => this.onGoDetailPage(item)}>
                     <View style={{justifyContent: "center", alignItems:"center", width: 80, backgroundColor: stylesGlobal.back_color}}>
                         <Text style={{fontSize:38, color: 'white', fontWeight: 'bold'}}>
-                            {Moment(item.event_time).format('d')}
+                            {Moment(item.event_time).format('D')}
                         </Text>
 
                         <Text style={{fontSize:20, color: 'white'}}>
@@ -200,7 +199,7 @@ export default class EventListPage extends Component {
                             <View style={{width:(40 + 20 * (item.attendant_list.length - 1))}}>
                                 {
                                     item.attendant_list.map((row, index) => (
-                                        <FastImage style = {[styles.member_icon, {left: 20 * index}]} source = {{uri: row.picture}}/>
+                                        <FastImage key={row.id} style = {[styles.member_icon, {left: 20 * index}]} source = {{uri: row.picture}}/>
                                     ))
                                 }                                
                             </View>

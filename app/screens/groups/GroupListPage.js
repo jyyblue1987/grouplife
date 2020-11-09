@@ -114,7 +114,7 @@ export default function GroupListPage(props) {
     }
 
     const onCancelSearch = () => {
-
+        console.log("onCancelSearch");
         setIsSearchVisible(false)
         setSearch('')
         setGroup_list([])

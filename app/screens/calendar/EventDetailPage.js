@@ -41,10 +41,6 @@ export default class EventDetailPage extends Component {
         this.getEventData();                
     }
 
-    onCreated = data => {
-
-    }
-
     getEventData() {
         this.setState({            
             isLoading: true,
@@ -102,8 +98,10 @@ export default class EventDetailPage extends Component {
     }
 
     onUpdateAttend = status => {        
+        var user = firebase.auth().currentUser;
         var group = this.props.route.params.group;
         var event = this.props.route.params.event;
+        var vm = this;
         console.log("Attendant ID = ", this.attendant_id);
 
         var attendant_ref = firestore.collection("group_list")
@@ -124,7 +122,9 @@ export default class EventDetailPage extends Component {
                         // attendant with profile
                         attendant_ref.add(data).then((doc) => {
                             vm.attendant_id = doc.id;
-                        });                            
+                        }).then((doc) => {
+                            vm.getEventData();
+                        }); 
                     });                    
                 });
         }
@@ -134,6 +134,8 @@ export default class EventDetailPage extends Component {
             attendant_ref.doc(this.attendant_id)
                 .update({
                     status: status
+                }).then((doc) => {
+                    this.getEventData();
                 });
         }
 
@@ -180,7 +182,7 @@ export default class EventDetailPage extends Component {
                         <FontAwesome name="calendar" size={30} color={stylesGlobal.back_color} />
                         <View style={{flex:1}}>
                             <Text style={{fontSize: 20, marginLeft: 10}}>
-                                {Moment(this.state.event.event_time).format('dddd, MMM d')}th, {Moment(this.state.event.event_time).format('HH:mm')}
+                                {Moment(this.state.event.event_time).format('dddd, MMM D')}th, {Moment(this.state.event.event_time).format('HH:mm')}
                             </Text>
                         </View>
                     </View>  
@@ -265,7 +267,7 @@ export default class EventDetailPage extends Component {
                         <View style={{marginLeft:20}}>
                             {
                                 this.state.attendant_list.map((item) => (
-                                    <Text style={{fontSize: 20}}>
+                                    <Text key={item.id} style={{fontSize: 20}}>
                                         {item.first_name} {item.last_name} {"<"}{item.status == 0 ? 'Yes': ''}{item.status == 1 ? 'Maybe': ''}{item.status == 2 ? 'No': ''}{">"} 
                                     </Text>
                                 ))
