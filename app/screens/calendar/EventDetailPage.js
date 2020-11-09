@@ -23,7 +23,7 @@ export default class EventDetailPage extends Component {
             event: this.props.route.params.event,
             edit_flag: event.created_by == user.uid,
             attendant_list: [],
-            attend_index: 0
+            attend_index: 2
         }
 
         this.attendant_id = '';
@@ -106,16 +106,36 @@ export default class EventDetailPage extends Component {
         var event = this.props.route.params.event;
         console.log("Attendant ID = ", this.attendant_id);
 
-        firestore.collection("group_list")
+        var attendant_ref = firestore.collection("group_list")
             .doc(group.id)
             .collection("event_list")
             .doc(event.id)
-            .collection("attendant_list")
+            .collection("attendant_list");
+
+        if( this.attendant_id == '' )
+        {
+            firestore.collection("member_list")
+                .where("user_id", "==", user.uid)
+                .get().then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        var data = doc.data();
+                        data.status = status;
+
+                        // attendant with profile
+                        docRef.collection("attendant_list").add(data).then((doc) => {
+                            vm.attendant_id = doc.id;
+                        });                            
+                    });                    
+                });
+        }
+        else
+        {
             // .where('user_id', '==', user.uid)
-            .doc(this.attendant_id)
+            attendant_ref.doc(this.attendant_id)
             .update({
                 status: status
             });
+        }
 
         this.setState({attend_index: status});           
     }
