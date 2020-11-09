@@ -66,9 +66,17 @@ export default class EventListPage extends Component {
 
     getAttendantListForEvent(event_list)
     {
-        var user = firebase.auth().currentUser;
-
         var total_count = event_list.length;
+
+        if( total_count < 1 )
+        {
+            this.setState({
+                event_list: [],
+                isLoading: false
+            });
+        }
+
+        var user = firebase.auth().currentUser;
         var count = 0;
         var group = this.props.route.params.group;
         event_list.forEach((item) => {              
@@ -103,11 +111,7 @@ export default class EventListPage extends Component {
                 });         
         });
 
-        // this.setState({
-        //     event_list: event_list,
-        //     isLoading: false
-        // });
-        
+                
     }
 
     renderRefreshControl() {
