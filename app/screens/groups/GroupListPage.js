@@ -20,10 +20,10 @@ export default function GroupListPage(props) {
     const [search, setSearch] = useState("")
   
     useEffect(() => {
-        if(!initialize)
-            renderRefreshControl();
+        // if(!initialize)
+        renderRefreshControl();
         setInitialize(true)
-    }, [])
+    }, [search, isSearchVisible])
 
     const getMyGroupList = () => {
         var user = firebase.auth().currentUser;
@@ -115,11 +115,11 @@ export default function GroupListPage(props) {
 
     const onCancelSearch = () => {
         console.log("onCancelSearch");
-        setIsSearchVisible(false)
-        setSearch('')
-        setGroup_list([])
+        setIsSearchVisible(false);
+        setSearch('');
+        setGroup_list([]);
 
-        renderRefreshControl();
+        // renderRefreshControl();
     }
 
     const onClearSearch = () => {

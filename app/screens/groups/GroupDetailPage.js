@@ -42,6 +42,8 @@ export default function GroupDetailPage(props) {
             .doc(group?.threadId)
             .onSnapshot(documentSnapshot  => {
                 const data = documentSnapshot.data()
+
+                console.log('setUnreadMessage');
                 
                 let myUnreadMsgCountData = data?.unread_msg_count_list.find( item => item._id == uid)
                 setUnreadMessage(myUnreadMsgCountData?.count == undefined ? 0: myUnreadMsgCountData?.count)
