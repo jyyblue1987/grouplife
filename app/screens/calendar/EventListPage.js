@@ -188,9 +188,9 @@ export default class EventListPage extends Component {
                                 {item.name}
                             </Text>
                             {
-                                <TouchableOpacity style = {{width: 60, height: 20, marginRight: 5, borderRadius: 3, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
+                                <TouchableOpacity style = {{width: 80, height: 20, marginRight: 5, borderRadius: 3, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
                                         onPress = {() => this.onJoinEvent(item)}>
-                                    <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 12}]}>RSVP</Text>
+                                    <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 12}]}>Attending</Text>
                                 </TouchableOpacity>
                             }
                         </View>
@@ -198,6 +198,8 @@ export default class EventListPage extends Component {
                         <Text style={{fontSize: 17, color:'gray'}}>
                             {item.location}
                         </Text>
+                        
+                        <View style = {{width: '100%', borderWidth:0.5, borderColor:'lightgray', marginTop: 15}} />
 
                         <View style={{width: '100%', height: 30, marginTop: 10, flexDirection:'row'}}>
                             <View style={{width:(40 + 20 * (item.attendant_list.length - 1))}}>
