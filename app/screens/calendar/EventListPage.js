@@ -5,6 +5,7 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator }
 import FastImage from 'react-native-fast-image';
 import { Card } from 'react-native-material-ui';
 import { Button } from 'react-native-elements';
+import ActionSheet from 'react-native-actionsheet';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
@@ -130,7 +131,14 @@ export default class EventListPage extends Component {
         this.props.navigation.navigate('EventDetail', { group: group, event: event, title: event.name });
     }
 
-    onJoinEvent = (event) => {
+    onJoinEvent = (index) => {
+        var event = this.selected_item;
+        if( !event )
+            return;
+
+        if( index >= 3 )
+            return;
+
         var vm = this;
         var user = firebase.auth().currentUser;
         var group = this.props.route.params.group;          
@@ -147,7 +155,7 @@ export default class EventListPage extends Component {
                 .get().then((querySnapshot) => {
                     querySnapshot.forEach((doc) => {
                         var data = doc.data();
-                        data.status = 0;
+                        data.status = index;
 
                         // attendant with profile
                         attendant_ref.add(data)
@@ -162,11 +170,16 @@ export default class EventListPage extends Component {
             // .where('user_id', '==', user.uid)
             attendant_ref.doc(event.attendant_id)
                 .update({
-                    status: 0
+                    status: index
                 }).then((doc) => {
                     vm.renderRefreshControl();
                 });  
         }
+    }
+
+    showActionSheet = (item) => {
+        this.selected_item = item
+        this.ActionSheet.show()
     }
 
     renderRow(item) {        
@@ -189,7 +202,7 @@ export default class EventListPage extends Component {
                             </Text>
                             {
                                 <TouchableOpacity style = {{width: 80, height: 20, marginRight: 5, borderRadius: 3, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
-                                        onPress = {() => this.onJoinEvent(item)}>
+                                        onPress = {() => this.showActionSheet(item)}>
                                     <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 12}]}>Attending</Text>
                                 </TouchableOpacity>
                             }
@@ -233,6 +246,15 @@ export default class EventListPage extends Component {
                     onRefresh={() => this.renderRefreshControl()}
                     refreshing={this.state.isLoading}
                     initialNumToRender={8}
+                />
+
+            <ActionSheet
+                ref={o => this.ActionSheet = o}
+                title={'Do you want to attend this event?'}
+                options={['Yes', 'Maybe', 'No', 'cancel']}
+                cancelButtonIndex={3}
+                destructiveButtonIndex={2}
+                onPress={(index) => this.onJoinEvent(index)}
                 />
            
                 <TouchableOpacity
