@@ -19,6 +19,7 @@ export default class EventListPage extends Component {
 
         this.state = {
             isLoading: false,
+            isPastEvent: true,
             event_list: [],          
         }
     }
@@ -41,6 +42,7 @@ export default class EventListPage extends Component {
         }
 
         var group = this.props.route.params.group;
+        var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
 
         var user_id = user.uid;
         console.log("User ID = ", user_id);
@@ -48,7 +50,8 @@ export default class EventListPage extends Component {
         firestore.collection("group_list")
             .doc(group.id)
             .collection('event_list')
-            .orderBy('created_at', 'asc')
+            .orderBy('event_time', 'asc')
+            .where('event_time', '>=', cur_time)
             .get().then((querySnapshot) => {
                 var event_list = [];
                 
@@ -62,7 +65,7 @@ export default class EventListPage extends Component {
                 console.log("Event List", JSON.stringify(event_list));    
 
                 this.getAttendantListForEvent(event_list);                
-            });        
+            });   
     }
 
     getAttendantListForEvent(event_list)
@@ -71,8 +74,7 @@ export default class EventListPage extends Component {
 
         if( total_count < 1 )
         {
-            this.setState({
-                event_list: [],
+            this.setState({                
                 isLoading: false
             });
         }
@@ -105,19 +107,54 @@ export default class EventListPage extends Component {
                     {
                         console.log("Detail Event List", JSON.stringify(event_list)); 
                         this.setState({
-                            event_list: event_list,
+                            event_list: event_list.concat(this.state.event_list),
                             isLoading: false
                         });
                     }
                 });         
-        });
-
-                
+        });     
     }
 
     renderRefreshControl() {
-        this.setState({ isLoading: true });
+        this.setState({ isLoading: true, event_list: [] });
+        this.last_time = Moment().format('YYYY-MM-DD HH:mm:ss');
+
         this.getEventList();        
+    }
+
+    onLoadPastEvent = () => {
+        var group = this.props.route.params.group;
+        
+        firestore.collection("group_list")
+            .doc(group.id)
+            .collection('event_list')
+            .orderBy('event_time', 'asc')
+            .where('event_time', '<', this.last_time)
+            .limit(20)
+            .get().then((querySnapshot) => {
+                var event_list = [];
+                
+                querySnapshot.forEach((doc) => {                                
+                    var data = doc.data();
+                    data.id = doc.id;
+                    
+                    event_list.push(data);                    
+                });
+
+                if( event_list.length > 0 )
+                {
+                    this.last_time = event_list[0].event_time;
+                    this.setState({isPastEvent:true});
+                }
+                else
+                {
+                    this.setState({isPastEvent:false});
+                }
+
+                console.log("Past Event List", JSON.stringify(event_list));    
+
+                this.getAttendantListForEvent(event_list);                
+            });
     }
 
 
@@ -182,7 +219,8 @@ export default class EventListPage extends Component {
         this.ActionSheet.show()
     }
 
-    renderRow(item) {        
+    renderRow(item) {   
+        var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');     
 		return (			
             <Card style={{container:{borderRadius: 6}}}>
                 <TouchableOpacity style={{flexDirection: 'row'}} onPress={() => this.onGoDetailPage(item)}>
@@ -201,6 +239,7 @@ export default class EventListPage extends Component {
                                 {item.name}
                             </Text>
                             {
+                                item.event_time >= cur_time &&
                                 <TouchableOpacity style = {{width: 80, height: 20, marginRight: 5, borderRadius: 3, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
                                         onPress = {() => this.showActionSheet(item)}>
                                     <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 12}]}>Attending</Text>
@@ -239,6 +278,12 @@ export default class EventListPage extends Component {
   
         return (
             <View style={styles.container}>          
+                {
+                    this.state.isPastEvent &&
+                    <TouchableOpacity style={{alignItems:'center'}} onPress={() => this.onLoadPastEvent()}>
+                        <Text style={{color:stylesGlobal.back_color, textDecorationLine: 'underline'}}>View Past Events</Text>
+                    </TouchableOpacity>
+                }
                 <FlatList
                     data={this.state.event_list}
                     renderItem={({item}) => this.renderRow(item)}
@@ -248,14 +293,14 @@ export default class EventListPage extends Component {
                     initialNumToRender={8}
                 />
 
-            <ActionSheet
-                ref={o => this.ActionSheet = o}
-                title={'Do you want to attend this event?'}
-                options={['Yes', 'Maybe', 'No', 'cancel']}
-                cancelButtonIndex={3}
-                destructiveButtonIndex={2}
-                onPress={(index) => this.onJoinEvent(index)}
-                />
+                <ActionSheet
+                    ref={o => this.ActionSheet = o}
+                    title={'Do you want to attend this event?'}
+                    options={['Yes', 'Maybe', 'No', 'cancel']}
+                    cancelButtonIndex={3}
+                    destructiveButtonIndex={2}
+                    onPress={(index) => this.onJoinEvent(index)}
+                    />
            
                 <TouchableOpacity
                     style={{
@@ -285,7 +330,7 @@ const styles = StyleSheet.create({
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        paddingVertical: 35,
+        paddingVertical: 20,
         paddingHorizontal: 10,
     }, 
     
