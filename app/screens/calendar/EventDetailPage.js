@@ -101,6 +101,10 @@ export default class EventDetailPage extends Component {
         var user = firebase.auth().currentUser;
         var group = this.props.route.params.group;
         var event = this.props.route.params.event;
+        var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
+        if( event.event_time < cur_time )
+            return;
+
         var vm = this;
         console.log("Attendant ID = ", this.attendant_id);
 

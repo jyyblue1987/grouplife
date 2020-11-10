@@ -123,6 +123,7 @@ export default class EventListPage extends Component {
     }
 
     onLoadPastEvent = () => {
+        this.setState({isLoading: true});
         var group = this.props.route.params.group;
         
         firestore.collection("group_list")
