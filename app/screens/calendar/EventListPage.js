@@ -188,18 +188,31 @@ export default class EventListPage extends Component {
 
         if( event.attendant_id == '' )
         {
+            console.log('Add new attendant');
             firestore.collection("member_list")
                 .where("user_id", "==", user.uid)
                 .get().then((querySnapshot) => {
                     querySnapshot.forEach((doc) => {
                         var data = doc.data();
                         data.status = index;
+                        data.id = doc.id;
 
                         // attendant with profile
                         attendant_ref.add(data)
-                            .then((doc) => {
-                                vm.renderRefreshControl();
-                            });                    
+                            .then((doc1) => {                                
+                                event_list = [... this.state.event_list];
+                                event_list.forEach((item) => {
+                                    if( event.id == item.id)
+                                    {
+                                        console.log("Event", JSON.stringify(item));                                                                                
+                                        item.attendant_list.push(data);
+                                        item.attendant_id = doc1.id;
+                                    }
+                                });
+
+                                this.setState({event_list: event_list});
+                            });                   
+
                     });
                 });
         }
@@ -210,7 +223,7 @@ export default class EventListPage extends Component {
                 .update({
                     status: index
                 }).then((doc) => {
-                    vm.renderRefreshControl();
+                    // vm.renderRefreshControl();
                 });  
         }
     }
