@@ -91,13 +91,20 @@ export default class EventListPage extends Component {
                 .get().then((snapshot) => {
                     var attendant_list = [];
                     item.attendant_id = '';
+                    item.attendant_label = 'Attending';
                     snapshot.forEach((doc) => {
                         var data1 = doc.data();
                         data1.id = doc.id;
                         attendant_list.push(data1);                                                                
                         if( data1.user_id == user.uid )
-                            item.attendant_id = doc.id;                        
+                        {
+                            item.attendant_id = doc.id;                  
+                            if( data1.status == 0 )
+                                item.attendant_label = 'Attending: Yes';                            
+                        }
                     });
+
+                    
 
                     console.log("Attendant List", JSON.stringify(attendant_list));   
 
@@ -207,6 +214,10 @@ export default class EventListPage extends Component {
                                         console.log("Event", JSON.stringify(item));                                                                                
                                         item.attendant_list.push(data);
                                         item.attendant_id = doc1.id;
+                                        if( status == 0 )
+                                            item.attendant_label = 'Attending: Yes';
+                                        else
+                                            item.attendant_label = 'Attending';
                                     }
                                 });
 
@@ -225,6 +236,19 @@ export default class EventListPage extends Component {
                 }).then((doc) => {
                     // vm.renderRefreshControl();
                 });  
+
+            event_list = [... this.state.event_list];
+            event_list.forEach((item) => {
+                if( event.id == item.id)
+                {                   
+                    if( index == 0 )
+                        item.attendant_label = 'Attending: Yes';
+                    else
+                        item.attendant_label = 'Attending';
+                }
+            });
+
+            this.setState({event_list: event_list});
         }
     }
 
@@ -254,9 +278,9 @@ export default class EventListPage extends Component {
                             </Text>
                             {
                                 item.event_time >= cur_time &&
-                                <TouchableOpacity style = {{width: 80, height: 20, marginRight: 5, borderRadius: 3, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
+                                <TouchableOpacity style = {{width: 100, height: 20, marginRight: 5, borderRadius: 3, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
                                         onPress = {() => this.showActionSheet(item)}>
-                                    <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 12}]}>Attending</Text>
+                                    <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 12}]}>{item.attendant_label}</Text>
                                 </TouchableOpacity>
                             }
                         </View>
