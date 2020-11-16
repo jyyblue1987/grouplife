@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Card } from 'react-native-material-ui';
 import { stylesGlobal } from '../../styles/stylesGlobal';
@@ -60,6 +60,53 @@ export default class MemberListPage extends Component {
         this.getMemberList()
     }
 
+    onRemoveMember = (item) => {
+        Alert.alert(
+            'Delete Member',
+            'Are you sure to delelet "' + item.first_name + '"?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel'
+                },
+                { text: 'Yes', onPress: () => this.removeMember(item) }
+                ],
+                { cancelable: false }
+            );
+    }
+
+    removeMember(item) {
+        this.setState({            
+            isLoading: true
+        });
+        
+        var group = this.props.route.params.group;
+        var member_list = this.state.member_list.filter(row => {
+            return item.user_id != row.user_id;
+        });
+
+        member_list = [... member_list];
+        
+        var user_ids = member_list.map(row => {
+            return row.user_id;
+        });
+
+        console.log("User IDs", JSON.stringify(user_ids));
+
+        firestore.collection("group_list")
+            .doc(group.id)
+            .update({member_list: user_ids})
+            .then(function() {
+                this.setState({
+                        isLoading: false,
+                        member_list: member_list
+                    });
+            }).catch(function(error) {
+                Alert.alert("Failed to delete member", JSON.stringify(error));
+            });
+    }
+
     renderRow(item) {
 		return (			
             <Card style={{container:{borderRadius: 15}}}>
@@ -69,10 +116,21 @@ export default class MemberListPage extends Component {
                         source = {{uri: item.picture}}
                         />
                     </View>
-                    <View style={{width:'100%', marginLeft: 7, paddingVertical: 9}}>
-                        <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-                            {item.first_name}
-                        </Text>
+                    <View style={{flex:1, marginLeft: 7, paddingVertical: 9}}>
+                        <View style={{flexDirection:'row', width:'100%', alignItems:'center'}}>
+                            <Text style={{flex:1, fontSize: 20, fontWeight: 'bold'}}>
+                                {item.first_name}
+                            </Text>
+                            {
+                                this.state.edit_flag &&
+                    
+                                <TouchableOpacity style={styles.iconButton}
+                                        onPress={() => this.onRemoveMember(item)}
+                                        >
+                                    <FontAwesome5 name="trash" size={17} color={stylesGlobal.back_color} />
+                                </TouchableOpacity>
+                            }
+                        </View>    
 
                         <Text style={{fontSize: 17}}>
                             {item.role}
@@ -133,6 +191,14 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 30,
         fontWeight: 'bold'
+    },
+
+    iconButton: {
+        width: 30,
+        height: 30,        
+        borderRadius: 10,
+        justifyContent: "center",
+        alignItems: 'center'
     }
     
 });
