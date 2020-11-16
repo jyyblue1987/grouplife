@@ -26,6 +26,7 @@ import MyProfileEditPage from  './app/screens/profile/MyProfileEditPage';
 import EventListPage from './app/screens/calendar/EventListPage';
 import EventEditPage from './app/screens/calendar/EventEditPage';
 import EventDetailPage from './app/screens/calendar/EventDetailPage';
+import MemberCreatePage from './app/screens/profile/MemberCreatePage';
 
 const Stack = createStackNavigator();
 
@@ -108,6 +109,12 @@ export default class App extends Component {
 							headerBackTitle: 'Back' 
 						})} 					
 					/> 
+
+					<Stack.Screen name="MemberCreate" component={MemberCreatePage} 
+						options={{
+							title: 'Member Create',
+						}} 
+					/>
 
 
                 </Stack.Navigator>

@@ -119,6 +119,15 @@ export default class MemberListPage extends Component {
         route.params.onUpdated({ data:  data});
     }
 
+    onCreated = (data) => {
+        this.getMemberList();
+    }
+
+    onCreateMember = () => {
+        var group = this.props.route.params.group;
+        this.props.navigation.navigate('MemberCreate', {group: group, onCreated: this.onCreated});
+    }
+
     renderRow(item) {
 		return (			
             <Card style={{container:{borderRadius: 15}}}>
@@ -181,7 +190,7 @@ export default class MemberListPage extends Component {
                             backgroundColor:stylesGlobal.back_color,
                             borderRadius:100,
                             }}                        
-                            onPress={() => onGoEdit()}
+                            onPress={() => this.onCreateMember()}
                         >
                         <FontAwesome5 name="plus"  size={30} color="#fff" />
                     </TouchableOpacity>
