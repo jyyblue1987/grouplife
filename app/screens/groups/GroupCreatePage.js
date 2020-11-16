@@ -46,25 +46,59 @@ export default class GroupCreatePage extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            isLoading: false,                        
-            group_name: '',      
-            group_desc: '',                 
-            group_type: '',
-            image_uri: '',
-            group_image: '',
-            day_flag: [false, false, false, false, false, false, false],
-            timepicker_show: false,
-            date: new Date(),
-            meeting_time: 'Meeting Time',
-            occurence: '2',
-            location: '',
-            leader_name: '',
-            leader_phone: '',
-            leader_email: '',      
-            created_by: '',     
-            isUploading: false, 
-            upload_progress: 0, 
+        var group = this.props.route.params.group;
+
+        if( group == null )
+        {
+            props.navigation.setOptions({title: 'Create Group'});
+            this.state = {
+                title: 'Create Group',
+                edit_label: 'Create', 
+                isLoading: false,                        
+                group_name: '',      
+                group_desc: '',                 
+                group_type: '',
+                image_uri: '',
+                group_image: '',
+                day_flag: [false, false, false, false, false, false, false],
+                timepicker_show: false,
+                date: new Date(),
+                meeting_time: 'Meeting Time',
+                occurence: '2',
+                location: '',
+                leader_name: '',
+                leader_phone: '',
+                leader_email: '',      
+                created_by: '',     
+                isUploading: false, 
+                upload_progress: 0, 
+            }
+        }
+        else
+        {
+            props.navigation.setOptions({title: 'Edit Group'});
+            this.state = {
+                title: 'Edit Group',
+                edit_label: 'Save',
+                isLoading: false,                        
+                group_name: group.group_name,      
+                group_desc: group.group_desc,                 
+                group_type: group.group_type,
+                image_uri: '',
+                group_image: group.group_image,
+                day_flag: group.day_flag,
+                timepicker_show: false,
+                date: new Date(),
+                meeting_time: group.meeting_time,
+                occurence: group.occurence,
+                location: group.location,
+                leader_name: group.leader_name,
+                leader_phone: group.leader_phone,
+                leader_email: group.leader_email,      
+                created_by: group.created_by,     
+                isUploading: false, 
+                upload_progress: 0, 
+            }
         }
     }
 
@@ -242,7 +276,11 @@ export default class GroupCreatePage extends Component {
     }
 
     onPressCreateGroup () {
-        this.createChatRoom()
+        var group = this.props.route.params.group;
+        if( group == null )        
+            this.createChatRoom();
+        else
+            this.updateGroupData();        
     }
 
     createChatRoom () {
@@ -323,6 +361,39 @@ export default class GroupCreatePage extends Component {
         console.log("Make Data End");
     }
 
+    updateGroupData() {
+        this.setState({isLoading: true});
+
+        var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
+
+        var data = {
+            group_name: this.state.group_name,
+            group_desc: this.state.group_desc,
+            group_type: this.state.group_type,
+            group_image: this.state.group_image,
+            day_flag: this.state.day_flag,
+            meeting_time: this.state.meeting_time,
+            occurence: this.state.occurence,
+            location: this.state.location,
+            leader_name: this.state.leader_name,
+            leader_phone: this.state.leader_phone,
+            leader_email: this.state.leader_email,
+            updated_at: cur_time,            
+        };
+
+        console.log(JSON.stringify(data));
+
+        var vm = this;
+        var group = this.props.route.params.group;
+        firestore.collection("group_list").doc(group.id).update(data).then(function() {
+            console.log("Group is updated");
+            vm.goBackPage();            
+        }).catch(function(error) {
+            console.error("Error update group: ", error);
+            vm.clearInputData();            
+        });
+    }
+
     clearInputData(doc_id)
     {
         if( doc_id )
@@ -337,6 +408,12 @@ export default class GroupCreatePage extends Component {
         }
     }
 
+    goBackPage()
+    {
+        const { navigation, route } = this.props;
+        navigation.goBack();
+    }
+
     render() {
   
         return (
@@ -347,9 +424,9 @@ export default class GroupCreatePage extends Component {
                         <Text
                             style={[styles.header, {flex: 1}]}
                             >
-                            Create Group
+                            {this.state.title}                            
                         </Text>                            
-                        <Button title="CREATE" type="clear" titleStyle={{color:stylesGlobal.back_color}} onPress = {() => this.onPressCreateGroup()} />
+                        <Button title={this.state.edit_label} type="clear" titleStyle={{color:stylesGlobal.back_color}} onPress = {() => this.onPressCreateGroup()} />
                     </View>
 
                     <TextInput

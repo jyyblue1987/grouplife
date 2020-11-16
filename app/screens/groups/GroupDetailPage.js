@@ -97,8 +97,8 @@ export default function GroupDetailPage(props) {
         console.log("onCreated");
     }
 
-    const onGoEdit = () => {
-        props.navigation.navigate('GroupCreate', { onCreated: onCreated });
+    const onGoEdit = () => {        
+        props.navigation.navigate('GroupCreate', {group: group});
     }
 
     return (

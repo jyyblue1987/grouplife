@@ -59,9 +59,6 @@ export default class App extends Component {
 						}} 
 					/>            
 					<Stack.Screen name="GroupCreate" component={GroupCreatePage} 
-						options={{
-							title: 'Create Group',							
-						}} 
 					/>     
 					<Stack.Screen name="GroupDetail" component={GroupDetailPage} 
 						options={{
