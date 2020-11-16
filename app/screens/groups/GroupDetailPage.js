@@ -62,7 +62,7 @@ export default function GroupDetailPage(props) {
     const init_data = () => {
         console.log("Group Detail Init Data", JSON.stringify(group));
         
-        let uid = firebase.auth().currentUser.uid
+        let uid = firebase.auth().currentUser.uid;
         let member_count = 0;
         let isMember = false;
         

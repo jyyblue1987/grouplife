@@ -17,10 +17,14 @@ export default class EventListPage extends Component {
     constructor(props) {
         super(props);
 
+        var group = this.props.route.params.group;
+        let uid = firebase.auth().currentUser.uid;
+
         this.state = {
             isLoading: false,
             isPastEvent: true,
             event_list: [],          
+            edit_flag: uid == group.created_by
         }
     }
 
@@ -340,24 +344,27 @@ export default class EventListPage extends Component {
                     onPress={(index) => this.onJoinEvent(index)}
                     />
            
-                <TouchableOpacity
-                    style={{
-                        borderWidth:1,
-                        borderColor:'rgba(0,0,0,0.2)',
-                        alignItems:'center',
-                        justifyContent:'center',
-                        width:70,
-                        height:70,
-                        position: 'absolute',                                          
-                        bottom: 20,                                                    
-                        right: 20,
-                        backgroundColor:stylesGlobal.back_color,
-                        borderRadius:100,
-                        }}                        
-                        onPress={() => this.onGoCreate()}
-                    >
-                    <FontAwesome5 name="plus"  size={30} color="#fff" />
-                </TouchableOpacity>
+                {
+                    this.state.edit_flag &&
+                    <TouchableOpacity
+                        style={{
+                            borderWidth:1,
+                            borderColor:'rgba(0,0,0,0.2)',
+                            alignItems:'center',
+                            justifyContent:'center',
+                            width:70,
+                            height:70,
+                            position: 'absolute',                                          
+                            bottom: 20,                                                    
+                            right: 20,
+                            backgroundColor:stylesGlobal.back_color,
+                            borderRadius:100,
+                            }}                        
+                            onPress={() => this.onGoCreate()}
+                        >
+                        <FontAwesome5 name="plus"  size={30} color="#fff" />
+                    </TouchableOpacity>
+                }
             </View>
         );
     }
