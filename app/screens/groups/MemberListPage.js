@@ -120,6 +120,11 @@ export default class MemberListPage extends Component {
     }
 
     onCreated = (data) => {
+        var member_list = data.data.member_list;
+        var new_group = {... this.state.group};
+        new_group.member_list = member_list;
+        this.setState({group: new_group});
+
         this.getMemberList();
 
         const { navigation, route } = this.props;   

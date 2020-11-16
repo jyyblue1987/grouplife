@@ -103,7 +103,7 @@ export default function GroupDetailPage(props) {
 
         let member_count = new_data.member_list.length;
         console.log("New Member Count", member_count);
-        setMemberCount(member_count)
+        setMemberCount(member_count);
     }
 
     const onGoEdit = () => {        
