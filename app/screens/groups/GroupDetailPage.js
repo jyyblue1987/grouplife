@@ -26,6 +26,7 @@ export default function GroupDetailPage(props) {
     const [group, setGroup] = useState(props.route.params.group)
     const [isMember, setIsMember] = useState(false)
     const [unreadMessage, setUnreadMessage] = useState(0)
+    const [editFlag, setEditFlag] = useState(false)
 
     useFocusEffect(() => {
         if(!initialize) {
@@ -62,8 +63,10 @@ export default function GroupDetailPage(props) {
         console.log("Group Detail Init Data", JSON.stringify(group));
         
         let uid = firebase.auth().currentUser.uid
-        let member_count = 0
-        let isMember = false
+        let member_count = 0;
+        let isMember = false;
+        
+        setEditFlag(uid == group.created_by);
 
         if( group.member_list != null ) {
             member_count = group.member_list.length;
@@ -90,26 +93,12 @@ export default function GroupDetailPage(props) {
         props.navigation.navigate('GroupChatPage', {group: group})
     }
 
-    const getUnreadMessageCount = () => {
+    const onCreated = () => {
+        console.log("onCreated");
+    }
 
-        let uid = firebase.auth().currentUser.uid
-
-        var messageThreadRef = firestore.collection("MESSAGE_THREADS").doc(group?.threadId);
-        messageThreadRef.get().then(async(doc) => {
-            if (doc.exists)
-            {
-                var data = doc.data();
-                let myUnreadMsgCountData = data?.unread_msg_count_list.find( item => item._id == uid)
-
-                setUnreadMessage(myUnreadMsgCountData?.count == undefined ? 0: myUnreadMsgCountData?.count)
-
-            } else {
-                // doc.data() will be undefined in this case
-                console.log("No such document!");
-            }
-        }).catch(function(error) {
-            console.log("Error getting document:", error);
-        });
+    const onGoEdit = () => {
+        props.navigation.navigate('GroupCreate', { onCreated: onCreated });
     }
 
     return (
@@ -222,6 +211,27 @@ export default function GroupDetailPage(props) {
                     </TouchableOpacity>
                 </Card>
             </ScrollView>
+            {
+                editFlag &&
+                <TouchableOpacity
+                    style={{
+                        borderWidth:1,
+                        borderColor:'rgba(0,0,0,0.2)',
+                        alignItems:'center',
+                        justifyContent:'center',
+                        width:70,
+                        height:70,
+                        position: 'absolute',                                          
+                        bottom: 20,                                                    
+                        right: 20,
+                        backgroundColor:stylesGlobal.back_color,
+                        borderRadius:100,
+                        }}                        
+                        onPress={() => onGoEdit()}
+                    >
+                    <FontAwesome5 name="edit"  size={30} color="#fff" />
+                </TouchableOpacity>
+            }
         </View>
     );
 }

@@ -349,8 +349,8 @@ export default class EventListPage extends Component {
                         width:70,
                         height:70,
                         position: 'absolute',                                          
-                        bottom: 10,                                                    
-                        right: 10,
+                        bottom: 20,                                                    
+                        right: 20,
                         backgroundColor:stylesGlobal.back_color,
                         borderRadius:100,
                         }}                        
