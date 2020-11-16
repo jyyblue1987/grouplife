@@ -46,84 +46,64 @@ export default class MemberCreatePage extends Component {
 
         var user = firebase.auth().currentUser;
         var group = this.props.route.params.group;
-        var event = this.props.route.params.event;
         var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
-        var event_time = Moment(this.state.date).format('YYYY-MM-DD HH:mm:ss');
-
-        var event_data = {
-            name: this.state.name,      
-            event_time: event_time,
-            host: this.state.host,
-            location: this.state.location,
-            detail: this.state.detail,
-            food: this.state.food,      
-            video_conf_link: this.state.video_conf_link,
-            phone: this.state.phone,          
-            created_by: user.uid,   
-            updated_at: cur_time           
+        
+        var data = {
+            first_name: this.state.first_name,      
+            last_name: this.state.last_name,
+            email: this.state.email,
+            phone: this.state.phone,
         }
 
-        // find event for selected grouop
-        var eventRef = firestore.collection("group_list")
-            .doc(group.id)
-            .collection('event_list');
+        // find member
+        firestore.collection("member_list")
+            .where('email', '==', data.email)
+            .get().then((querySnapshot) => {
+                var user_id = '';
+                querySnapshot.forEach((doc) => {
+                    var data = doc.data();
+                    user_id = data.user_id;                    
+                });                    
 
-          
-        if( event == null )
-        {
-            event_data.created_at = cur_time;
-            
-            // create event
-            eventRef.add(event_data).then(function(docRef) {
-                console.log("Event is created with ID:", docRef.id);
+                if( user_id == '' ) // New User 
+                {
 
-                firestore.collection("member_list")
-                    .where("user_id", "==", user.uid)
-                    .get().then((querySnapshot) => {
-                        querySnapshot.forEach((doc) => {
-                            var data = doc.data();
-                            data.status = 0;
-
-                            // attendant with profile
-                            docRef.collection("attendant_list").add(data);                            
-                        });
-                        vm.clearInputData(docRef.id);
-                    });
-                
-            }).catch(function(error) {
-                console.error("Error adding event: ", error);
-                vm.clearInputData();            
+                }
+                else // Exist User
+                {
+                    console.log("Exist User", user_id);
+                    vm.joinUserOnGroup(user_id);
+                }
             });
-        }
-        else
-        {
-            // update event
-            eventRef = eventRef.doc(event.id);
-            eventRef.update(event_data).then(function(doc) {
-                vm.clearInputData(event.id);
-            }).catch(function(error) {
-                console.log("Error setting group:", error);
-                vm.clearInputData();  
-            }); 
-        }
-
-        console.log("Event Data", JSON.stringify(event_data));
     }
 
-    clearInputData(doc_id)
+    joinUserOnGroup(user_id) {
+        var group = this.props.route.params.group;
+        var member_list = [...group.member_list.filter((item) => item != user_id), user_id];
+
+        console.log("New Membmer List", JSON.stringify(member_list));
+        var vm = this;
+
+        firestore.collection("group_list")
+            .doc(group.id)
+            .update({member_list: member_list})
+            .then(function() {
+                vm.clearInputData(member_list);
+            });
+    }
+
+    clearInputData(member_list)
     {
         this.setState({                    
             isLoading: false,
         });
-        if( doc_id )
-        {
-            const { navigation, route } = this.props;
-            navigation.goBack();            
-        }
-        else
-        {
-            Alert.alert("Failed to create member!");
-        }
+      
+        const { navigation, route } = this.props;
+        navigation.goBack();            
+
+        var data = {};
+        data.member_list = member_list;
+        route.params.onCreated({ data:  data});
     }
 
     render() {
@@ -151,7 +131,7 @@ export default class MemberCreatePage extends Component {
                             style={[stylesGlobal.inputStyle, {marginTop: 20}]}
                             placeholder="Last Name"
                             autoCapitalize = 'none'
-                            value={this.state.first_name}
+                            value={this.state.last_name}
                             onChangeText={(val) => this.updateInputVal(val, 'last_name')}
                         />
 
@@ -168,7 +148,7 @@ export default class MemberCreatePage extends Component {
                             placeholder="Phone Number"
                             autoCapitalize = 'none'
                             value={this.state.phone}
-                            onChangeText={(val) => this.updateInputVal(val, 'email')}
+                            onChangeText={(val) => this.updateInputVal(val, 'phone')}
                         />
                     <View style = {{width: '100%', alignItems: 'center', marginTop: 50}}>
                         <TouchableOpacity style = {{width: '90%', height: 40, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 

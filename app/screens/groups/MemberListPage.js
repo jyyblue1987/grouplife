@@ -121,6 +121,9 @@ export default class MemberListPage extends Component {
 
     onCreated = (data) => {
         this.getMemberList();
+
+        const { navigation, route } = this.props;   
+        route.params.onUpdated(data);
     }
 
     onCreateMember = () => {

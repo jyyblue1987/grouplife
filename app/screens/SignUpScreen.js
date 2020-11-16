@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityInd
 import firebase from '../../database/firebase';
 import {firestore} from '../../database/firebase';
 import { stylesGlobal } from '../styles/stylesGlobal';
-
+import Moment from 'moment';
 
 export default class SignUpScreen extends Component {
     constructor(props) {
@@ -51,7 +51,7 @@ export default class SignUpScreen extends Component {
                 console.log('User registered successfully!');                
                 
                 // create member
-               
+                var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
                 var data = {
                     user_id: res.user.uid,
                     first_name: this.state.displayName,
@@ -64,7 +64,8 @@ export default class SignUpScreen extends Component {
                     state: '',
                     country: '',
                     desc: '',
-                    role: 'Member'
+                    role: 'Member',
+                    created_at: cur_time,                    
                 };
 
                 firestore.collection("member_list").add(data).then(function(docRef) {

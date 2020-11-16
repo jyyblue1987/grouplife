@@ -102,6 +102,7 @@ export default function GroupDetailPage(props) {
         setGroup(new_data);
 
         let member_count = new_data.member_list.length;
+        console.log("New Member Count", member_count);
         setMemberCount(member_count)
     }
 
