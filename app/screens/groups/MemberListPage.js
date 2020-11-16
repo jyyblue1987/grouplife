@@ -94,17 +94,29 @@ export default class MemberListPage extends Component {
 
         console.log("User IDs", JSON.stringify(user_ids));
 
+        var vm = this;
+
         firestore.collection("group_list")
             .doc(group.id)
             .update({member_list: user_ids})
             .then(function() {
-                this.setState({
-                        isLoading: false,
-                        member_list: member_list
-                    });
+                vm.onUpdatedMember(member_list, user_ids);
             }).catch(function(error) {
                 Alert.alert("Failed to delete member", JSON.stringify(error));
             });
+    }
+
+    onUpdatedMember(member_list, user_ids) {
+        console.log("onUpdatedMember", JSON.stringify(member_list));
+        this.setState({
+            isLoading: false,
+            member_list: member_list
+        });
+
+        const { navigation, route } = this.props;    
+        var data = {};
+        data.member_list = user_ids;
+        route.params.onUpdated({ data:  data});
     }
 
     renderRow(item) {

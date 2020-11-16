@@ -100,6 +100,9 @@ export default function GroupDetailPage(props) {
         var new_data = {... group, ...data.data};
         console.log("Updated Detail", JSON.stringify(new_data));
         setGroup(new_data);
+
+        let member_count = new_data.member_list.length;
+        setMemberCount(member_count)
     }
 
     const onGoEdit = () => {        
@@ -139,7 +142,7 @@ export default function GroupDetailPage(props) {
                         <View style={{flex:1, flexDirection: 'row', alignItems: 'center', fontSize: 16}}>
                             <FontAwesome5 name="user" size={18} color={stylesGlobal.back_color} style={{marginLeft: 15}} />
                             <Text style={{marginLeft: 15, fontSize: 16}}
-                            onPress={() => props.navigation.navigate('MemberList', {group: group})}
+                            onPress={() => props.navigation.navigate('MemberList', {group: group, onUpdated: onUpdated})}
                             >
                             {member_count}   Members
                             </Text>
