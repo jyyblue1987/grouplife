@@ -50,7 +50,6 @@ export default class GroupCreatePage extends Component {
 
         if( group == null )
         {
-            props.navigation.setOptions({title: 'Create Group'});
             this.state = {
                 title: 'Create Group',
                 edit_label: 'Create', 
@@ -76,7 +75,6 @@ export default class GroupCreatePage extends Component {
         }
         else
         {
-            props.navigation.setOptions({title: 'Edit Group'});
             this.state = {
                 title: 'Edit Group',
                 edit_label: 'Save',
@@ -102,8 +100,12 @@ export default class GroupCreatePage extends Component {
         }
     }
 
-    componentDidMount() {
-        
+    componentDidMount() {        
+        var group = this.props.route.params.group;
+        if( group == null )
+            this.props.navigation.setOptions({title: 'Create Group'});
+        else
+            this.props.navigation.setOptions({title: 'Edit Group'});        
     }
 
     updateInputVal = (val, prop) => {
@@ -298,27 +300,27 @@ export default class GroupCreatePage extends Component {
         unread_msg_count_list.push(unreadMsgCountData)
 
         if (group_name.length > 0) {
-          // create new thread using firebase & firestore
-          firestore
-            .collection('MESSAGE_THREADS')
-            .add({
-              name: group_name,
-              latestMessage: {
-                text: `${group_name} created. Welcome!`,
-                createdAt: new Date().getTime()
-              },
-              member_list,
-              unread_msg_count_list,
-            })
-            .then(docRef => {
-                docRef.collection('MESSAGES').add({
-                  text: `${group_name} created. Welcome!`,
-                  createdAt: new Date().getTime(),
-                  system: true
+            // create new thread using firebase & firestore
+            firestore
+                .collection('MESSAGE_THREADS')
+                .add({
+                name: group_name,
+                latestMessage: {
+                    text: `${group_name} created. Welcome!`,
+                    createdAt: new Date().getTime()
+                },
+                member_list,
+                unread_msg_count_list,
                 })
-                
-                this.onCreateGroup(docRef.id)
-            })
+                .then(docRef => {
+                    docRef.collection('MESSAGES').add({
+                    text: `${group_name} created. Welcome!`,
+                    createdAt: new Date().getTime(),
+                    system: true
+                    })
+                    
+                    this.onCreateGroup(docRef.id)
+                })
         }
     }
 
@@ -387,7 +389,7 @@ export default class GroupCreatePage extends Component {
         var group = this.props.route.params.group;
         firestore.collection("group_list").doc(group.id).update(data).then(function() {
             console.log("Group is updated");
-            vm.goBackPage();            
+            vm.goBackPage(data);            
         }).catch(function(error) {
             console.error("Error update group: ", error);
             vm.clearInputData();            
@@ -408,10 +410,11 @@ export default class GroupCreatePage extends Component {
         }
     }
 
-    goBackPage()
+    goBackPage(data)
     {
         const { navigation, route } = this.props;
         navigation.goBack();
+        route.params.onUpdated({ data:  data});
     }
 
     render() {

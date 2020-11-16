@@ -29,13 +29,12 @@ export default function GroupDetailPage(props) {
     const [editFlag, setEditFlag] = useState(false)
 
     useFocusEffect(() => {
-        if(!initialize) {
-
+        if(initialize) {
+            return;
         }
         setInitialize(true)
-    
-        init_data()
 
+        init_data();
         let uid = firebase.auth().currentUser.uid
         
         const subscriber = firestore
@@ -97,8 +96,14 @@ export default function GroupDetailPage(props) {
         console.log("onCreated");
     }
 
+    const onUpdated = (data) => {
+        var new_data = {... group, ...data.data};
+        console.log("Updated Detail", JSON.stringify(new_data));
+        setGroup(new_data);
+    }
+
     const onGoEdit = () => {        
-        props.navigation.navigate('GroupCreate', {group: group});
+        props.navigation.navigate('GroupCreate', {group: group, onUpdated: onUpdated});
     }
 
     return (
