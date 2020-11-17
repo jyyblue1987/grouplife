@@ -23,6 +23,7 @@ import { firestore, storage} from '../../../database/firebase';
 import firebase from '../../../database/firebase';
 import {stylesGlobal} from '../../../app/styles/stylesGlobal';
 import { useFocusEffect } from '@react-navigation/native';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const {width, height} = Dimensions.get("screen")
 
@@ -38,9 +39,36 @@ function validURL(str) {
   return !!pattern.test(str);
 }
 
-const messageBox = (message, myuid) => {
+function onRemoveMessage(group, message) {
+  // Alert.alert(
+  //   'Delete Member',
+  //   'Are you sure to delelet "' + item.first_name + '"?',
+  //   [
+  //       {
+  //           text: 'Cancel',
+  //           onPress: () => console.log('Cancel Pressed'),
+  //           style: 'cancel'
+  //       },
+  //       { text: 'Yes', onPress: () => this.removeMember(item) }
+  //       ],
+  //       { cancelable: false }
+  //   );
+
+  firestore
+    .collection('MESSAGE_THREADS')
+    .doc(group?.threadId)
+    .collection('MESSAGES')
+    .doc(message._id)
+    .delete().then( async docref => {
+              
+    });
+}
+
+const messageBox = (group, message, myuid) => {
   let received = message?.user?._id != myuid;
   let created_at = moment(Number(message?.createdAt)).format("DD/M/YYYY HH:mm:ss");
+  let edit_flag = group.created_by == myuid;
+
   return (
     <View
         style={{
@@ -66,12 +94,20 @@ const messageBox = (message, myuid) => {
           </View>
         </View>
       ) : null}
-      { validURL(message?.text) == true &&
+      { validURL(message?.text) == true &&        
         <TouchableOpacity style={{flex: 1, width: "100%", flexDirection: "column"}}>
           <RNUrlPreview
             text={message?.text}
           />
-        </TouchableOpacity>
+          {
+            edit_flag &&  
+            <TouchableOpacity style={[styles.iconButton, {position: 'absolute', right: 10, bottom: 10}]}
+                    onPress={() => onRemoveMessage(group, message)}
+                    >
+                <FontAwesome5 name="trash" size={17} color={stylesGlobal.back_color} />
+            </TouchableOpacity>
+          }
+        </TouchableOpacity>        
       }
       { validURL(message?.text) == false &&
         <View
@@ -97,9 +133,19 @@ const messageBox = (message, myuid) => {
               style={{
                 alignSelf: received ? "flex-start" : "flex-end",
                 marginTop: 10,
+                flexDirection: 'row',
+                alignItems: 'center'
               }}
             >
             <Text style={{ fontSize: 10 }}>{created_at}</Text>
+            {
+              edit_flag &&  
+              <TouchableOpacity style={styles.iconButton}
+                      onPress={() => onRemoveMessage(group, message)}
+                      >
+                  <FontAwesome5 name="trash" size={17} color={stylesGlobal.back_color} />
+              </TouchableOpacity>
+            }
           </View>
         </View>
       }
@@ -440,7 +486,7 @@ export default function GroupChatPage(props) {
             contentContainerStyle={{ paddingHorizontal: 20 }}
             data={messages}
             renderItem={({ item, index }) => {
-              return messageBox(item, userMe?.user_id);
+              return messageBox(group, item, userMe?.user_id);
             }}
             keyExtractor={(item, index) => index.toString()}
             onEndReached={() => endReached()}
@@ -553,4 +599,13 @@ const styles = StyleSheet.create({
     zIndex: 1,
     justifyContent: "center",
   },
+
+  iconButton: {
+    width: 30,
+    height: 30,        
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: 'center',
+    marginLeft: 20
+  }
 });
