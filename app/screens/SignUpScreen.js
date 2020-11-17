@@ -65,7 +65,8 @@ export default class SignUpScreen extends Component {
                     country: '',
                     desc: '',
                     role: 'Member',
-                    created_at: cur_time,                    
+                    created_at: cur_time,     
+                    created_by: res.user.uid,               
                 };
 
                 firestore.collection("member_list").add(data).then(function(docRef) {

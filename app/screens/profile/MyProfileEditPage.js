@@ -18,6 +18,7 @@ import storage from '@react-native-firebase/storage';
 
 import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
 
+
 // import RNFetchBlob from 'rn-fetch-blob';
 
 // // Prepare Blob support
@@ -157,6 +158,7 @@ export default class MyProfileEditPage extends Component {
 
     onSaveProfile = () => {
         this.setState({isLoading: true});
+        var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
 
         var data = {
             user_id: this.state.user_id,
@@ -171,12 +173,13 @@ export default class MyProfileEditPage extends Component {
             country: this.state.country,
             desc: this.state.desc,
             role: this.state.role,
+            updated_at: cur_time,
         };
 
         var vm = this;
         var userRef = firestore.collection("member_list").doc(this.state.id);        
         
-        userRef.set(data).then(function(doc) {
+        userRef.update(data).then(function(doc) {
             const { navigation, route } = vm.props;
             navigation.goBack();
             route.params.onUpdated({ updated: true });

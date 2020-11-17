@@ -43,37 +43,33 @@ export default class MemberCreatePage extends Component {
         this.setState({isLoading: true});
 
         var vm = this;
-
-        var user = firebase.auth().currentUser;
-        var group = this.props.route.params.group;
-        var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
+        var email = this.state.email;
         
-        var data = {
-            first_name: this.state.first_name,      
-            last_name: this.state.last_name,
-            email: this.state.email,
-            phone: this.state.phone,
-        }
-
         // find member
         firestore.collection("member_list")
-            .where('email', '==', data.email)
+            .where('email', '==', email)
             .get().then((querySnapshot) => {
-                var user_id = '';
+                var member = undefined;                
                 querySnapshot.forEach((doc) => {
                     var data = doc.data();
-                    user_id = data.user_id;                    
+                    data.member_id = doc.id;
+                    member = data;
+                    exist = true;
                 });                    
 
-                if( user_id == '' ) // New User 
+                if( member && member.user_id != '' ) // Exist User
                 {
-
+                    console.log("Exist User", member.user_id);
+                    vm.joinUserOnGroup(member.user_id);
                 }
-                else // Exist User
+                else if( member ) // Already add, but not login
                 {
-                    console.log("Exist User", user_id);
-                    vm.joinUserOnGroup(user_id);
+                    vm.updateCandidateList(member);
                 }
+                else // Not added
+                {
+                    vm.addMember();
+                }                
             });
     }
 
@@ -92,18 +88,99 @@ export default class MemberCreatePage extends Component {
             });
     }
 
+    addMember()
+    {
+        var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
+        var user = firebase.auth().currentUser;
+
+        var data = {
+            first_name: this.state.first_name,      
+            last_name: this.state.last_name,
+            email: this.state.email,
+            phone: this.state.phone,
+            user_id: "",
+            picture: "",
+            address: "",
+            city: "",
+            state: "",
+            country: "",
+            desc: "",
+            role: "",
+            created_at: cur_time,
+            created_by: user.uid,
+        };
+
+        console.log("Add Member:", JSON.stringify(data));
+
+        var vm = this;
+
+        firestore.collection("member_list")
+            .add(data)
+            .then((doc) => {
+                data.member_id = doc.id;
+                vm.addCandidateList(data);    
+
+                // TODO: Send Email
+            });
+    }
+
+    addCandidateList(data)
+    {
+        console.log("Add Candidate List:", JSON.stringify(data));
+        var group = this.props.route.params.group;
+        firestore.collection('group_list')
+            .doc(group.id)
+            .collection('candidate_list')
+            .add(data);
+
+        this.goBackPage();
+    }
+
+    updateCandidateList(member)
+    {
+        // TODO: Send Email
+
+        // check if exists on candidate list
+        var group = this.props.route.params.group;
+        var vm = this;
+
+        console.log("Update Candidate List:", JSON.stringify(member));
+
+        firestore.collection("group_list")
+            .doc(group.id)
+            .collection("candidate_list")
+            .where('member_id', '==', member.member_id)
+            .get().then((querySnapshot) => {
+                var exist = false;          
+                querySnapshot.forEach((doc) => {
+                    exist = true;
+                });                    
+
+                if( exist == false )
+                    vm.addCandidateList(member);
+                else
+                    vm.goBackPage();       
+            });
+        
+    }
+
     clearInputData(member_list)
+    {
+        this.goBackPage();  
+
+        var data = {};
+        data.member_list = member_list;
+        route.params.onCreated({ data:  data});
+    }
+
+    goBackPage() 
     {
         this.setState({                    
             isLoading: false,
         });
       
         const { navigation, route } = this.props;
-        navigation.goBack();            
-
-        var data = {};
-        data.member_list = member_list;
-        route.params.onCreated({ data:  data});
+        navigation.goBack();    
     }
 
     render() {
