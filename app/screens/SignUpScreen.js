@@ -40,6 +40,7 @@ export default class SignUpScreen extends Component {
         }
 
         var vm = this;
+        vm.user_id = '';
 
         firebase.auth()
             .createUserWithEmailAndPassword(this.state.email, this.state.password)
@@ -48,44 +49,25 @@ export default class SignUpScreen extends Component {
                     displayName: this.state.displayName
                 });
 
-                console.log('User registered successfully!');                
-                
-                // create member
-                var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
-                var data = {
-                    user_id: res.user.uid,
-                    first_name: this.state.displayName,
-                    last_name: '',
-                    picture: '',
-                    email: this.state.email,
-                    phone: '',
-                    address: '',
-                    city: '',
-                    state: '',
-                    country: '',
-                    desc: '',
-                    role: 'Member',
-                    created_at: cur_time,     
-                    created_by: res.user.uid,               
-                };
+                vm.user_id = res.user.uid;
 
-                firestore.collection("member_list").add(data).then(function(docRef) {
-                    console.log("User is created with ID:", docRef.id);
+                console.log('User registered successfully!', vm.user_id);                
 
-                    vm.setState({
-                        isLoading: false,
-                        displayName: '',
-                        email: '',
-                        password: ''
+                // find member
+                firestore.collection('member_list')
+                    .where('email', '==', vm.state.email)
+                    .get().then((querySnapshot) => {                                                  
+                        var member = undefined;
+                        querySnapshot.forEach((doc) => {
+                            member = doc.data();
+                            member.id = doc.id;
+                        });        
+                        
+                        if( member )                            
+                            vm.joinMemberOnGroupList(member);       
+                        else
+                            vm.createMember();                            
                     });
-    
-                    vm.props.navigation.navigate('Signin');                    
-                }).catch(function(error) {
-                    vm.setState({
-                        isLoading: false,                       
-                    });
-                    Alert.alert(error.message);
-                });
 
                 
             })
@@ -96,6 +78,121 @@ export default class SignUpScreen extends Component {
                     });
                 Alert.alert(error.message);
             }) 
+    }
+
+    createMember() {
+        // create member
+        var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
+        var data = {
+            user_id: this.user_id,
+            first_name: this.state.displayName,
+            last_name: '',
+            picture: '',
+            email: this.state.email,
+            phone: '',
+            address: '',
+            city: '',
+            state: '',
+            country: '',
+            desc: '',
+            role: 'Member',
+            created_at: cur_time,     
+            created_by: this.user_id,               
+        };
+
+        console.log("createMember", JSON.stringify(data));
+
+        firestore.collection("member_list").add(data).then(function(docRef) {
+            console.log("Member is created with ID:", docRef.id);
+
+            data.id = docRef.id;
+            vm.joinMemberOnGroupList(data);
+
+            vm.props.navigation.navigate('Signin');                    
+        }).catch(function(error) {
+            vm.setState({
+                isLoading: false,                       
+            });
+            Alert.alert(error.message);
+        });
+    }
+
+    joinMemberOnGroupList(member) {
+        if( member.user_id == '' )
+        {
+            // update member's user id
+            firestore.collection('member_list')
+                .doc(member.id)
+                .update({user_id: this.user_id});   
+        }
+
+        console.log("joinMemberOnGroupList", JSON.stringify(member));
+        var vm = this;
+        member.user_id = this.user_id;
+        firestore.collection('group_list')
+            .get().then((querySnapshot) => {                         
+                     
+                querySnapshot.forEach((doc) => {    
+                    var group = doc.data(); 
+                    group.id = doc.id;               
+                    vm.joinMemberOnGroup(group, member);
+                });                    
+            });
+
+        vm.setState({
+            isLoading: false,
+            displayName: '',
+            email: '',
+            password: ''
+        });
+
+        vm.props.navigation.navigate('Signin');                    
+    }
+
+    joinMemberOnGroup(group, member)
+    {
+        console.log("joinMemberOnGroup", JSON.stringify(group), JSON.stringify(member));
+        var vm = this;
+        firestore.collection('group_list')
+            .doc(group.id)
+            .collection('candidate_list')
+            .where('member_id', '==', member.id)
+            .get().then((querySnapshot) => {
+                var candidate = undefined;
+                querySnapshot.forEach((doc) => {    
+                    candidate = doc.data();                    
+                    candidate.id = doc.id;
+                });     
+
+                if( candidate ) // exist candidate
+                {
+                    vm.moveCandidateToGroupMember(group, candidate, member);
+                }
+            });
+    }
+
+    moveCandidateToGroupMember(group, candidate, member)
+    {
+        console.log("moveCandidateToGroupMember, Candidate", JSON.stringify(candidate));
+        // remove candidate
+        firestore.collection('group_list')
+            .doc(group.id)
+            .collection('candidate_list')
+            .doc(candidate.id)
+            .delete().then(function() {
+                // update group member list
+                var member_list = [...group.member_list.filter((item) => item != member.user_id), member.user_id];
+
+                console.log("New Membmer List", JSON.stringify(member_list));
+                
+                firestore.collection("group_list")
+                    .doc(group.id)
+                    .update({member_list: member_list})
+                    .then(function() {
+                        
+                    });
+            });
+
     }
 
     render() {
