@@ -1,12 +1,13 @@
 import * as React from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert, Button} from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert, TextInput} from 'react-native';
 import Modal from 'react-native-modalbox';
 import FastImage from 'react-native-fast-image';
 import { Card } from 'react-native-material-ui';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import {CheckBox} from'react-native-elements';
 
 import firebase from '../../../database/firebase';
 import { firestore} from '../../../database/firebase';
@@ -23,6 +24,8 @@ export default class MemberListPage extends Component {
             group: this.props.route.params.group,
             member_list: [],
             swipeToClose: true,
+            group_message: '',
+            send_mode: 'Email',
             edit_flag: uid == group.created_by
         }
     }
@@ -142,6 +145,17 @@ export default class MemberListPage extends Component {
         this.refs.modal1.open();
     }
 
+
+    updateInputVal = (val, prop) => {
+        const state = this.state;
+        state[prop] = val;
+        this.setState(state);
+    }
+
+    onSendMessage = () => {
+        
+    }
+
     renderRow(item) {
 		return (			
             <Card style={{container:{borderRadius: 15}}}>
@@ -238,8 +252,50 @@ export default class MemberListPage extends Component {
                     onClosed={this.onClose}
                     onOpened={this.onOpen}
                     onClosingState={this.onClosingState}>
-                    <Text style={styles.text}>Basic modal</Text>         
-                    <Button title={`Disable swipeToClose(${this.state.swipeToClose ? "true" : "false"})`} onPress={() => this.setState({swipeToClose: !this.state.swipeToClose})} style={styles.btn}/>                   
+                    <Text style={{fontSize: 27, marginTop: 25, marginBottom: 25}}>Send Message</Text>         
+                    <CheckBox                        
+                        title='Email'
+                        checkedIcon='dot-circle-o'
+                        uncheckedIcon='circle-o'
+                        containerStyle={styles.radioButton}
+                        onPress={()=>this.setState({send_mode:'Email'})}
+                        checked={this.state.send_mode == 'Email'}
+                        />
+
+                    <CheckBox                        
+                        title='SMS'
+                        checkedIcon='dot-circle-o'
+                        uncheckedIcon='circle-o'
+                        containerStyle={styles.radioButton}
+                        onPress={()=>this.setState({send_mode:'SMS'})}
+                        checked={this.state.send_mode == 'SMS'}
+                        />
+
+                    <CheckBox                        
+                        title='Notification'
+                        checkedIcon='dot-circle-o'
+                        uncheckedIcon='circle-o'
+                        containerStyle={styles.radioButton}
+                        onPress={()=>this.setState({send_mode:'Notification'})}
+                        checked={this.state.send_mode == 'Notification'}
+                        />
+
+                    <TextInput
+                            style={{width: '90%', height:80, marginTop: 40}}
+                            placeholder="Message"                            
+                            multiline={true}
+                            autoCapitalize = 'none'
+                            value={this.state.group_message}
+                            onChangeText={(val) => this.updateInputVal(val, 'group_message')}
+                        />
+
+                    <View style = {{width: '100%', alignItems: 'center', marginTop: 50}}>
+                        <TouchableOpacity style = {{width: '90%', height: 40, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
+                            onPress = {() => this.onSendMessage()}>
+                            <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 16}]}>Send Message</Text>
+                        </TouchableOpacity>
+                    </View>
+                    
                 </Modal>
             </View>
         );
@@ -268,9 +324,17 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
 
-    modal: {
-        justifyContent: 'center',
-        alignItems: 'center'
+    modal: {        
+        alignItems: 'center',
+        width: '90%',        
+        height: '80%',
+        borderRadius: 10
     },
+
+    radioButton: {
+        width: '70%',
+        backgroundColor: 'white',
+        borderColor: 'white'
+    }
 });
 
