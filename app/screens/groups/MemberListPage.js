@@ -1,7 +1,8 @@
 import * as React from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert, Button} from 'react-native';
+import Modal from 'react-native-modalbox';
 import FastImage from 'react-native-fast-image';
 import { Card } from 'react-native-material-ui';
 import { stylesGlobal } from '../../styles/stylesGlobal';
@@ -21,6 +22,7 @@ export default class MemberListPage extends Component {
             isLoading: false,
             group: this.props.route.params.group,
             member_list: [],
+            swipeToClose: true,
             edit_flag: uid == group.created_by
         }
     }
@@ -135,6 +137,10 @@ export default class MemberListPage extends Component {
         var group = this.props.route.params.group;
         this.props.navigation.navigate('MemberCreate', {group: group, onCreated: this.onCreated});
     }
+    
+    onShowSendMessage = () => {
+        this.refs.modal1.open();
+    }
 
     renderRow(item) {
 		return (			
@@ -181,9 +187,30 @@ export default class MemberListPage extends Component {
                     onRefresh={() => this.renderRefreshControl()}
                     refreshing={this.state.isLoading}
                     initialNumToRender={8}
-                />
+                />      
                 {
-                    this.state.edit_flag &&
+                    this.state.edit_flag &&          
+                    <TouchableOpacity
+                        style={{
+                            borderWidth:1,
+                            borderColor:'rgba(0,0,0,0.2)',
+                            alignItems:'center',
+                            justifyContent:'center',
+                            width:70,
+                            height:70,
+                            position: 'absolute',                                          
+                            bottom: 20,                                                    
+                            left: 20,
+                            backgroundColor:stylesGlobal.back_color,
+                            borderRadius:100,
+                            }}
+                            onPress={() => this.onShowSendMessage()}
+                        >
+                        <FontAwesome5 name="comment"  size={30} color="#fff" />
+                    </TouchableOpacity>
+                }
+                {
+                    this.state.edit_flag &&                    
                     <TouchableOpacity
                         style={{
                             borderWidth:1,
@@ -203,6 +230,17 @@ export default class MemberListPage extends Component {
                         <FontAwesome5 name="plus"  size={30} color="#fff" />
                     </TouchableOpacity>
                 }
+
+                <Modal
+                    style={[styles.modal, styles.modal1]}
+                    ref={"modal1"}
+                    swipeToClose={this.state.swipeToClose}
+                    onClosed={this.onClose}
+                    onOpened={this.onOpen}
+                    onClosingState={this.onClosingState}>
+                    <Text style={styles.text}>Basic modal</Text>         
+                    <Button title={`Disable swipeToClose(${this.state.swipeToClose ? "true" : "false"})`} onPress={() => this.setState({swipeToClose: !this.state.swipeToClose})} style={styles.btn}/>                   
+                </Modal>
             </View>
         );
     }
@@ -228,7 +266,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: "center",
         alignItems: 'center'
-    }
-    
+    },
+
+    modal: {
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
 });
 
