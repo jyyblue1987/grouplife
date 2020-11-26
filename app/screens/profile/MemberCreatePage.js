@@ -191,17 +191,17 @@ export default class MemberCreatePage extends Component {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: { 
-                email: email, 
+            body: {                 
                 user_id: user.uid, 
-                // idToken: user.idToken,
-                displayName: user.displayName 
+                // idToken: user.getIdToken(),
+                displayName: user.displayName,
+                email: email
             }
         };
 
         console.log("Send Email", requestOptions);
 
-        fetch(GLOBAL.FIREBASE_URL + '/sendEmail', requestOptions)
+        fetch(GLOBAL.FIREBASE_URL + 'sendEmail', requestOptions)
             // .then((response) => response.json())
             .then((responseJson) => {
                 console.log(responseJson);            

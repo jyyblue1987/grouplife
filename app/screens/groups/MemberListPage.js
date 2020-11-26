@@ -11,6 +11,7 @@ import {CheckBox} from'react-native-elements';
 
 import firebase from '../../../database/firebase';
 import { firestore} from '../../../database/firebase';
+const GLOBAL = require('../../Globals');
 
 export default class MemberListPage extends Component {
     constructor(props) {
@@ -153,7 +154,38 @@ export default class MemberListPage extends Component {
     }
 
     onSendMessage = () => {
+        var user = firebase.auth().currentUser;
+        var send_mode = this.state.send_mode;
+        var group = this.props.route.params.group;
+
+        var vm = this;
         
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: {                 
+                user_id: user.uid,
+                // idToken: user.getIdToken(),
+                displayName: user.displayName,
+                group_id: group.id, 
+                send_mode: send_mode, 
+                message: this.state.group_message
+            }
+        };
+    
+        console.log("Send Email", requestOptions);
+
+
+        fetch(GLOBAL.FIREBASE_URL + 'sendMessageToGroup', requestOptions)
+            // .then((response) => response.json())
+            .then((responseJson) => {
+                console.log(responseJson);     
+                Alert.alert('Message is sent to group members');
+                vm.refs.modal1.close();       
+            })
+            .catch((error) => {
+                console.error(error);
+            });       
     }
 
     renderRow(item) {
