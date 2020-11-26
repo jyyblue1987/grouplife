@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {Component} from 'react';
+const GLOBAL = require('../../Globals');
 
 import {    
     Platform,
@@ -121,6 +122,7 @@ export default class MemberCreatePage extends Component {
                 vm.addCandidateList(data);    
 
                 // TODO: Send Email
+                this.sendEmail(data.email);
             });
     }
 
@@ -139,6 +141,7 @@ export default class MemberCreatePage extends Component {
     updateCandidateList(member)
     {
         // TODO: Send Email
+        this.sendEmail(member.email);
 
         // check if exists on candidate list
         var group = this.props.route.params.group;
@@ -181,6 +184,31 @@ export default class MemberCreatePage extends Component {
       
         const { navigation, route } = this.props;
         navigation.goBack();    
+    }
+
+    sendEmail(email) {        
+        var user = firebase.auth().currentUser;
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: { 
+                email: email, 
+                user_id: user.uid, 
+                // idToken: user.idToken,
+                displayName: user.displayName 
+            }
+        };
+
+        console.log("Send Email", requestOptions);
+
+        fetch(GLOBAL.FIREBASE_URL + '/sendEmail', requestOptions)
+            // .then((response) => response.json())
+            .then((responseJson) => {
+                console.log(responseJson);            
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
     render() {
