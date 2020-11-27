@@ -191,12 +191,12 @@ export default class MemberCreatePage extends Component {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: {                 
+            body: JSON.stringify({                 
                 user_id: user.uid, 
                 // idToken: user.getIdToken(),
                 displayName: user.displayName,
                 email: email
-            }
+            })
         };
 
         console.log("Send Email", requestOptions);

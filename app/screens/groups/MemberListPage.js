@@ -163,14 +163,14 @@ export default class MemberListPage extends Component {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: {                 
+            body: JSON.stringify({                 
                 user_id: user.uid,
                 // idToken: user.getIdToken(),
                 displayName: user.displayName,
                 group_id: group.id, 
                 send_mode: send_mode, 
                 message: this.state.group_message
-            }
+            })
         };
     
         console.log("Send Email", requestOptions);
