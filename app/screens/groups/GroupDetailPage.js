@@ -1,6 +1,6 @@
 import React, { Component, useState, useEffect } from "react";
 
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Card } from 'react-native-material-ui';
 import LinearGradient from 'react-native-linear-gradient';
@@ -108,6 +108,55 @@ export default function GroupDetailPage(props) {
 
     const onGoEdit = () => {        
         props.navigation.navigate('GroupCreate', {group: group, onUpdated: onUpdated});
+    }
+
+    const onLeaveGroup = () => {
+
+        Alert.alert(
+            'Leave Group',
+            'Are you sure to leave this group "' + group.group_name + '"?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel'
+                },
+                { text: 'Yes', onPress: () => leaveGroup() }
+                ],
+                { cancelable: false }
+            );
+    }
+
+    const leaveGroup = () => {
+        console.log("leaveGroup");
+
+        let uid = firebase.auth().currentUser.uid
+
+        firestore.collection('group_list')
+            .doc(group.id)
+            .get()
+            .then(doc  => {
+                const group_data = doc.data();     
+               
+                console.log("Old Membmer List", JSON.stringify(group_data.member_list));
+
+                var member_list = group_data.member_list.filter((item) => item != uid);
+                console.log("New Membmer List", JSON.stringify(member_list));
+
+                updateMember(group, member_list);
+
+            });
+
+    }
+
+    const updateMember = (group, member_list) => {
+        console.log('updateMember');
+        firestore.collection("group_list")
+            .doc(group.id)
+            .update({member_list: member_list})
+            .then(function() {
+                console.log("You did leave group successfully1");
+            });
     }
 
     return (
@@ -219,6 +268,19 @@ export default function GroupDetailPage(props) {
                         <Text style={styles.textStyle}>Freedback</Text>
                     </TouchableOpacity>
                 </Card>
+
+                {/* Leave Group Button */}
+                {
+                    isMember && 
+                    <View style = {{width: '100%', alignItems: 'center', marginTop: 15}}>
+                        <TouchableOpacity style = {{width: '90%', height: 40, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
+                            onPress = {() => onLeaveGroup()}>
+                            <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 16}]}>Leave Group</Text>
+                        </TouchableOpacity>
+                    </View>
+                }
+
+
             </ScrollView>
             {
                 editFlag &&
