@@ -92,6 +92,16 @@ export default function GroupDetailPage(props) {
         props.navigation.navigate('GroupChatPage', {group: group})
     }
 
+    const onPressMaterial = () => {
+        console.log("onPressMaterial");
+        if (!isMember) {
+            alert("You are not a member of this group. Please join to this group")
+            return
+        }
+
+        props.navigation.navigate('MaterialList', {group: group})
+    }
+
     const onCreated = () => {
         console.log("onCreated");
     }
@@ -233,7 +243,7 @@ export default function GroupDetailPage(props) {
 
                 {/* Material */}
                 <Card style={{container: {borderRadius: 10}}}>
-                    <TouchableOpacity style={styles.cardButtonStyle}>
+                    <TouchableOpacity style={styles.cardButtonStyle} onPress={() => onPressMaterial() }>
                         <FontAwesome5 name="book-open" size={22} style={styles.iconStyle} />
                         <Text style={styles.textStyle}>Materials</Text>
                     </TouchableOpacity>
