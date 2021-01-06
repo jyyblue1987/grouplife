@@ -151,11 +151,16 @@ export default function GroupDetailPage(props) {
 
     const updateMember = (group, member_list) => {
         console.log('updateMember');
+        var vm = this;
         firestore.collection("group_list")
             .doc(group.id)
             .update({member_list: member_list})
             .then(function() {
-                console.log("You did leave group successfully1");
+                console.log("You did leave group successfully");
+
+                const { navigation, route } = props;
+                navigation.goBack();
+                route.params.onRefresh();
             });
     }
 
