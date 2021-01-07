@@ -28,6 +28,7 @@ import EventEditPage from './app/screens/calendar/EventEditPage';
 import EventDetailPage from './app/screens/calendar/EventDetailPage';
 import MemberCreatePage from './app/screens/profile/MemberCreatePage';
 import MaterialListPage from './app/screens/materials/MaterialListPage';
+import MaterialCreatePage from './app/screens/materials/MaterialCreatePage';
 
 const Stack = createStackNavigator();
 
@@ -121,7 +122,13 @@ export default class App extends Component {
 						options={{
 							title: 'Materials',							
 						}} 
-					/>    
+					/>  
+
+					<Stack.Screen name="MaterialCreate" component={MaterialCreatePage} 
+						options={{
+							title: 'Add Material',							
+						}} 
+					/>      
 
 
                 </Stack.Navigator>

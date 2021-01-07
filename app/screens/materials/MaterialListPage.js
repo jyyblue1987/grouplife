@@ -57,6 +57,14 @@ export default function MaterialListPage(props) {
         </View>
     );
 
+    const onCreated = data => {
+        
+    }
+
+    const onGoCreate = () => {
+        props.navigation.navigate('MaterialCreate', { onCreated: onCreated });
+    }
+
     return (
         <View style={styles.container}>
             <SwipeListView
@@ -85,7 +93,7 @@ export default function MaterialListPage(props) {
                         backgroundColor:stylesGlobal.back_color,
                         borderRadius:100,
                         }}                        
-                        onPress={() => this.onGoCreate()}
+                        onPress={() => onGoCreate()}
                     >
                     <FontAwesome5 name="plus"  size={30} color="#fff" />
                 </TouchableOpacity>
