@@ -126,7 +126,8 @@ export default class App extends Component {
 
 					<Stack.Screen name="MaterialCreate" component={MaterialCreatePage} 
 						options={{
-							title: 'Add Material',							
+							title: 'Add Material',		
+							headerBackTitle: 'Back' 					
 						}} 
 					/>      
 
