@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
 import { StyleSheet, View, TextInput, TouchableOpacity, Text, Button } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { WebView } from 'react-native-webview';
-
+import { Card } from 'react-native-material-ui';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
 import firebase from '../../../database/firebase';
 import { firestore } from '../../../database/firebase';
 
 import Moment from 'moment';
-import { ViewPagerAndroid } from 'react-native';
+
 
 export default function MaterialDetailPage(props) {
     const [isUploading, setUploading] = useState(false)
@@ -28,8 +27,12 @@ export default function MaterialDetailPage(props) {
 
     }, []);
 
-    const onGoEdit = () =>{
+    const onGoEdit = () => {
         console.log("onGoEdit");
+
+    }
+
+    const onDownloadFile = () => {
 
     }
 
@@ -44,7 +47,17 @@ export default function MaterialDetailPage(props) {
                             source={{ html: material.content }}                                         
                         />
                     </View> 
-
+                }
+                
+                {
+                    material.type == 2 &&
+                    <View>
+                        <Card style={{container: {borderRadius: 5, height: 40, paddingHorizontal: 10, justifyContent: 'center'}}}
+                            onPress={() => onDownloadFile()}
+                            >
+                            <Text style={styles.link}>{material.filename}</Text>
+                        </Card>
+                    </View>
                 }
                 
 
@@ -88,5 +101,13 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         paddingVertical: 20,
         paddingHorizontal: 10,
+    },
+
+    link: {
+        fontSize: 17,
+        color: stylesGlobal.back_color,
+        textDecorationLine: "underline",
+        textDecorationStyle: "solid",
+        textDecorationColor: stylesGlobal.back_color,
     }
 });
