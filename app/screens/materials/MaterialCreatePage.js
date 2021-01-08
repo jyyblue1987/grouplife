@@ -17,6 +17,8 @@ import { firestore } from '../../../database/firebase';
 import { Icon } from 'react-native-material-ui';
 import storage from '@react-native-firebase/storage';
 
+import Moment from 'moment';
+
 export default function MaterialCreatePage(props) {
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
@@ -24,6 +26,8 @@ export default function MaterialCreatePage(props) {
     const [isUploading, setUploading] = useState(false)
     const [upload_progress, setUploadProgress] = useState(0)
     const [filename, setFileName] = useState("")
+
+    const group = props.route.params.group;
 
     const material_type_list = [
         { label: 'Freeform Text', type: 1},
@@ -36,7 +40,8 @@ export default function MaterialCreatePage(props) {
     linkModal = React.createRef();
 
     var downloadUrl = "";
-
+    var fileType = "";
+    
     useEffect(() => {
         setContent("Hello <b>World</b> <p>this is a new paragraph</p> <p>this is another new paragraph</p>")        
     })
@@ -60,6 +65,41 @@ export default function MaterialCreatePage(props) {
     const onSaveMaterial = async() => {
         let html = await richText.current?.getContentHtml();
         console.log(html);
+
+        var data = {};
+        data.title = title;
+        data.type = type;
+
+        var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
+        data.created_at = cur_time;
+        data.created_by = firebase.auth().currentUser.uid;
+        
+        if( type == 1 ) // free text
+            data.content = html;
+        else
+        {
+            data.content = downloadUrl;
+            data.filename = filename;
+            data.filetype = fileType;
+        }
+
+        const ref = firestore.collection("group_list")
+            .doc(group.id)
+            .collection("material_list")
+            .add(data);
+
+        if( ref )
+        {          
+            console.log("Material is created with");
+
+            const { navigation, route } = props;
+            navigation.goBack();
+            route.params.onCreated({ created: true });
+        }
+        else
+        {
+            console.error("Error");
+        }
     }
 
     const onCancelMaterial = () => {                

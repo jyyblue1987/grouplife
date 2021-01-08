@@ -16,6 +16,8 @@ export default function MaterialListPage(props) {
             .map((_, i) => ({ key: `${i}`, text: `item #${i}` }))
     );
 
+    const group = props.route.params.group;
+
     const closeRow = (rowMap, rowKey) => {
         if (rowMap[rowKey]) {
             rowMap[rowKey].closeRow();
@@ -62,7 +64,7 @@ export default function MaterialListPage(props) {
     }
 
     const onGoCreate = () => {
-        props.navigation.navigate('MaterialCreate', { onCreated: onCreated });
+        props.navigation.navigate('MaterialCreate', { group: group, onCreated: onCreated });
     }
 
     return (
