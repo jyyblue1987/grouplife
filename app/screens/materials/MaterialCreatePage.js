@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, View, TextInput, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, TextInput, TouchableOpacity, Text, Button } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import RadioButtonRN from 'radio-buttons-react-native';
 import { Card } from 'react-native-material-ui';
@@ -64,6 +64,10 @@ export default function MaterialCreatePage(props) {
         linkModal.current?.setModalVisible(true);
     }
 
+    const onShowDocumentPicker = () => {
+        
+    }
+
     return (
         <View style={styles.container}>
             <KeyboardAwareScrollView style={{width:'100%'}}>
@@ -113,6 +117,18 @@ export default function MaterialCreatePage(props) {
                             onFocus={() => onChangeHTML("Focus")}
                             onKeyUp={(data) => handleKeyUp(data)}
                             />
+                    </View>
+                }
+
+                {
+                    type == 2 &&
+                    <View style={{width: '100%', flexDirection: 'row', marginTop: 15, paddingHorizontal: 5}}>
+                        <Text
+                            style={{flex:1, fontSize: 18, alignSelf:'center'}}
+                            >
+                            File Upload
+                        </Text>              
+                        <Button title="Choose File" buttonStyle={{backgroundColor:stylesGlobal.back_color,borderRadius:6}} onPress = {() => onShowDocumentPicker()} />
                     </View>
                 }
 
