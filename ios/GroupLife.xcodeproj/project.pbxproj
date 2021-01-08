@@ -67,6 +67,7 @@
 		7C1604CFDE274CFD8CD4AC4E /* Pods-GroupLife-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GroupLife-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-GroupLife-tvOSTests/Pods-GroupLife-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		7C9D95DFD8494573A8DBB01B /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = GroupLife/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8493EC3225A7E681006ED4CE /* GroupLife.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = GroupLife.entitlements; path = GroupLife/GroupLife.entitlements; sourceTree = "<group>"; };
 		84A03ABEB219219890C5E831 /* libPods-GroupLife.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GroupLife.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8958815488D5AE2B722D5B30 /* Pods-GroupLife-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GroupLife-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-GroupLife-tvOS/Pods-GroupLife-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		95134CF658034D7AB5D6DCD3 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
@@ -143,6 +144,7 @@
 		13B07FAE1A68108700A75B9A /* GroupLife */ = {
 			isa = PBXGroup;
 			children = (
+				8493EC3225A7E681006ED4CE /* GroupLife.entitlements */,
 				9F001E982544ED50001535CD /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -337,6 +339,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = PH7DDRVMV2;
 						LastSwiftMigration = 1120;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
@@ -777,8 +780,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = GroupLife/GroupLife.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = PH7DDRVMV2;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = GroupLife/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -801,8 +805,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = GroupLife/GroupLife.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 8K8PNJN4TK;
 				INFOPLIST_FILE = GroupLife/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (

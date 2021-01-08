@@ -6,19 +6,24 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import RadioButtonRN from 'radio-buttons-react-native';
 import { Card } from 'react-native-material-ui';
 import {actions, getContentCSS, RichEditor, RichToolbar} from 'react-native-pell-rich-editor';
+import * as Progress from 'react-native-progress';
+import DocumentPicker from 'react-native-document-picker';
+import ImagePicker from 'react-native-image-picker';
 
 import { stylesGlobal } from '../../styles/stylesGlobal';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { SwipeListView } from 'react-native-swipe-list-view';
 
 import firebase from '../../../database/firebase';
-import { firestore, storage} from '../../../database/firebase';
+import { firestore } from '../../../database/firebase';
 import { Icon } from 'react-native-material-ui';
+import storage from '@react-native-firebase/storage';
 
 export default function MaterialCreatePage(props) {
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
     const [type, setType] = useState(1)
+    const [isUploading, setUploading] = useState(false)
+    const [upload_progress, setUploadProgress] = useState(0)
+    const [filename, setFileName] = useState("")
 
     const material_type_list = [
         { label: 'Freeform Text', type: 1},
@@ -29,6 +34,8 @@ export default function MaterialCreatePage(props) {
 
     const richText = React.createRef();
     linkModal = React.createRef();
+
+    var downloadUrl = "";
 
     useEffect(() => {
         setContent("Hello <b>World</b> <p>this is a new paragraph</p> <p>this is another new paragraph</p>")        
@@ -64,8 +71,101 @@ export default function MaterialCreatePage(props) {
         linkModal.current?.setModalVisible(true);
     }
 
-    const onShowDocumentPicker = () => {
-        
+    const onShowDocumentPicker1 = async() => {
+        // Pick a single file
+        try {
+            const res = await DocumentPicker.pick({
+                type: [DocumentPicker.types.images],
+            });
+            console.log(
+                res.uri,
+                res.type, // mime type
+                res.name,
+                res.size
+            );
+
+            uploadFile(res.uri, res.name, res.type, res.size);
+
+        } catch (err) {
+            if (DocumentPicker.isCancel(err)) {
+                // User cancelled the picker, exit any dialogs or menus and move on
+            } else {
+                throw err;
+            }
+        }
+    }
+
+    const onShowDocumentPicker = async() => {
+        var options = {
+            title: 'Select Image',
+            mediaType: 'photo',
+            quality: 1.0,
+            allowsEditing: true,
+            noData: true,
+            storageOptions: {
+                skipBackup: true,
+                path: 'images'
+            }
+        };
+
+        ImagePicker.showImagePicker(options, (response) => {
+
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            } else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            } else {
+                var uri = response.uri;
+                
+                uploadFile(uri, "document", "pdf", 100);               
+            }
+            
+        });
+    }
+
+
+    const uploadFile = async(uri, name, type, size) => {
+        const fname = firebase.auth().currentUser.uid + "_" + name;
+        console.log('filename------------', fname);
+
+        setFileName(name)
+
+        const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+        console.log("uploadUri-----------", uploadUri);
+
+        uploadTask = storage().ref("/materials/" + fname).putFile(uploadUri)
+        setUploading(true);
+        uploadTask.on( 'state_changed', async(snapshot) => {
+                switch (snapshot.state) {
+                    case 'running':
+                        var progress = (snapshot.bytesTransferred / snapshot.totalBytes);
+                        if( progress <= 1.0 )
+                            setUploadProgress(progress)
+
+                        console.log(snapshot.bytesTransferred + ' is transferred in total ' + snapshot.totalBytes);  
+                        break;
+                    case 'success':
+                        // snapshot.ref.getDownloadURL().then(downloadUrl => {
+                        //     console.log('---------- success = ', downloadUrl);                            
+                        // });
+
+                        downloadUrl = await snapshot.ref.getDownloadURL();
+                        console.log('---------- success = ', downloadUrl); 
+
+                        setUploading(false);
+
+                        break;
+                    default:
+                        break;
+                }
+            },
+            err => {
+                console.error(err);               
+                setUploading(false);                
+            },
+        )
     }
 
     return (
@@ -122,13 +222,19 @@ export default function MaterialCreatePage(props) {
 
                 {
                     type == 2 &&
-                    <View style={{width: '100%', flexDirection: 'row', marginTop: 15, paddingHorizontal: 5}}>
-                        <Text
-                            style={{flex:1, fontSize: 18, alignSelf:'center'}}
-                            >
-                            File Upload
-                        </Text>              
-                        <Button title="Choose File" buttonStyle={{backgroundColor:stylesGlobal.back_color,borderRadius:6}} onPress = {() => onShowDocumentPicker()} />
+                    <View>
+                        <View style={{width: '100%', flexDirection: 'row', marginTop: 15, paddingHorizontal: 5}}>
+                            <Text
+                                style={{flex:1, fontSize: 18, alignSelf:'center'}}
+                                >
+                                File Upload
+                            </Text>              
+                            <Button title="Choose File" buttonStyle={{backgroundColor:stylesGlobal.back_color,borderRadius:6}} onPress = {() => onShowDocumentPicker()} />
+                        </View>
+
+                        <View style={{width: '100%', alignItems: 'center', marginVertical: 10}}>
+                            <Text style={{fontSize: 18}}>{filename}</Text>
+                        </View>
                     </View>
                 }
 
@@ -146,6 +252,12 @@ export default function MaterialCreatePage(props) {
                     
 
             </KeyboardAwareScrollView>
+
+            {
+                isUploading && <View style={stylesGlobal.preloader}>
+                    <Progress.Bar progress={upload_progress} width={200} />
+                </View>
+            } 
         </View>
     );
 }
