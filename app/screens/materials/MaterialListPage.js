@@ -51,12 +51,12 @@ export default function MaterialListPage(props) {
     };
 
     
-    const onCreated = data => {
+    const onRefresh = data => {
         refreshList();
     }
 
     const onGoCreate = () => {
-        props.navigation.navigate('MaterialCreate', { group: group, onCreated: onCreated });
+        props.navigation.navigate('MaterialCreate', { group: group, onRefresh: onRefresh });
     }
 
     const refreshList = async() => {
@@ -80,9 +80,15 @@ export default function MaterialListPage(props) {
         setLoading(false);
     }
 
+    const onPressRow = (item) => {
+        console.log(item);
+
+        props.navigation.navigate('MaterialDetail', { group: group, onRefresh: onRefresh });
+    }
+
     const renderItem = data => (
         <TouchableHighlight
-            onPress={() => console.log('You touched me')}
+            onPress={() => onPressRow(data.item)}
             style={styles.rowFront}
             underlayColor={'#AAA'}
         >

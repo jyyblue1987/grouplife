@@ -43,8 +43,8 @@ export default function MaterialCreatePage(props) {
     var fileType = "";
     
     useEffect(() => {
-        setContent("Hello <b>World</b> <p>this is a new paragraph</p> <p>this is another new paragraph</p>")        
-    })
+        
+    }, [])
 
     const onSelectType = (item) => {
         setType(item.type);
@@ -94,7 +94,7 @@ export default function MaterialCreatePage(props) {
 
             const { navigation, route } = props;
             navigation.goBack();
-            route.params.onCreated({ created: true });
+            route.params.onRefresh({ created: true });
         }
         else
         {

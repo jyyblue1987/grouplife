@@ -29,6 +29,7 @@ import EventDetailPage from './app/screens/calendar/EventDetailPage';
 import MemberCreatePage from './app/screens/profile/MemberCreatePage';
 import MaterialListPage from './app/screens/materials/MaterialListPage';
 import MaterialCreatePage from './app/screens/materials/MaterialCreatePage';
+import MaterialDetailPage from './app/screens/materials/MaterialDetailPage';
 
 const Stack = createStackNavigator();
 
@@ -131,7 +132,12 @@ export default class App extends Component {
 						}} 
 					/>      
 
-
+					<Stack.Screen name="MaterialDetail" component={MaterialDetailPage} 
+						options={{
+							title: 'Material Detail',		
+							headerBackTitle: 'Back' 					
+						}} 
+					/>      
                 </Stack.Navigator>
             </NavigationContainer>
 
