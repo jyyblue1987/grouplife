@@ -18,30 +18,24 @@ import { Icon } from 'react-native-material-ui';
 export default function MaterialCreatePage(props) {
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
+    const [type, setType] = useState(1)
+
     const material_type_list = [
         { label: 'Freeform Text', type: 1},
         { label: 'Upload File', type: 2 }
     ];
 
-    const initHTML = `<br/>
-            <center><b onclick="_.sendEvent('TitleClick')" id="title" contenteditable="false">Rich Editor</b></center>
-            <center>
-            <a href="https://github.com/wxik/react-native-rich-editor">React Native</a>
-            <span>And</span>
-            <a href="https://github.com/wxik/flutter-rich-editor">Flutter</a>
-            </center>
-            <br/>            
-            <br/>Click the picture to switch<br/><br/>
-            `;
+    const initHTML = "";
 
     const richText = React.createRef();
+    linkModal = React.createRef();
 
     useEffect(() => {
         setContent("Hello <b>World</b> <p>this is a new paragraph</p> <p>this is another new paragraph</p>")        
     })
 
-    const onSelectType = (type) => {
-        console.log(type);
+    const onSelectType = (item) => {
+        setType(item.type);
     }
 
     const onEditorInitialized = () => {
@@ -65,6 +59,11 @@ export default function MaterialCreatePage(props) {
         richText.current?.setContentHTML(initHTML);
     }
 
+    const onInsertLink = () => {
+        // this.richText.current?.insertLink('Google', 'http://google.com');
+        linkModal.current?.setModalVisible(true);
+    }
+
     return (
         <View style={styles.container}>
             <KeyboardAwareScrollView style={{width:'100%'}}>
@@ -85,23 +84,39 @@ export default function MaterialCreatePage(props) {
                 </Card>
 
                 <TextInput
-                        style={[stylesGlobal.inputStyle, {marginTop: 35, marginLeft: 20}]}
+                        style={[stylesGlobal.inputStyle, {marginTop: 35, marginLeft: 20, height:30}]}
                         placeholder="Title"
                         autoCapitalize = 'none'
+                        multiline={true}
                         value={title}                        
                         onChangeText={(val) => setTitle(val)}
                     />
 
-                <RichEditor
-                    ref={richText}
-                    initialContentHTML={initHTML}
-                    editorInitializedCallback={() => onEditorInitialized()}
-                    onChange={(html) => onChangeHTML(html)}
-                    onFocus={() => onChangeHTML("Focus")}
-                    onKeyUp={(data) => handleKeyUp(data)}
-                    />
+                {
+                    type == 1 && 
+                    <View>
+                        <RichToolbar
+                                style={[styles.richBar]}
+                                flatContainerStyle={styles.flatStyle}
+                                editor={richText}
+                                selectedIconTint={'#2095F2'}
+                                disabledIconTint={'#bfbfbf'}
+                                onInsertLink={onInsertLink}
+                            />
 
-                <View style={{width: '100%', flexDirection: 'row'}}>
+                        <RichEditor
+                            ref={richText}
+                            initialContentHTML={initHTML}
+                            style={styles.rich}
+                            editorInitializedCallback={() => onEditorInitialized()}
+                            onChange={(html) => onChangeHTML(html)}
+                            onFocus={() => onChangeHTML("Focus")}
+                            onKeyUp={(data) => handleKeyUp(data)}
+                            />
+                    </View>
+                }
+
+                <View style={{width: '100%', flexDirection: 'row', marginTop: 15}}>
                     <TouchableOpacity style = {{flex: 1, height: 40, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center', marginHorizontal: 5}} 
                         onPress = {() => onSaveMaterial()}>
                         <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 16}]}>Save</Text>
@@ -126,5 +141,19 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         paddingVertical: 20,
         paddingHorizontal: 10,
-    }
+    },
+
+    richBar: {
+        borderColor: '#efefef',
+        borderTopWidth: StyleSheet.hairlineWidth,
+    },
+
+    flatStyle: {
+        paddingHorizontal: 12,
+    },
+
+    rich: {
+        minHeight: 300,
+        flex: 1,
+    },
 });  
