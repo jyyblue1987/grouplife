@@ -83,7 +83,7 @@ export default function MaterialListPage(props) {
     const onPressRow = (item) => {
         console.log(item);
 
-        props.navigation.navigate('MaterialDetail', { group: group, onRefresh: onRefresh });
+        props.navigation.navigate('MaterialDetail', { group: group, material: item, onRefresh: onRefresh });
     }
 
     const renderItem = data => (
