@@ -10,16 +10,19 @@ import { useFocusEffect } from '@react-navigation/native';
 import firebase from '../../../database/firebase';
 import { firestore, storage} from '../../../database/firebase';
 
+import Moment from 'moment';
+
 export default function MaterialListPage(props) {
     const [material_list, setMaterialList] = useState([]);
     const [isLoading, setLoading] = useState(false);
-
+    
     useEffect(() => {
         console.log("useEffect");
         refreshList();
     }, []);
 
     const group = props.route.params.group;
+    const isAdmin = firebase.auth().currentUser.uid == group.created_by;
 
     const closeRow = (rowMap, rowKey) => {
         if (rowMap[rowKey]) {
@@ -84,7 +87,7 @@ export default function MaterialListPage(props) {
             underlayColor={'#AAA'}
         >
             <View>
-                <Text style={{fontSize: 17}}>{data.item.title}</Text>
+                <Text style={{fontSize: 17}}>{Moment(data.item.created_at).format('MMM D')}th - {data.item.title}</Text>
             </View>
         </TouchableHighlight>
     );
@@ -106,7 +109,7 @@ export default function MaterialListPage(props) {
             <SwipeListView
                 data={material_list}
                 renderItem={renderItem}
-                renderHiddenItem={renderHiddenItem}                
+                renderHiddenItem={isAdmin ? renderHiddenItem : null}                
                 rightOpenValue={-75}
                 previewRowKey={'0'}
                 previewOpenValue={-40}
