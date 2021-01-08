@@ -1,20 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {Component} from 'react';
 
 import { StyleSheet, View, TouchableOpacity, Text, TouchableHighlight, ActivityIndicator } from 'react-native';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { SwipeListView } from 'react-native-swipe-list-view';
-
+import { useFocusEffect } from '@react-navigation/native';
+  
 import firebase from '../../../database/firebase';
 import { firestore, storage} from '../../../database/firebase';
 
 export default function MaterialListPage(props) {
-    const [material_list, setMaterialList] = useState(
-        Array(20)
-            .fill('')
-            .map((_, i) => ({ key: `${i}`, text: `item #${i}` }))
-    );
+    const [material_list, setMaterialList] = useState([]);
+    const [isLoading, setLoading] = useState(false);
+
+    useEffect(() => {
+        console.log("useEffect");
+        refreshList();
+    }, []);
 
     const group = props.route.params.group;
 
@@ -24,17 +27,55 @@ export default function MaterialListPage(props) {
         }
     };
 
-    const deleteRow = (rowMap, rowKey) => {
+    const deleteRow = async(rowMap, rowKey) => {
         closeRow(rowMap, rowKey);
-        const newData = [...material_list];
-        const prevIndex = material_list.findIndex(item => item.key === rowKey);
-        newData.splice(prevIndex, 1);
-        setMaterialList(newData);
+
+        setLoading(true);
+        
+        await firestore.collection("group_list")
+                    .doc(group.id)
+                    .collection("material_list")
+                    .doc(rowKey)
+                    .delete();
+
+        console.log("delete row", rowKey);
+
+        refreshList();
     };
 
     const onRowDidOpen = rowKey => {
         console.log('This row opened', rowKey);
     };
+
+    
+    const onCreated = data => {
+        refreshList();
+    }
+
+    const onGoCreate = () => {
+        props.navigation.navigate('MaterialCreate', { group: group, onCreated: onCreated });
+    }
+
+    const refreshList = async() => {
+        setLoading(true);
+        var ref = await firestore.collection("group_list")
+            .doc(group.id)
+            .collection('material_list')
+            .orderBy('created_at', 'desc')
+            .get();
+
+        var list = [];
+        for(const doc of ref.docs)
+        {
+            var data = doc.data();
+            data.key = doc.id;
+            list.push(data);
+        }
+
+        setMaterialList(list);
+
+        setLoading(false);
+    }
 
     const renderItem = data => (
         <TouchableHighlight
@@ -43,7 +84,7 @@ export default function MaterialListPage(props) {
             underlayColor={'#AAA'}
         >
             <View>
-                <Text>I am {data.item.text} in a SwipeListView</Text>
+                <Text style={{fontSize: 17}}>{data.item.title}</Text>
             </View>
         </TouchableHighlight>
     );
@@ -59,13 +100,6 @@ export default function MaterialListPage(props) {
         </View>
     );
 
-    const onCreated = data => {
-        
-    }
-
-    const onGoCreate = () => {
-        props.navigation.navigate('MaterialCreate', { group: group, onCreated: onCreated });
-    }
 
     return (
         <View style={styles.container}>
@@ -100,6 +134,12 @@ export default function MaterialListPage(props) {
                     <FontAwesome5 name="plus"  size={30} color="#fff" />
                 </TouchableOpacity>
             }
+
+            {
+                isLoading && <View style={stylesGlobal.preloader}>
+                    <ActivityIndicator size="large" color="#9E9E9E"/>
+                </View>
+            }
         </View>
     );
    
@@ -119,10 +159,10 @@ const styles = StyleSheet.create({
     backTextWhite: {
         color: '#FFF',
     },
-    rowFront: {
-        alignItems: 'center',
-        backgroundColor: '#CCC',
-        borderBottomColor: 'black',
+    rowFront: {        
+        paddingHorizontal: 15,
+        backgroundColor: '#FFF',
+        borderBottomColor: 'gray',
         borderBottomWidth: 1,
         justifyContent: 'center',
         height: 50,
