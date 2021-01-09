@@ -3,5 +3,6 @@ module.exports = {
     FIREBASE_URL: 'https://us-central1-grouplife-dev.cloudfunctions.net/',  
 
     // Collection Names
+    GROUP_LIST: "group_list",
     PRAYER_REQUEST: "prayer_request_list",
 };

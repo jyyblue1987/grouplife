@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import { StyleSheet, View, TouchableOpacity, Text, TextInput, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, TextInput, ActivityIndicator, FlatList } from 'react-native';
 import { Card } from 'react-native-material-ui';
+import FastImage from 'react-native-fast-image';
+
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
@@ -17,6 +19,7 @@ export default function PrayerRequestPage(props) {
     const [isLoading, setLoading] = useState(false);
     const [isAdding, setAdding] = useState(false);
     const [message, setMessage] = useState("");
+    const [prayer_list, setPrayerList] = useState([]);
 
 
     useEffect(() => {
@@ -25,7 +28,25 @@ export default function PrayerRequestPage(props) {
     }, []);
 
     const refreshList = async() => {
-        
+        setLoading(true);
+
+        var ref = await firestore.collection(GLOBAL.GROUP_LIST)
+            .doc(group.id)
+            .collection(GLOBAL.PRAYER_REQUEST)
+            .orderBy('created_at', 'desc')
+            .get();
+
+        var list = [];
+        for(const doc of ref.docs)
+        {
+            var data = doc.data();
+            data._id = doc.id;            
+            list.push(data);
+        }
+
+        setPrayerList(list);
+
+        setLoading(false);
     }
 
     const onGoCreate = () => {
@@ -72,6 +93,19 @@ export default function PrayerRequestPage(props) {
         console.log("Member", member);
     }
 
+    const renderRow = (item) => {
+		return (			
+            <Card style={{container:{borderRadius: 6}}}>
+                <View style={{flex:1, flexDirection: 'row'}}>
+                    <View style={{justifyContent: "center"}}>
+                        <FastImage style = {{width: 100, height: '100%'}} 
+                            source = {{uri: item.member.picture}}
+                            />
+                    </View>                    
+                </View> 
+            </Card>
+		)
+	}
 
     return (
         <View style={styles.container}>
@@ -96,6 +130,15 @@ export default function PrayerRequestPage(props) {
                     </TouchableOpacity>
                 </Card>
             }
+
+            <FlatList
+                data={prayer_list}
+                renderItem={({item}) => renderRow(item)}
+                keyExtractor={(item, index) => item._id}
+                onRefresh={() => refreshList()}
+                refreshing={isLoading}
+                initialNumToRender={8}
+            />
             {                
                 <TouchableOpacity
                     style={{
