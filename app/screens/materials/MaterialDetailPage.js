@@ -4,6 +4,8 @@ import { StyleSheet, View, TextInput, TouchableOpacity, Text, Button } from 'rea
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { WebView } from 'react-native-webview';
 import { Card } from 'react-native-material-ui';
+import * as Progress from 'react-native-progress';
+
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
 import RNFS from 'react-native-fs';
@@ -15,7 +17,8 @@ import Moment from 'moment';
 import Share from 'react-native-share';
 
 export default function MaterialDetailPage(props) {
-    const [isUploading, setUploading] = useState(false)
+    const [isDownloading, setDownloading] = useState(false)
+    const [download_progress, setDownloadProgress] = useState(0)
 
     const group = props.route.params.group;
     const material = props.route.params.material;
@@ -41,8 +44,23 @@ export default function MaterialDetailPage(props) {
         RNFS.downloadFile({
             fromUrl: material.content,
             toFile: local_path,
+            //headers
+            background: true, // Continue the download in the background after the app terminates (iOS only)**
+            discretionary: true, // Allow the OS to control the timing and speed of the download to improve perceived performance  (iOS only)**
+            cacheable: true, // Whether the download can be stored in the shared NSURLCache (iOS only, defaults to true)**
+        
+            begin: (res) => {
+                console.log("Response begin ===\n\n");
+                console.log(res);
+                setDownloading(true);
+            },
+            progress: (res) => {
+                let progress = res.bytesWritten / res.contentLength;
+                setDownloadProgress(progress);
+            }
           }).promise.then((r) => {
             console.log("Download is done", r);
+            setDownloading(false);
             shareFile(local_path)
           });
     }
@@ -88,8 +106,8 @@ export default function MaterialDetailPage(props) {
             </View>
 
             {
-                isUploading && <View style={stylesGlobal.preloader}>
-                    <Progress.Bar progress={upload_progress} width={200} />
+                isDownloading && <View style={stylesGlobal.preloader}>
+                    <Progress.Bar progress={download_progress} width={200} />
                 </View>
             } 
 
