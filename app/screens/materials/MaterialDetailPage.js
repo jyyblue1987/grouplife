@@ -6,6 +6,8 @@ import { WebView } from 'react-native-webview';
 import { Card } from 'react-native-material-ui';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
+import RNFS from 'react-native-fs';
+
 import firebase from '../../../database/firebase';
 import { firestore } from '../../../database/firebase';
 
@@ -33,7 +35,15 @@ export default function MaterialDetailPage(props) {
     }
 
     const onDownloadFile = () => {
+        local_path = `${RNFS.DocumentDirectoryPath}/` + material.filename + '.' + material.filetype;
+        console.log("Start Download", local_path);
 
+        RNFS.downloadFile({
+            fromUrl: material.content,
+            toFile: local_path,
+          }).promise.then((r) => {
+            console.log("Download is done", r);
+          });
     }
 
     return (
