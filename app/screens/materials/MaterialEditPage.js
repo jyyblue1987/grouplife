@@ -20,33 +20,37 @@ import storage from '@react-native-firebase/storage';
 import Moment from 'moment';
 
 export default function MaterialCreatePage(props) {
+    const group = props.route.params.group;
+    const material = props.route.params.material;
+
     const [title, setTitle] = useState("")
-    const [type, setType] = useState(1)
+    const [type, setType] = useState(material.type)
     const [isUploading, setUploading] = useState(false)
     const [upload_progress, setUploadProgress] = useState(0)
     const [filename, setFileName] = useState("")
     const [downloadUrl, setDownloadUrl] = useState("")
     const [fileType, setFileType] = useState("")
 
-    const group = props.route.params.group;
+    
 
     const material_type_list = [
         { label: 'Freeform Text', type: 1},
         { label: 'Upload File', type: 2 }
     ];
 
-    const initHTML = "";
+    const initHTML = material.type == 1 ? material.content : '';
 
     const richText = React.createRef();
     linkModal = React.createRef();
 
-    
     useEffect(() => {
-        
+        var title = Moment(material.created_at).format('MMM D') + "th - " + material.title;
+        props.navigation.setOptions({title: title});
     }, [])
 
     const onSelectType = (item) => {
         setType(item.type);
+        
     }
 
     const onEditorInitialized = () => {
@@ -214,7 +218,7 @@ export default function MaterialCreatePage(props) {
                     <RadioButtonRN 
                         data={material_type_list}
                         selectedBtn={e => onSelectType(e)}
-                        initial={1}
+                        initial={type}
                         box={false}
                         icon={
                             <Icon
