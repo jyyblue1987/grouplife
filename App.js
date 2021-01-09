@@ -30,6 +30,7 @@ import MemberCreatePage from './app/screens/profile/MemberCreatePage';
 import MaterialListPage from './app/screens/materials/MaterialListPage';
 import MaterialCreatePage from './app/screens/materials/MaterialCreatePage';
 import MaterialDetailPage from './app/screens/materials/MaterialDetailPage';
+import MaterialEditPage from './app/screens/materials/MaterialEditPage';
 
 const Stack = createStackNavigator();
 
@@ -137,7 +138,14 @@ export default class App extends Component {
 							title: 'Material Detail',		
 							headerBackTitle: 'Back' 					
 						}} 
-					/>      
+					/>    
+
+					<Stack.Screen name="MaterialEdit" component={MaterialEditPage} 
+						options={{
+							title: 'Material Edit',		
+							headerBackTitle: 'Back' 					
+						}} 
+					/>     
                 </Stack.Navigator>
             </NavigationContainer>
 

@@ -32,9 +32,14 @@ export default function MaterialDetailPage(props) {
 
     }, []);
 
+    const onRefresh = data => {
+        route.params.onRefresh({ created: true });        
+    }
+
     const onGoEdit = () => {
         console.log("onGoEdit");
 
+        props.navigation.navigate('MaterialEdit', { group: group, material: material, onRefresh: onRefresh });
     }
 
     const onDownloadFile = () => {
