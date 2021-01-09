@@ -71,7 +71,7 @@ export default function MaterialListPage(props) {
         for(const doc of ref.docs)
         {
             var data = doc.data();
-            data.key = doc.id;
+            data.key = doc.id;            
             list.push(data);
         }
 

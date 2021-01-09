@@ -23,13 +23,13 @@ export default function MaterialCreatePage(props) {
     const group = props.route.params.group;
     const material = props.route.params.material;
 
-    const [title, setTitle] = useState("")
+    const [title, setTitle] = useState(material.title)
     const [type, setType] = useState(material.type)
     const [isUploading, setUploading] = useState(false)
     const [upload_progress, setUploadProgress] = useState(0)
     const [filename, setFileName] = useState("")
     const [downloadUrl, setDownloadUrl] = useState("")
-    const [fileType, setFileType] = useState("")
+    const [fileType, setFileType] = useState(material.filetype)
 
     
 
@@ -46,6 +46,8 @@ export default function MaterialCreatePage(props) {
     useEffect(() => {
         var title = Moment(material.created_at).format('MMM D') + "th - " + material.title;
         props.navigation.setOptions({title: title});
+
+        console.log("Material", material);
     }, [])
 
     const onSelectType = (item) => {
@@ -74,8 +76,8 @@ export default function MaterialCreatePage(props) {
         data.type = type;
 
         var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
-        data.created_at = cur_time;
-        data.created_by = firebase.auth().currentUser.uid;
+        data.updated_at = cur_time;
+        data.updated_by = firebase.auth().currentUser.uid;
         
         if( type == 1 ) // free text
             data.content = html;
@@ -88,23 +90,19 @@ export default function MaterialCreatePage(props) {
 
         console.log(data);
 
-        const ref = firestore.collection("group_list")
+        const ref = await firestore.collection("group_list")
             .doc(group.id)
             .collection("material_list")
-            .add(data);
+            .doc(material.key)
+            .update(data);
 
-        if( ref )
-        {          
-            console.log("Material is created with");
+        data.key = material.key;
+             
+        console.log("Material is updated with");
 
-            const { navigation, route } = props;
-            navigation.goBack();
-            route.params.onRefresh({ created: true });
-        }
-        else
-        {
-            console.error("Error");
-        }
+        const { navigation, route } = props;
+        navigation.goBack();
+        route.params.onRefresh({ data: data });        
     }
 
     const onCancelMaterial = () => {                

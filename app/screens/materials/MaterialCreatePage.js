@@ -58,7 +58,7 @@ export default function MaterialCreatePage(props) {
     }
 
     const handleKeyUp = data => {
-        console.log('Keyup:', data);
+        // console.log('Keyup:', data);
     }
 
     const onSaveMaterial = async() => {
@@ -84,7 +84,7 @@ export default function MaterialCreatePage(props) {
 
         console.log(data);
 
-        const ref = firestore.collection("group_list")
+        const ref = await firestore.collection("group_list")
             .doc(group.id)
             .collection("material_list")
             .add(data);

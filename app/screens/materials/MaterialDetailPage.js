@@ -19,9 +19,9 @@ import Share from 'react-native-share';
 export default function MaterialDetailPage(props) {
     const [isDownloading, setDownloading] = useState(false)
     const [download_progress, setDownloadProgress] = useState(0)
+    const [material, setMaterial] = useState(props.route.params.material);
 
-    const group = props.route.params.group;
-    const material = props.route.params.material;
+    const group = props.route.params.group;    
     const isAdmin = firebase.auth().currentUser.uid == group.created_by;
 
     useEffect(() => {
@@ -33,7 +33,12 @@ export default function MaterialDetailPage(props) {
     }, []);
 
     const onRefresh = data => {
-        route.params.onRefresh({ created: true });        
+        const { navigation, route } = props;
+
+        route.params.onRefresh({ created: true });     
+        console.log("Updated Material", data);
+
+        setMaterial(data.data);
     }
 
     const onGoEdit = () => {
@@ -79,6 +84,9 @@ export default function MaterialDetailPage(props) {
     return (
         <View style={styles.container}>
             <View style={{width:'100%'}}>
+                <Text style={[styles.title, {}]}>
+                    {material.title}
+                </Text>
                 {
                     material.type == 1 &&  
                     <View style={{height: '100%'}}>                        
@@ -156,5 +164,12 @@ const styles = StyleSheet.create({
         textDecorationLine: "underline",
         textDecorationStyle: "solid",
         textDecorationColor: stylesGlobal.back_color,
+    },
+
+    title: {
+        fontSize: 17,
+        color: stylesGlobal.back_color,
+        marginBottom: 15,
+        marginHorizontal: 10,     
     }
 });
