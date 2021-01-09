@@ -31,6 +31,7 @@ import MaterialListPage from './app/screens/materials/MaterialListPage';
 import MaterialCreatePage from './app/screens/materials/MaterialCreatePage';
 import MaterialDetailPage from './app/screens/materials/MaterialDetailPage';
 import MaterialEditPage from './app/screens/materials/MaterialEditPage';
+import PrayerRequestPage from './app/screens/prayer/PrayerRequestPage';
 
 const Stack = createStackNavigator();
 
@@ -146,6 +147,13 @@ export default class App extends Component {
 							headerBackTitle: 'Back' 					
 						}} 
 					/>     
+
+					<Stack.Screen name="PrayerRequest" component={PrayerRequestPage} 
+						options={{
+							title: 'Prayer Request',		
+							headerBackTitle: 'Back' 					
+						}} 
+					/>    
                 </Stack.Navigator>
             </NavigationContainer>
 

@@ -102,6 +102,16 @@ export default function GroupDetailPage(props) {
         props.navigation.navigate('MaterialList', {group: group})
     }
 
+    const onPressPrayer = () => {
+        console.log("onPressPrayer");
+        if (!isMember) {
+            alert("You are not a member of this group. Please join to this group")
+            return
+        }
+
+        props.navigation.navigate('PrayerRequest', {group: group})
+    }
+
     const onCreated = () => {
         console.log("onCreated");
     }
@@ -261,7 +271,8 @@ export default function GroupDetailPage(props) {
 
                 {/* Prayer Requests */}
                 <Card style={{container: {borderRadius: 10}}}>
-                    <TouchableOpacity style={styles.cardButtonStyle}                    
+                    <TouchableOpacity style={styles.cardButtonStyle} 
+                        onPress={() => onPressPrayer() }                  
                     >
                         <MaterialIcons name="schedule" size={22} style={styles.iconStyle} />
                         <Text style={styles.textStyle}>Prayer Requests</Text>

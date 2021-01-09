@@ -5,10 +5,9 @@ import { StyleSheet, View, TouchableOpacity, Text, TouchableHighlight, ActivityI
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { SwipeListView } from 'react-native-swipe-list-view';
-import { useFocusEffect } from '@react-navigation/native';
   
 import firebase from '../../../database/firebase';
-import { firestore, storage} from '../../../database/firebase';
+import { firestore } from '../../../database/firebase';
 
 import Moment from 'moment';
 
