@@ -9,6 +9,7 @@ import firebase from '../../../database/firebase';
 import { firestore } from '../../../database/firebase';
 
 import Moment from 'moment';
+const GLOBAL = require('../../Globals');
 
 export default function PrayerRequestPage(props) {
     const group = props.route.params.group;    
@@ -34,8 +35,41 @@ export default function PrayerRequestPage(props) {
 
 
     const onAddRequest = async() => {
-        setAdding(false);
         console.log("Message", message);
+        setLoading(true);
+
+        var data = {};
+
+        data.message = message;
+        var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
+        data.created_at = cur_time;
+        data.created_by = firebase.auth().currentUser.uid;
+
+        var user = firebase.auth().currentUser;
+
+        var ref = await firestore.collection("member_list")
+            .where("user_id", "==", user.uid)
+            .get();
+
+        var member = undefined;
+        for(const doc of ref.docs)
+        {
+            var data1 = doc.data();
+            member = data1;
+            break;
+        }
+
+        data.member = member;
+
+        await firestore.collection("group_list")
+            .doc(group.id)
+            .collection(GLOBAL.PRAYER_REQUEST)
+            .add(data);
+
+        setAdding(false);
+        setLoading(false); 
+        
+        console.log("Member", member);
     }
 
 
