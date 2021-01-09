@@ -12,7 +12,7 @@ import firebase from '../../../database/firebase';
 import { firestore } from '../../../database/firebase';
 
 import Moment from 'moment';
-
+import Share from 'react-native-share';
 
 export default function MaterialDetailPage(props) {
     const [isUploading, setUploading] = useState(false)
@@ -43,6 +43,13 @@ export default function MaterialDetailPage(props) {
             toFile: local_path,
           }).promise.then((r) => {
             console.log("Download is done", r);
+            shareFile(local_path)
+          });
+    }
+
+    const shareFile = (path) => {
+        Share.open({
+            url: path,            
           });
     }
 
