@@ -57,6 +57,13 @@ export default function MaterialDetailPage(props) {
                             >
                             <Text style={styles.link}>{material.filename}</Text>
                         </Card>
+
+                        <View style={{height: '100%', marginTop: 5}}> 
+                            <WebView 
+                                originWhitelist={['*']}
+                                source={{ uri: material.content }}                                         
+                            />
+                        </View>
                     </View>
                 }
                 

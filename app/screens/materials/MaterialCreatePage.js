@@ -21,11 +21,12 @@ import Moment from 'moment';
 
 export default function MaterialCreatePage(props) {
     const [title, setTitle] = useState("")
-    const [content, setContent] = useState("")
     const [type, setType] = useState(1)
     const [isUploading, setUploading] = useState(false)
     const [upload_progress, setUploadProgress] = useState(0)
     const [filename, setFileName] = useState("")
+    const [downloadUrl, setDownloadUrl] = useState("")
+    const [fileType, setFileType] = useState("")
 
     const group = props.route.params.group;
 
@@ -39,8 +40,6 @@ export default function MaterialCreatePage(props) {
     const richText = React.createRef();
     linkModal = React.createRef();
 
-    var downloadUrl = "";
-    var fileType = "";
     
     useEffect(() => {
         
@@ -82,6 +81,8 @@ export default function MaterialCreatePage(props) {
             data.filename = filename;
             data.filetype = fileType;
         }
+
+        console.log(data);
 
         const ref = firestore.collection("group_list")
             .doc(group.id)
@@ -170,7 +171,8 @@ export default function MaterialCreatePage(props) {
         const fname = firebase.auth().currentUser.uid + "_" + name;
         console.log('filename------------', fname);
 
-        setFileName(name)
+        setFileName(name);
+        setFileType(type);
 
         const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
         console.log("uploadUri-----------", uploadUri);
@@ -187,14 +189,11 @@ export default function MaterialCreatePage(props) {
                         console.log(snapshot.bytesTransferred + ' is transferred in total ' + snapshot.totalBytes);  
                         break;
                     case 'success':
-                        // snapshot.ref.getDownloadURL().then(downloadUrl => {
-                        //     console.log('---------- success = ', downloadUrl);                            
-                        // });
-
-                        downloadUrl = await snapshot.ref.getDownloadURL();
-                        console.log('---------- success = ', downloadUrl); 
+                        url = await snapshot.ref.getDownloadURL();
+                        console.log('---------- success = ', url); 
 
                         setUploading(false);
+                        setDownloadUrl(url);
 
                         break;
                     default:
