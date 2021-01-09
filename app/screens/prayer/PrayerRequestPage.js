@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
-import { StyleSheet, View, TouchableOpacity, Text, TouchableHighlight, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, TextInput, ActivityIndicator } from 'react-native';
+import { Card } from 'react-native-material-ui';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
@@ -13,6 +14,8 @@ export default function PrayerRequestPage(props) {
     const group = props.route.params.group;    
 
     const [isLoading, setLoading] = useState(false);
+    const [isAdding, setAdding] = useState(false);
+    const [message, setMessage] = useState("");
 
 
     useEffect(() => {
@@ -24,8 +27,41 @@ export default function PrayerRequestPage(props) {
         
     }
 
+    const onGoCreate = () => {
+        setAdding(true);
+        setMessage("");
+    }
+
+
+    const onAddRequest = async() => {
+        setAdding(false);
+        console.log("Message", message);
+    }
+
+
     return (
         <View style={styles.container}>
+            {
+                isAdding &&
+                <Card style={{container: {borderRadius: 5, padding: 10, justifyContent: 'center'}}}                
+                    >
+                    <Text style={{fontSize: 16}}>Add Prayer Request</Text>
+
+                    <TextInput
+                        style={[stylesGlobal.inputStyle, {height:80, marginTop: 20, marginBottom: 0}]}
+                        placeholder="Please write a request here..."                            
+                        multiline={true}
+                        autoCapitalize = 'none'
+                        value={message}
+                        onChangeText={(val) => setMessage(val)}
+                        />
+
+                    <TouchableOpacity style = {{backgroundColor: stylesGlobal.back_color, width: 80, justifyContent: 'center', alignItems: 'center', alignSelf: 'flex-end', marginTop: 5, padding: 5}} 
+                        onPress = {() => onAddRequest()}>
+                        <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 16}]}>Save</Text>
+                    </TouchableOpacity>
+                </Card>
+            }
             {                
                 <TouchableOpacity
                     style={{
