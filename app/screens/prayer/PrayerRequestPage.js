@@ -55,6 +55,11 @@ export default function PrayerRequestPage(props) {
 
             data.prayer_count = pray_collection.docs.length;
 
+            pray_self_collection = await prayer_ref.collection(GLOBAL.PRAYER_LIST)
+                                    .where("user_id", "==", user_id)
+                                    .get();
+            data.prayer_self_count = pray_self_collection.docs.length;
+
             comment_collection = await prayer_ref.collection(GLOBAL.COMMENT_LIST)
                 .get();
 
@@ -125,8 +130,7 @@ export default function PrayerRequestPage(props) {
             {
                 console.log("Not Exists");
                 // not pray
-                await ref.add({user_id, user_id});
-                item.prayer_count++;
+                await ref.add({user_id, user_id});                
             }
             else
             {
@@ -135,8 +139,7 @@ export default function PrayerRequestPage(props) {
                 for(const doc of prayer_list.docs)
                 {
                     await ref.doc(doc.id).delete();                          
-                }
-                item.prayer_count--;
+                }                
             }
         } catch(e) {
             console.log("Exception", e);
@@ -167,8 +170,8 @@ export default function PrayerRequestPage(props) {
                         <TouchableOpacity style={{flex:1, flexDirection: 'row', paddingLeft: 40, alignItems: 'center'}}
                             onPress={() => onPressPraying(item)}
                             >
-                            <FontAwesome5 name="praying-hands" size={30} style={{color: 'gray'}} />                            
-                            <Text style={{marginLeft: 10, fontSize: 17}}>{item.prayer_count}</Text>
+                            <FontAwesome5 name="praying-hands" size={30} style={{color: item.prayer_self_count > 0 ? stylesGlobal.back_color : 'gray'}} />                            
+                            <Text style={{marginLeft: 10, fontSize: 17, color: item.prayer_self_count > 0 ? stylesGlobal.back_color : 'black'}}>{item.prayer_count}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={{flex:1, flexDirection: 'row', paddingLeft: 40, alignItems: 'center'}}
                             onPress={() => onToggleComment(item)}
