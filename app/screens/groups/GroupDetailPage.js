@@ -274,7 +274,7 @@ export default function GroupDetailPage(props) {
                     <TouchableOpacity style={styles.cardButtonStyle} 
                         onPress={() => onPressPrayer() }                  
                     >
-                        <MaterialIcons name="schedule" size={22} style={styles.iconStyle} />
+                        <FontAwesome5 name="praying-hands" size={22} style={styles.iconStyle} />
                         <Text style={styles.textStyle}>Prayer Requests</Text>
                     </TouchableOpacity>
                 </Card>

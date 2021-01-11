@@ -89,19 +89,50 @@ export default function PrayerRequestPage(props) {
 
         setAdding(false);
         setLoading(false); 
-        
-        console.log("Member", member);
     }
 
-    const renderRow = (item) => {
+    const onPressPraying = () => {
+        
+    }
+
+    const onToggleComment = () => {
+        
+    }
+
+    const renderRow = (item) => {        
 		return (			
             <Card style={{container:{borderRadius: 6}}}>
-                <View style={{flex:1, flexDirection: 'row'}}>
-                    <View style={{justifyContent: "center"}}>
-                        <FastImage style = {{width: 100, height: '100%'}} 
+                <View style={{width: '100%', padding: 6}}>
+                    <View style={{width: '100%', alignItems: "center", flexDirection: 'row'}}>
+                        <FastImage style = {{width: 50, height: 50, borderRadius: 25, borderColor: stylesGlobal.back_color, borderWidth: 2}} 
                             source = {{uri: item.member.picture}}
-                            />
-                    </View>                    
+                            /> 
+                        <Text style={{fontSize: 16, marginLeft: 7}}>{item.member.first_name} {item.member.last_name}</Text>
+                        <View style={{flex:1}}>
+                            <Text style={{fontSize: 16, alignSelf: 'flex-end'}}>{Moment(item.created_at).format('MMM DD YYYY')}</Text>
+                        </View>
+                    </View>       
+                    <View style={{padding: 5}}>
+                        <Text style={{fontSize: 20}}>{item.message}</Text>
+                    </View>             
+                    <View style={{width: '100%', flexDirection: 'row', marginTop: 5}}>
+                        <TouchableOpacity style={{flex:1, flexDirection: 'row', paddingLeft: 40, alignItems: 'center'}}
+                            onPress={() => onPressPraying(item)}
+                            >
+                            <FontAwesome5 name="praying-hands" size={30} style={{color: 'gray'}} />                            
+                            <Text style={{marginLeft: 10, fontSize: 17}}>5</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{flex:1, flexDirection: 'row', paddingLeft: 40, alignItems: 'center'}}
+                            onPress={() => onToggleComment(item)}
+                            >
+                            <FontAwesome5 name="comment-alt" size={30} style={{color: 'gray'}} />                            
+                            <Text style={{marginLeft: 10, fontSize: 17}}>5</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style = {{width: '100%', borderWidth:0.5, borderColor:'lightgray', marginTop: 15, marginBottom: 7}} />
+
+                    
                 </View> 
             </Card>
 		)
