@@ -273,14 +273,20 @@ export default function PrayerRequestPage(props) {
         setPrayerList([...prayer_list]);
     }
 
+    const onPressProfile = (item) => {
+        props.navigation.navigate('MemberProfile', {user: item.member});
+    }
+
     const renderRow = (item) => {        
 		return (			
             <Card style={{container:{borderRadius: 6}}}>
                 <View style={{width: '100%', padding: 6}}>
                     <View style={{width: '100%', alignItems: "center", flexDirection: 'row'}}>
-                        <FastImage style = {{width: 50, height: 50, borderRadius: 25, borderColor: stylesGlobal.back_color, borderWidth: 2}} 
-                            source = {{uri: item.member.picture}}
-                            /> 
+                        <TouchableOpacity onPress={() => onPressProfile(item)}>
+                            <FastImage style = {{width: 50, height: 50, borderRadius: 25, borderColor: stylesGlobal.back_color, borderWidth: 2}} 
+                                source = {{uri: item.member.picture}}                                
+                                /> 
+                        </TouchableOpacity>
                         <Text style={{fontSize: 16, marginLeft: 7}}>{item.member.first_name} {item.member.last_name}</Text>
                         <View style={{flex:1}}>
                             <Text style={{fontSize: 16, alignSelf: 'flex-end'}}>{Moment(item.created_at).format('MMM DD YYYY')}</Text>
@@ -314,9 +320,12 @@ export default function PrayerRequestPage(props) {
                                     return (
                                         <View style={{width: '100%', padding: 6}} key={row._id}>
                                             <View style={{width: '100%', alignItems: "center", flexDirection: 'row'}}>
-                                                <FastImage style = {{width: 50, height: 50, borderRadius: 25, borderColor: stylesGlobal.back_color, borderWidth: 2}} 
-                                                    source = {{uri: row.member.picture}}
-                                                    /> 
+                                                <TouchableOpacity onPress={() => onPressProfile(row)}>
+                                                    <FastImage style = {{width: 50, height: 50, borderRadius: 25, borderColor: stylesGlobal.back_color, borderWidth: 2}} 
+                                                        source = {{uri: row.member.picture}}
+                                                        onPress={() => onPressProfile(row)}
+                                                        />
+                                                </TouchableOpacity> 
                                                 <Text style={{fontSize: 16, marginLeft: 7}}>{row.member.first_name} {row.member.last_name}</Text>
                                                 {
                                                     row.created_by == user.uid &&
