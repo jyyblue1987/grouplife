@@ -15,11 +15,12 @@ const GLOBAL = require('../../Globals');
 
 export default function PrayerRequestPage(props) {
     const group = props.route.params.group;    
-    const user_id = firebase.auth().currentUser.uid;
+    const user = firebase.auth().currentUser;
 
     const [isLoading, setLoading] = useState(false);
     const [isAdding, setAdding] = useState(false);
     const [message, setMessage] = useState("");
+    const [comment, setComment] = useState("");
     const [prayer_list, setPrayerList] = useState([]);
 
 
@@ -43,8 +44,6 @@ export default function PrayerRequestPage(props) {
             var data = doc.data();
             data._id = doc.id;       
             
-            firebase.auth().currentUser.uid;
-
             var prayer_ref = firestore.collection(GLOBAL.GROUP_LIST)
                 .doc(group.id)
                 .collection(GLOBAL.PRAYER_REQUEST)
@@ -56,7 +55,7 @@ export default function PrayerRequestPage(props) {
             data.prayer_count = pray_collection.docs.length;
 
             pray_self_collection = await prayer_ref.collection(GLOBAL.PRAYER_LIST)
-                                    .where("user_id", "==", user_id)
+                                    .where("user_id", "==", user.uid)
                                     .get();
             data.prayer_self_count = pray_self_collection.docs.length;
 
@@ -89,9 +88,7 @@ export default function PrayerRequestPage(props) {
         data.message = message;
         var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
         data.created_at = cur_time;
-        data.created_by = firebase.auth().currentUser.uid;
-
-        var user = firebase.auth().currentUser;
+        data.created_by = user.uid;
 
         var ref = await firestore.collection("member_list")
             .where("user_id", "==", user.uid)
@@ -124,7 +121,7 @@ export default function PrayerRequestPage(props) {
             .collection(GLOBAL.PRAYER_LIST);
 
         try {
-            var list = await ref.where("user_id", "==", user_id)
+            var list = await ref.where("user_id", "==", user.uid)
                 .get();
             
             if( list.docs.length < 1 )
@@ -132,7 +129,7 @@ export default function PrayerRequestPage(props) {
                 // Add Prayer
                 console.log("Not Exists");
                 // not pray
-                await ref.add({user_id, user_id});                
+                await ref.add({user_id: user.uid});                
                 item.prayer_count++;
                 item.prayer_self_count++;
             }
@@ -167,10 +164,73 @@ export default function PrayerRequestPage(props) {
     const onToggleComment = (item) => {
         item.comment_open = !item.comment_open;
 
+        setComment("");
+        refreshComment(item);
+    }
+
+    const onAddComment = async(item) => {
+        var ref = firestore.collection(GLOBAL.GROUP_LIST)
+            .doc(group.id)
+            .collection(GLOBAL.PRAYER_REQUEST)
+            .doc(item._id)
+            .collection(GLOBAL.COMMENT_LIST);
+        
+        try {            
+            // not pray
+            var data = {};
+            data.created_at = user.uid;
+            var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
+            data.created_at = cur_time;
+            data.comment = comment;
+
+            var member_ref = await firestore.collection("member_list")
+                .where("user_id", "==", user.uid)
+                .get();
+
+            var member = undefined;
+            for(const doc of member_ref.docs)
+            {
+                var data1 = doc.data();
+                member = data1;
+                break;
+            }
+
+            data.member = member;
+
+            await ref.add(data);                
+            
+        } catch(e) {
+            console.log("Exception", e);
+        }
+
+        await refreshComment();
+
+    }
+
+    const refreshComment = async(item) => {
+        var ref = await firestore.collection(GLOBAL.GROUP_LIST)
+            .doc(group.id)
+            .collection(GLOBAL.PRAYER_REQUEST)
+            .doc(item._id)
+            .collection(GLOBAL.COMMENT_LIST)
+            .get();
+
+        item.comment_count = ref.docs.length;
+        var list = [];
+        for(const doc of ref.docs) {
+            var data = doc.data();
+            data.i_id = doc.id;
+
+            list.push(data);
+        }
+
+        item.comment_list = list;
+
         prayer_list.forEach(row => {
             if( row._id == item._id )
             {
-                row.comment_open = item.comment_open;                
+                row.comment_count = item.comment_count;                
+                row.comment_list = item.comment_list;                
             }
         });
 
@@ -218,8 +278,8 @@ export default function PrayerRequestPage(props) {
                                 placeholder="Please write a comment..."                            
                                 multiline={true}
                                 autoCapitalize = 'none'
-                                value={message}
-                                
+                                value={comment}                               
+                                onChangeText={(val) => setComment(val)}
                                 />
 
                             <TouchableOpacity style = {{backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center', alignSelf: 'flex-end', marginTop: 5, paddingHorizontal: 10, paddingVertical: 5}} 
