@@ -162,10 +162,10 @@ export default function PrayerRequestPage(props) {
     }
 
     const onToggleComment = (item) => {
-        item.comment_open = !item.comment_open;
-
         setComment("");
-        refreshComment(item);
+
+        item.comment_open = !item.comment_open;        
+        refreshComment(item);        
     }
 
     const onAddComment = async(item) => {
@@ -203,36 +203,52 @@ export default function PrayerRequestPage(props) {
             console.log("Exception", e);
         }
 
-        await refreshComment();
+        await refreshComment(item);
 
+        setComment("");
     }
 
     const refreshComment = async(item) => {
-        var ref = await firestore.collection(GLOBAL.GROUP_LIST)
-            .doc(group.id)
-            .collection(GLOBAL.PRAYER_REQUEST)
-            .doc(item._id)
-            .collection(GLOBAL.COMMENT_LIST)
-            .get();
+        if( item.comment_open )
+        {
+            var ref = await firestore.collection(GLOBAL.GROUP_LIST)
+                .doc(group.id)
+                .collection(GLOBAL.PRAYER_REQUEST)
+                .doc(item._id)
+                .collection(GLOBAL.COMMENT_LIST)
+                .get();
 
-        item.comment_count = ref.docs.length;
-        var list = [];
-        for(const doc of ref.docs) {
-            var data = doc.data();
-            data.i_id = doc.id;
+            item.comment_count = ref.docs.length;
+            var list = [];
+            for(const doc of ref.docs) {
+                var data = doc.data();
+                data.i_id = doc.id;
 
-            list.push(data);
-        }
-
-        item.comment_list = list;
-
-        prayer_list.forEach(row => {
-            if( row._id == item._id )
-            {
-                row.comment_count = item.comment_count;                
-                row.comment_list = item.comment_list;                
+                list.push(data);
             }
-        });
+
+            item.comment_list = list;
+
+            prayer_list.forEach(row => {
+                if( row._id == item._id )
+                {
+                    row.comment_open = item.comment_open;                
+                    row.comment_count = item.comment_count;                
+                    row.comment_list = item.comment_list;                
+                }
+            });
+
+        }
+        else
+        {
+            prayer_list.forEach(row => {
+                if( row._id == item._id )
+                {
+                    row.comment_open = item.comment_open;                
+                    row.comment_list = [];                
+                }
+            });
+        }
 
         setPrayerList([...prayer_list]);
     }
@@ -273,6 +289,26 @@ export default function PrayerRequestPage(props) {
                     {
                         item.comment_open && 
                         <View style={{width: '100%', padding: 6}}>
+                            {
+                                item.comment_list.map((row, key) => {
+                                    return (
+                                        <View style={{width: '100%', padding: 6}} key={row._id}>
+                                            <View style={{width: '100%', alignItems: "center", flexDirection: 'row'}}>
+                                                <FastImage style = {{width: 50, height: 50, borderRadius: 25, borderColor: stylesGlobal.back_color, borderWidth: 2}} 
+                                                    source = {{uri: row.member.picture}}
+                                                    /> 
+                                                <Text style={{fontSize: 16, marginLeft: 7}}>{row.member.first_name} {row.member.last_name}</Text>
+                                                <View style={{flex:1}}>
+                                                    <Text style={{fontSize: 16, alignSelf: 'flex-end'}}>{Moment(row.created_at).format('MMM DD YYYY')}</Text>
+                                                </View>
+                                            </View>       
+                                            <View style={{padding: 5}}>
+                                                <Text style={{fontSize: 17, marginLeft: 50}}>{row.comment}</Text>
+                                            </View>          
+                                        </View>   
+                                    );
+                                })
+                            }
                             <TextInput
                                 style={[stylesGlobal.inputStyle, {height:80, marginTop: 20, marginBottom: 0}]}
                                 placeholder="Please write a comment..."                            
