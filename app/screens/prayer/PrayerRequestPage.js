@@ -178,7 +178,7 @@ export default function PrayerRequestPage(props) {
         try {            
             // not pray
             var data = {};
-            data.created_at = user.uid;
+            data.created_by = user.uid;
             var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
             data.created_at = cur_time;
             data.comment = comment;
@@ -208,6 +208,26 @@ export default function PrayerRequestPage(props) {
         setComment("");
     }
 
+    onDeleteComment = async(item, row) => {
+        // if( row.created_at != user.uid )
+        //     return;
+
+        try {
+            await firestore.collection(GLOBAL.GROUP_LIST)
+                .doc(group.id)
+                .collection(GLOBAL.PRAYER_REQUEST)
+                .doc(item._id)
+                .collection(GLOBAL.COMMENT_LIST)
+                .doc(row._id)
+                .delete();
+
+            await refreshComment(item);
+
+        } catch(e) {
+            console.og
+        }
+    }
+
     const refreshComment = async(item) => {
         if( item.comment_open )
         {
@@ -222,7 +242,7 @@ export default function PrayerRequestPage(props) {
             var list = [];
             for(const doc of ref.docs) {
                 var data = doc.data();
-                data.i_id = doc.id;
+                data._id = doc.id;
 
                 list.push(data);
             }
@@ -298,6 +318,14 @@ export default function PrayerRequestPage(props) {
                                                     source = {{uri: row.member.picture}}
                                                     /> 
                                                 <Text style={{fontSize: 16, marginLeft: 7}}>{row.member.first_name} {row.member.last_name}</Text>
+                                                {
+                                                    row.created_by == user.uid &&
+                                                    <TouchableOpacity style={{marginLeft: 10, alignItems: 'center'}}
+                                                        onPress={() => onDeleteComment(item, row)}
+                                                        >
+                                                        <FontAwesome5 name="trash" size={20} style={{color: stylesGlobal.back_color}} />         
+                                                    </TouchableOpacity>
+                                                }
                                                 <View style={{flex:1}}>
                                                     <Text style={{fontSize: 16, alignSelf: 'flex-end'}}>{Moment(row.created_at).format('MMM DD YYYY')}</Text>
                                                 </View>
