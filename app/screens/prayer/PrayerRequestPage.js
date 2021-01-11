@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { StyleSheet, View, TouchableOpacity, Text, TextInput, ActivityIndicator, FlatList } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, TextInput, ActivityIndicator, FlatList, Alert } from 'react-native';
 import { Card } from 'react-native-material-ui';
 import FastImage from 'react-native-fast-image';
 
@@ -109,8 +109,44 @@ export default function PrayerRequestPage(props) {
             .collection(GLOBAL.PRAYER_REQUEST)
             .add(data);
 
+        await refreshList();
+
         setAdding(false);
         setLoading(false); 
+    }
+
+    const onDeleteRequest = (item) => {
+        Alert.alert(
+            'Delete Request',
+            'Are you sure to delelet this prayer request?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel'
+                },
+                { text: 'Yes', onPress: () => deleteRequest(item, row) }
+                ],
+                { cancelable: false }
+            );
+    }
+
+    const deleteRequest = async(item) => {
+        if( item.created_by != user.uid )
+            return;
+
+        try {
+            await firestore.collection(GLOBAL.GROUP_LIST)
+                .doc(group.id)
+                .collection(GLOBAL.PRAYER_REQUEST)
+                .doc(item._id)              
+                .delete();
+
+            await refreshList(item);
+
+        } catch(e) {
+            console.og
+        }
     }
 
     const onPressPraying = async(item) => {
@@ -208,10 +244,26 @@ export default function PrayerRequestPage(props) {
         setComment("");
     }
 
-    onDeleteComment = async(item, row) => {
-        // if( row.created_at != user.uid )
-        //     return;
+    const onDeleteComment = async(item, row) => {
+        if( row.created_by != user.uid )
+            return;
 
+        Alert.alert(
+            'Delete Comment',
+            'Are you sure to delelet this comment?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel'
+                },
+                { text: 'Yes', onPress: () => deleteComment(item, row) }
+                ],
+                { cancelable: false }
+            );
+    }
+
+    const deleteComment = async(item, row) =>{
         try {
             await firestore.collection(GLOBAL.GROUP_LIST)
                 .doc(group.id)
@@ -236,6 +288,7 @@ export default function PrayerRequestPage(props) {
                 .collection(GLOBAL.PRAYER_REQUEST)
                 .doc(item._id)
                 .collection(GLOBAL.COMMENT_LIST)
+                .orderBy("created_at", "asc")
                 .get();
 
             item.comment_count = ref.docs.length;
@@ -288,6 +341,14 @@ export default function PrayerRequestPage(props) {
                                 /> 
                         </TouchableOpacity>
                         <Text style={{fontSize: 16, marginLeft: 7}}>{item.member.first_name} {item.member.last_name}</Text>
+                        {
+                            item.created_by == user.uid &&
+                            <TouchableOpacity style={{marginLeft: 10, alignItems: 'center'}}
+                                onPress={() => onDeleteRequest(item)}
+                                >
+                                <FontAwesome5 name="trash" size={20} style={{color: stylesGlobal.back_color}} />         
+                            </TouchableOpacity>
+                        }
                         <View style={{flex:1}}>
                             <Text style={{fontSize: 16, alignSelf: 'flex-end'}}>{Moment(item.created_at).format('MMM DD YYYY')}</Text>
                         </View>
