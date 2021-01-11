@@ -123,27 +123,43 @@ export default function PrayerRequestPage(props) {
             .collection(GLOBAL.PRAYER_LIST);
 
         try {
-            var prayer_list = await ref.where("user_id", "==", user_id)
+            var list = await ref.where("user_id", "==", user_id)
                 .get();
             
-            if( prayer_list.docs.length < 1 )
+            if( list.docs.length < 1 )
             {
                 console.log("Not Exists");
                 // not pray
                 await ref.add({user_id, user_id});                
+                item.prayer_count++;
+                item.prayer_self_count++;
             }
             else
             {
                 console.log("Exists");
 
-                for(const doc of prayer_list.docs)
+                for(const doc of list.docs)
                 {
                     await ref.doc(doc.id).delete();                          
+                    item.prayer_self_count--;
+
                 }                
+                item.prayer_count--;                
             }
         } catch(e) {
             console.log("Exception", e);
         }
+
+        prayer_list.forEach(row => {
+            if( row._id == item._id )
+            {
+                row.prayer_count = item.prayer_count;
+                row.prayer_self_count = item.prayer_self_count;
+            }
+        });
+
+        console.log("Prayer List", prayer_list);        
+        setPrayerList([...prayer_list]);
     }
 
     const onToggleComment = () => {
