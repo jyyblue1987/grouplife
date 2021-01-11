@@ -64,6 +64,7 @@ export default function PrayerRequestPage(props) {
                 .get();
 
             data.comment_count = comment_collection.docs.length;
+            data.comment_open = false;
 
             list.push(data);
         }
@@ -128,6 +129,7 @@ export default function PrayerRequestPage(props) {
             
             if( list.docs.length < 1 )
             {
+                // Add Prayer
                 console.log("Not Exists");
                 // not pray
                 await ref.add({user_id, user_id});                
@@ -136,6 +138,7 @@ export default function PrayerRequestPage(props) {
             }
             else
             {
+                // Remove Prayer                
                 console.log("Exists");
 
                 for(const doc of list.docs)
@@ -158,12 +161,20 @@ export default function PrayerRequestPage(props) {
             }
         });
 
-        console.log("Prayer List", prayer_list);        
         setPrayerList([...prayer_list]);
     }
 
-    const onToggleComment = () => {
-        
+    const onToggleComment = (item) => {
+        item.comment_open = !item.comment_open;
+
+        prayer_list.forEach(row => {
+            if( row._id == item._id )
+            {
+                row.comment_open = item.comment_open;                
+            }
+        });
+
+        setPrayerList([...prayer_list]);
     }
 
     const renderRow = (item) => {        
@@ -199,7 +210,24 @@ export default function PrayerRequestPage(props) {
 
                     <View style = {{width: '100%', borderWidth:0.5, borderColor:'lightgray', marginTop: 15, marginBottom: 7}} />
 
-                    
+                    {
+                        item.comment_open && 
+                        <View style={{width: '100%', padding: 6}}>
+                            <TextInput
+                                style={[stylesGlobal.inputStyle, {height:80, marginTop: 20, marginBottom: 0}]}
+                                placeholder="Please write a comment..."                            
+                                multiline={true}
+                                autoCapitalize = 'none'
+                                value={message}
+                                
+                                />
+
+                            <TouchableOpacity style = {{backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center', alignSelf: 'flex-end', marginTop: 5, paddingHorizontal: 10, paddingVertical: 5}} 
+                                onPress = {() => onAddComment(item)}>
+                                <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 16}]}>Add Comment</Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
                 </View> 
             </Card>
 		)
