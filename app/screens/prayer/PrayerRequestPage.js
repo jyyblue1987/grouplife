@@ -15,6 +15,7 @@ const GLOBAL = require('../../Globals');
 
 export default function PrayerRequestPage(props) {
     const group = props.route.params.group;    
+    const user_id = firebase.auth().currentUser.uid;
 
     const [isLoading, setLoading] = useState(false);
     const [isAdding, setAdding] = useState(false);
@@ -40,7 +41,25 @@ export default function PrayerRequestPage(props) {
         for(const doc of ref.docs)
         {
             var data = doc.data();
-            data._id = doc.id;            
+            data._id = doc.id;       
+            
+            firebase.auth().currentUser.uid;
+
+            var prayer_ref = firestore.collection(GLOBAL.GROUP_LIST)
+                .doc(group.id)
+                .collection(GLOBAL.PRAYER_REQUEST)
+                .doc(doc.id);
+
+            pray_collection = await prayer_ref.collection(GLOBAL.PRAYER_LIST)
+                .get();
+
+            data.prayer_count = pray_collection.docs.length;
+
+            comment_collection = await prayer_ref.collection(GLOBAL.COMMENT_LIST)
+                .get();
+
+            data.comment_count = comment_collection.docs.length;
+
             list.push(data);
         }
 
@@ -82,7 +101,7 @@ export default function PrayerRequestPage(props) {
 
         data.member = member;
 
-        await firestore.collection("group_list")
+        await firestore.collection(GLOBAL.GROUP_LIST)
             .doc(group.id)
             .collection(GLOBAL.PRAYER_REQUEST)
             .add(data);
@@ -91,8 +110,37 @@ export default function PrayerRequestPage(props) {
         setLoading(false); 
     }
 
-    const onPressPraying = () => {
-        
+    const onPressPraying = async(item) => {
+        var ref = firestore.collection(GLOBAL.GROUP_LIST)
+            .doc(group.id)
+            .collection(GLOBAL.PRAYER_REQUEST)
+            .doc(item._id)
+            .collection(GLOBAL.PRAYER_LIST);
+
+        try {
+            var prayer_list = await ref.where("user_id", "==", user_id)
+                .get();
+            
+            if( prayer_list.docs.length < 1 )
+            {
+                console.log("Not Exists");
+                // not pray
+                await ref.add({user_id, user_id});
+                item.prayer_count++;
+            }
+            else
+            {
+                console.log("Exists");
+
+                for(const doc of prayer_list.docs)
+                {
+                    await ref.doc(doc.id).delete();                          
+                }
+                item.prayer_count--;
+            }
+        } catch(e) {
+            console.log("Exception", e);
+        }
     }
 
     const onToggleComment = () => {
@@ -120,13 +168,13 @@ export default function PrayerRequestPage(props) {
                             onPress={() => onPressPraying(item)}
                             >
                             <FontAwesome5 name="praying-hands" size={30} style={{color: 'gray'}} />                            
-                            <Text style={{marginLeft: 10, fontSize: 17}}>5</Text>
+                            <Text style={{marginLeft: 10, fontSize: 17}}>{item.prayer_count}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={{flex:1, flexDirection: 'row', paddingLeft: 40, alignItems: 'center'}}
                             onPress={() => onToggleComment(item)}
                             >
                             <FontAwesome5 name="comment-alt" size={30} style={{color: 'gray'}} />                            
-                            <Text style={{marginLeft: 10, fontSize: 17}}>5</Text>
+                            <Text style={{marginLeft: 10, fontSize: 17}}>{item.comment_count}</Text>
                         </TouchableOpacity>
                     </View>
 
