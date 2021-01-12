@@ -11,6 +11,7 @@ import DocumentPicker from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-picker';
 
 import { stylesGlobal } from '../../styles/stylesGlobal';
+import {linkify} from '../../Utils';
 
 import firebase from '../../../database/firebase';
 import { firestore } from '../../../database/firebase';
@@ -74,7 +75,7 @@ export default function MaterialCreatePage(props) {
         data.created_by = firebase.auth().currentUser.uid;
         
         if( type == 1 ) // free text
-            data.content = html;
+            data.content = linkify(html);            
         else
         {
             data.content = downloadUrl;

@@ -11,6 +11,7 @@ import DocumentPicker from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-picker';
 
 import { stylesGlobal } from '../../styles/stylesGlobal';
+import {linkify} from '../../Utils';
 
 import firebase from '../../../database/firebase';
 import { firestore } from '../../../database/firebase';
@@ -18,6 +19,8 @@ import { Icon } from 'react-native-material-ui';
 import storage from '@react-native-firebase/storage';
 
 import Moment from 'moment';
+
+
 
 export default function MaterialCreatePage(props) {
     const group = props.route.params.group;
@@ -80,7 +83,9 @@ export default function MaterialCreatePage(props) {
         data.updated_by = firebase.auth().currentUser.uid;
         
         if( type == 1 ) // free text
-            data.content = html;
+        {
+            data.content = linkify(html);
+        }
         else
         {
             data.content = downloadUrl;
