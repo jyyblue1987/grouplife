@@ -112,11 +112,11 @@ export default function MaterialCreatePage(props) {
         linkModal.current?.setModalVisible(true);
     }
 
-    const onShowDocumentPicker1 = async() => {
+    const onShowDocumentPicker = async() => {
         // Pick a single file
         try {
             const res = await DocumentPicker.pick({
-                type: [DocumentPicker.types.images],
+                
             });
             console.log(
                 res.uri,
@@ -136,7 +136,7 @@ export default function MaterialCreatePage(props) {
         }
     }
 
-    const onShowDocumentPicker = async() => {
+    const onShowDocumentPicker1 = async() => {
         var options = {
             title: 'Select Image',
             mediaType: 'photo',
