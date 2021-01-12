@@ -21,7 +21,7 @@ export default function TestimonyListPage(props) {
     const [isAdding, setAdding] = useState(false);
     const [message, setMessage] = useState("");
     const [comment, setComment] = useState("");
-    const [prayer_list, setPrayerList] = useState([]);
+    const [testimony_list, setTestimonyList] = useState([]);
 
 
     useEffect(() => {
@@ -34,7 +34,7 @@ export default function TestimonyListPage(props) {
 
         var ref = await firestore.collection(GLOBAL.GROUP_LIST)
             .doc(group.id)
-            .collection(GLOBAL.PRAYER_REQUEST)
+            .collection(GLOBAL.TESTIMONY_REQUEST)
             .orderBy('created_at', 'desc')
             .get();
 
@@ -44,22 +44,22 @@ export default function TestimonyListPage(props) {
             var data = doc.data();
             data._id = doc.id;       
             
-            var prayer_ref = firestore.collection(GLOBAL.GROUP_LIST)
+            var testimony_ref = firestore.collection(GLOBAL.GROUP_LIST)
                 .doc(group.id)
-                .collection(GLOBAL.PRAYER_REQUEST)
+                .collection(GLOBAL.TESTIMONY_REQUEST)
                 .doc(doc.id);
 
-            pray_collection = await prayer_ref.collection(GLOBAL.PRAYER_LIST)
+            testimony_collection = await testimony_ref.collection(GLOBAL.TESTIMONY_LIST)
                 .get();
 
-            data.prayer_count = pray_collection.docs.length;
+            data.like_count = testimony_collection.docs.length;
 
-            pray_self_collection = await prayer_ref.collection(GLOBAL.PRAYER_LIST)
+            testimony_self_collection = await testimony_ref.collection(GLOBAL.TESTIMONY_LIST)
                                     .where("user_id", "==", user.uid)
                                     .get();
-            data.prayer_self_count = pray_self_collection.docs.length;
+            data.like_self_count = testimony_self_collection.docs.length;
 
-            comment_collection = await prayer_ref.collection(GLOBAL.COMMENT_LIST)
+            comment_collection = await testimony_ref.collection(GLOBAL.COMMENT_LIST)
                 .get();
 
             data.comment_count = comment_collection.docs.length;
@@ -68,7 +68,7 @@ export default function TestimonyListPage(props) {
             list.push(data);
         }
 
-        setPrayerList(list);
+        setTestimonyList(list);
 
         setLoading(false);
     }
@@ -106,7 +106,7 @@ export default function TestimonyListPage(props) {
 
         await firestore.collection(GLOBAL.GROUP_LIST)
             .doc(group.id)
-            .collection(GLOBAL.PRAYER_REQUEST)
+            .collection(GLOBAL.TESTIMONY_REQUEST)
             .add(data);
 
         await refreshList();
@@ -118,7 +118,7 @@ export default function TestimonyListPage(props) {
     const onDeleteRequest = (item) => {
         Alert.alert(
             'Delete Request',
-            'Are you sure to delelet this prayer request?',
+            'Are you sure to delelet this testimony request?',
             [
                 {
                     text: 'Cancel',
@@ -138,7 +138,7 @@ export default function TestimonyListPage(props) {
         try {
             await firestore.collection(GLOBAL.GROUP_LIST)
                 .doc(group.id)
-                .collection(GLOBAL.PRAYER_REQUEST)
+                .collection(GLOBAL.TESTIMONY_REQUEST)
                 .doc(item._id)              
                 .delete();
 
@@ -149,12 +149,12 @@ export default function TestimonyListPage(props) {
         }
     }
 
-    const onPressPraying = async(item) => {
+    const onPressLike = async(item) => {
         var ref = firestore.collection(GLOBAL.GROUP_LIST)
             .doc(group.id)
-            .collection(GLOBAL.PRAYER_REQUEST)
+            .collection(GLOBAL.TESTIMONY_REQUEST)
             .doc(item._id)
-            .collection(GLOBAL.PRAYER_LIST);
+            .collection(GLOBAL.TESTIMONY_LIST);
 
         try {
             var list = await ref.where("user_id", "==", user.uid)
@@ -162,12 +162,12 @@ export default function TestimonyListPage(props) {
             
             if( list.docs.length < 1 )
             {
-                // Add Prayer
+                // Add Testimony
                 console.log("Not Exists");
                 // not pray
                 await ref.add({user_id: user.uid});                
-                item.prayer_count++;
-                item.prayer_self_count++;
+                item.like_count++;
+                item.like_self_count++;
             }
             else
             {
@@ -177,24 +177,24 @@ export default function TestimonyListPage(props) {
                 for(const doc of list.docs)
                 {
                     await ref.doc(doc.id).delete();                          
-                    item.prayer_self_count--;
+                    item.like_self_count--;
 
                 }                
-                item.prayer_count--;                
+                item.like_count--;                
             }
         } catch(e) {
             console.log("Exception", e);
         }
 
-        prayer_list.forEach(row => {
+        testimony_list.forEach(row => {
             if( row._id == item._id )
             {
-                row.prayer_count = item.prayer_count;
-                row.prayer_self_count = item.prayer_self_count;
+                row.like_count = item.like_count;
+                row.like_self_count = item.like_self_count;
             }
         });
 
-        setPrayerList([...prayer_list]);
+        setTestimonyList([...testimony_list]);
     }
 
     const onToggleComment = (item) => {
@@ -207,7 +207,7 @@ export default function TestimonyListPage(props) {
     const onAddComment = async(item) => {
         var ref = firestore.collection(GLOBAL.GROUP_LIST)
             .doc(group.id)
-            .collection(GLOBAL.PRAYER_REQUEST)
+            .collection(GLOBAL.TESTIMONY_REQUEST)
             .doc(item._id)
             .collection(GLOBAL.COMMENT_LIST);
         
@@ -267,7 +267,7 @@ export default function TestimonyListPage(props) {
         try {
             await firestore.collection(GLOBAL.GROUP_LIST)
                 .doc(group.id)
-                .collection(GLOBAL.PRAYER_REQUEST)
+                .collection(GLOBAL.TESTIMONY_REQUEST)
                 .doc(item._id)
                 .collection(GLOBAL.COMMENT_LIST)
                 .doc(row._id)
@@ -285,7 +285,7 @@ export default function TestimonyListPage(props) {
         {
             var ref = await firestore.collection(GLOBAL.GROUP_LIST)
                 .doc(group.id)
-                .collection(GLOBAL.PRAYER_REQUEST)
+                .collection(GLOBAL.TESTIMONY_REQUEST)
                 .doc(item._id)
                 .collection(GLOBAL.COMMENT_LIST)
                 .orderBy("created_at", "asc")
@@ -302,7 +302,7 @@ export default function TestimonyListPage(props) {
 
             item.comment_list = list;
 
-            prayer_list.forEach(row => {
+            testimony_list.forEach(row => {
                 if( row._id == item._id )
                 {
                     row.comment_open = item.comment_open;                
@@ -314,7 +314,7 @@ export default function TestimonyListPage(props) {
         }
         else
         {
-            prayer_list.forEach(row => {
+            testimony_list.forEach(row => {
                 if( row._id == item._id )
                 {
                     row.comment_open = item.comment_open;                
@@ -323,7 +323,7 @@ export default function TestimonyListPage(props) {
             });
         }
 
-        setPrayerList([...prayer_list]);
+        setTestimonyList([...testimony_list]);
     }
 
     const onPressProfile = (item) => {
@@ -358,10 +358,10 @@ export default function TestimonyListPage(props) {
                     </View>             
                     <View style={{width: '100%', flexDirection: 'row', marginTop: 5}}>
                         <TouchableOpacity style={{flex:1, flexDirection: 'row', paddingLeft: 40, alignItems: 'center'}}
-                            onPress={() => onPressPraying(item)}
+                            onPress={() => onPressLike(item)}
                             >
-                            <FontAwesome5 name="praying-hands" size={30} style={{color: item.prayer_self_count > 0 ? stylesGlobal.back_color : 'gray'}} />                            
-                            <Text style={{marginLeft: 10, fontSize: 17, color: item.prayer_self_count > 0 ? stylesGlobal.back_color : 'black'}}>{item.prayer_count}</Text>
+                            <FontAwesome5 name="heart" size={30} style={{color: item.like_self_count > 0 ? stylesGlobal.back_color : 'gray'}} />                            
+                            <Text style={{marginLeft: 10, fontSize: 17, color: item.like_self_count > 0 ? stylesGlobal.back_color : 'black'}}>{item.like_count}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={{flex:1, flexDirection: 'row', paddingLeft: 40, alignItems: 'center'}}
                             onPress={() => onToggleComment(item)}
@@ -433,7 +433,7 @@ export default function TestimonyListPage(props) {
                 isAdding &&
                 <Card style={{container: {borderRadius: 5, padding: 10, justifyContent: 'center'}}}                
                     >
-                    <Text style={{fontSize: 16}}>Add Prayer Request</Text>
+                    <Text style={{fontSize: 16}}>Add Testimony</Text>
 
                     <TextInput
                         style={[stylesGlobal.inputStyle, {height:80, marginTop: 20, marginBottom: 0}]}
@@ -452,7 +452,7 @@ export default function TestimonyListPage(props) {
             }
 
             <FlatList
-                data={prayer_list}
+                data={testimony_list}
                 renderItem={({item}) => renderRow(item)}
                 keyExtractor={(item, index) => item._id}
                 onRefresh={() => refreshList()}

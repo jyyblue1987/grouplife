@@ -4,9 +4,12 @@ module.exports = {
 
     // Collection Names
     GROUP_LIST: "group_list",
-    PRAYER_REQUEST: "prayer_request_list",
 
+    PRAYER_REQUEST: "prayer_request_list",
     PRAYER_LIST: "prayer_list",
     COMMENT_LIST: "comment_list",
+
+    TESTIMONY_REQUEST: "testimony_request_list",
+    TESTIMONY_LIST: "testimonier_list",    
 
 };
