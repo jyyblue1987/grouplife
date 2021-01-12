@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { StyleSheet, View, TouchableOpacity, Text, TextInput, ActivityIndicator, FlatList, Alert } from 'react-native';
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import { Card } from 'react-native-material-ui';
 import FastImage from 'react-native-fast-image';
 
@@ -451,7 +452,7 @@ export default function TestimonyListPage(props) {
                 </Card>
             }
 
-            <FlatList
+            <KeyboardAwareFlatList
                 data={testimony_list}
                 renderItem={({item}) => renderRow(item)}
                 keyExtractor={(item, index) => item._id}
