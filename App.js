@@ -32,6 +32,7 @@ import MaterialCreatePage from './app/screens/materials/MaterialCreatePage';
 import MaterialDetailPage from './app/screens/materials/MaterialDetailPage';
 import MaterialEditPage from './app/screens/materials/MaterialEditPage';
 import PrayerRequestPage from './app/screens/prayer/PrayerRequestPage';
+import TestimonyListPage from './app/screens/testimony/TestimonyListPage';
 
 const Stack = createStackNavigator();
 
@@ -151,6 +152,13 @@ export default class App extends Component {
 					<Stack.Screen name="PrayerRequest" component={PrayerRequestPage} 
 						options={{
 							title: 'Prayer Request',		
+							headerBackTitle: 'Back' 					
+						}} 
+					/>    
+
+					<Stack.Screen name="TestimonyList" component={TestimonyListPage} 
+						options={{
+							title: 'Testimonies',		
 							headerBackTitle: 'Back' 					
 						}} 
 					/>    
