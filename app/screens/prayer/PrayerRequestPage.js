@@ -305,10 +305,10 @@ export default function PrayerRequestPage(props) {
 
             prayer_list.forEach(row => {
                 if( row._id == item._id )
-                {
-                    row.comment_open = item.comment_open;                
+                {                             
                     row.comment_count = item.comment_count;                
                     row.comment_list = item.comment_list;                
+                    row.comment_open = item.comment_open;       
                 }
             });
 
