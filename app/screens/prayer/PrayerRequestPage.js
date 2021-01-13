@@ -126,7 +126,7 @@ export default function PrayerRequestPage(props) {
                     onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel'
                 },
-                { text: 'Yes', onPress: () => deleteRequest(item, row) }
+                { text: 'Yes', onPress: () => deleteRequest(item) }
                 ],
                 { cancelable: false }
             );

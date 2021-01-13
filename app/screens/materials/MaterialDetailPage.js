@@ -110,6 +110,7 @@ export default function MaterialDetailPage(props) {
                             <WebView 
                                 originWhitelist={['*']}
                                 source={{ uri: material.content }}                                         
+                                startInLoadingState={true}
                             />
                         </View>
                     </View>

@@ -51,6 +51,13 @@ export default function MaterialCreatePage(props) {
         props.navigation.setOptions({title: title});
 
         console.log("Material", material);
+        if( material.type == 2 )
+        {
+            setFileName(material.filename);
+            setFileType(material.filetype);
+            setDownloadUrl(material.content);
+        }
+
     }, [])
 
     const onSelectType = (item) => {
