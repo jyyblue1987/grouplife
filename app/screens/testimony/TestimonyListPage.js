@@ -341,6 +341,10 @@ export default function TestimonyListPage(props) {
                                 source = {{uri: item.member.picture}}                                
                                 /> 
                         </TouchableOpacity>
+                        
+                        <View style={{flex:1}}>
+                            <Text style={{fontSize: 16, alignSelf: 'flex-end'}}>{Moment(item.created_at).format('MMM DD YYYY')}</Text>
+                        </View>
                         <Text style={{fontSize: 16, marginLeft: 7}}>{item.member.first_name} {item.member.last_name}</Text>
                         {
                             item.created_by == user.uid &&
@@ -350,9 +354,6 @@ export default function TestimonyListPage(props) {
                                 <FontAwesome5 name="trash" size={20} style={{color: stylesGlobal.back_color}} />         
                             </TouchableOpacity>
                         }
-                        <View style={{flex:1}}>
-                            <Text style={{fontSize: 16, alignSelf: 'flex-end'}}>{Moment(item.created_at).format('MMM DD YYYY')}</Text>
-                        </View>
                     </View>       
                     <View style={{padding: 5}}>
                         <Text style={{fontSize: 20}}>{item.message}</Text>
@@ -389,6 +390,9 @@ export default function TestimonyListPage(props) {
                                                         />
                                                 </TouchableOpacity> 
                                                 <Text style={{fontSize: 16, marginLeft: 7}}>{row.member.first_name} {row.member.last_name}</Text>
+                                                <View style={{flex:1}}>
+                                                    <Text style={{fontSize: 16, alignSelf: 'flex-end'}}>{Moment(row.created_at).format('MMM DD YYYY')}</Text>
+                                                </View>
                                                 {
                                                     row.created_by == user.uid &&
                                                     <TouchableOpacity style={{marginLeft: 10, alignItems: 'center'}}
@@ -397,9 +401,6 @@ export default function TestimonyListPage(props) {
                                                         <FontAwesome5 name="trash" size={20} style={{color: stylesGlobal.back_color}} />         
                                                     </TouchableOpacity>
                                                 }
-                                                <View style={{flex:1}}>
-                                                    <Text style={{fontSize: 16, alignSelf: 'flex-end'}}>{Moment(row.created_at).format('MMM DD YYYY')}</Text>
-                                                </View>
                                             </View>       
                                             <View style={{padding: 5}}>
                                                 <Text style={{fontSize: 17, marginLeft: 50}}>{row.comment}</Text>

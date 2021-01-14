@@ -311,10 +311,10 @@ export default function GroupDetailPage(props) {
                 {/* Leave Group Button */}
                 {
                     isMember && 
-                    <View style = {{width: '100%', alignItems: 'center', marginTop: 15}}>
-                        <TouchableOpacity style = {{width: '90%', height: 40, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
+                    <View style = {{width: '100%', alignItems: 'center', marginTop: 50}}>
+                        <TouchableOpacity style = {{width: '90%', height: 40, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center'}} 
                             onPress = {() => onLeaveGroup()}>
-                            <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 16}]}>Leave Group</Text>
+                            <Text style = {[stylesGlobal.general_font_style, {color: stylesGlobal.back_color, fontSize: 16, fontWeight: 'bold'}]}>Leave Group</Text>
                         </TouchableOpacity>
                     </View>
                 }
