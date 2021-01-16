@@ -265,7 +265,8 @@ export default class GroupCreatePage extends Component {
     onChangeMeetingTime(selectedDate) 
     {
         const currentDate = selectedDate || this.state.date;
-        var meeting_time = Moment(currentDate).format('HH:mm');
+        var meeting_time = Moment(currentDate).format('YYYY-MM-DD HH:mm:ss');
+        console.log(meeting_time);
         this.setState({date: currentDate, meeting_time: meeting_time, timepicker_show: false});
     }
 
@@ -517,7 +518,7 @@ export default class GroupCreatePage extends Component {
                         <TouchableOpacity style = {[{width:'100%'}, styles.roundButton]} 
                         onPress = {() => this.showTimepicker()}
                         >
-                            <Text style={{flex:1, color: '#383838B2', fontSize: 18}}>{this.state.meeting_time}</Text>
+                            <Text style={{flex:1, color: '#383838B2', fontSize: 18}}>{this.state.meeting_time == 'Meeting Time' ? 'Meeting Time' : Moment(this.state.meeting_time).format("hh:mm A")}</Text>
                             <Image style = {{width: 20, height: 20, tintColor: stylesGlobal.back_color}} source = {require("../../assets/images/dropdown.png")}/>
                         </TouchableOpacity>                        
                     </View>

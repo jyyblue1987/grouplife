@@ -236,7 +236,7 @@ export default function GroupDetailPage(props) {
                     </View>
 
                     <Text style={{fontSize: 15, color: '#383838B2'}}>                            
-                        {Moment(group.created_at).format('dddd LT')}
+                        {Moment(group.meeting_time).format('dddd LT')}
                     </Text>
                 </View>
 

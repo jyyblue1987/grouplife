@@ -242,7 +242,7 @@ export default function GroupListPage(props) {
                             <Text
                                 style={{fontSize: 16, color:'gray'}}
                                 >
-                                {Moment(item.created_at).format('dddd LT')}
+                                {Moment(item.meeting_time).format('dddd LT')}
                             </Text>      
                             {
                                 isSearchVisible &&        
