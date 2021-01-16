@@ -102,6 +102,8 @@ export default class SignUpScreen extends Component {
 
         console.log("createMember", JSON.stringify(data));
 
+        var vm = this;
+
         firestore.collection("member_list").add(data).then(function(docRef) {
             console.log("Member is created with ID:", docRef.id);
 

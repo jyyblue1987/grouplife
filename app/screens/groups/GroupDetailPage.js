@@ -1,6 +1,6 @@
 import React, { Component, useState, useEffect } from "react";
 
-import { StyleSheet, Text, View, Alert, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Alert, TouchableOpacity, ScrollView, Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Card } from 'react-native-material-ui';
 import LinearGradient from 'react-native-linear-gradient';
@@ -284,9 +284,10 @@ export default function GroupDetailPage(props) {
                 <Card style={{container: {borderRadius: 10}}}>
                     <TouchableOpacity style={styles.cardButtonStyle} 
                         onPress={() => onPressPrayer() }                  
-                    >
-                        <FontAwesome5 name="praying-hands" size={22} style={styles.iconStyle} />
+                    >                        
+                        <Image style = {{width: 24, height: 22, tintColor: stylesGlobal.back_color}} source = {require("../../assets/images/pray_selected.png")}/>                        
                         <Text style={styles.textStyle}>Prayer Requests</Text>
+
                     </TouchableOpacity>
                 </Card>
 
