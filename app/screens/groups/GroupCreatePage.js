@@ -429,7 +429,6 @@ export default class GroupCreatePage extends Component {
                             >
                             {this.state.title}                            
                         </Text>                            
-                        <Button title={this.state.edit_label} type="clear" titleStyle={{color:stylesGlobal.back_color}} onPress = {() => this.onPressCreateGroup()} />
                     </View>
 
                     <TextInput
@@ -597,6 +596,13 @@ export default class GroupCreatePage extends Component {
                             <FontAwesome5 name="plus-circle"  size={22} style = {{position: "absolute", left: 4}} color={stylesGlobal.back_color} />
                             <Text style={{color: stylesGlobal.back_color, fontSize: 17, alignContent: 'center'}}>Add Additional Leader</Text>                            
                         </TouchableOpacity>                        
+                    </View>
+
+                    <View style = {{width: '100%', alignItems: 'center', marginTop: 50}}>
+                        <TouchableOpacity style = {{width: '95%', height: 40, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
+                            onPress = {() => this.onPressCreateGroup()}>
+                            <Text style = {[stylesGlobal.general_font_style, {color: '#fff', fontSize: 16}]}>{this.state.edit_label}</Text>
+                        </TouchableOpacity>
                     </View>
                    
                 </KeyboardAwareScrollView>      
