@@ -224,7 +224,7 @@ export default function GroupDetailPage(props) {
                         {group.group_name}
                     </Text>
                     <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
-                        <Text style={{flex:1, fontSize: 16}}>{group.group_desc}</Text>
+                        <Text style={{flex:2, fontSize: 16}}>{group.group_desc}</Text>
                         <View style={{flex:1, flexDirection: 'row', alignItems: 'center', fontSize: 16}}>
                             <FontAwesome5 name="user" size={18} color={stylesGlobal.back_color} style={{marginLeft: 15}} />
                             <Text style={{marginLeft: 15, fontSize: 16}}
