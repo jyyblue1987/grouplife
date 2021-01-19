@@ -223,7 +223,7 @@ export default function GroupListPage(props) {
             <Card style={{container:{borderRadius: 6}}}>
                 <TouchableOpacity style={{flexDirection: 'row'}} onPress={() => props.navigation.navigate('GroupDetail', {group: item, onRefresh: onRefresh})}>
                     <View style={{justifyContent: "center"}}>
-                        <FastImage style = {{width: 100, height: '100%'}} 
+                        <FastImage style = {{flex:1, width: 100 }}                                                     
                             source = {{uri: item.group_image}}
                             />
                     </View>
