@@ -186,7 +186,7 @@ export default class EventDetailPage extends Component {
                         <FontAwesome name="calendar" size={30} color={stylesGlobal.back_color} />
                         <View style={{flex:1}}>
                             <Text style={{fontSize: 20, marginLeft: 10}}>
-                                {Moment(this.state.event.event_time).format('dddd, MMM D')}th, {Moment(this.state.event.event_time).format('HH:mm')}
+                                {Moment(this.state.event.event_time).format('dddd, MMM D')}th, {Moment(this.state.event.event_time).format('hh:mm A')}
                             </Text>
                         </View>
                     </View>  

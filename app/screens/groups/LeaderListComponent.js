@@ -14,13 +14,13 @@ export default function LeaderListComponent(props) {
                 </Text>
             }
 
-            <View>
+            <View style={{marginTop: 5}}>
                 {
                     props.leader_list && props.leader_list.map((row, key) => {
                         return (
                             <View key={key}>
                                 <Text>{row.name} - {row.phone} - {row.email}</Text>
-                                <View style = {{width: '100%', borderWidth:0.5, borderColor:'lightgray', marginVertical: 3}} />
+                                <View style = {{width: '100%', borderWidth:0.2, borderColor:'lightgray', marginVertical: 3}} />
                             </View>
                         );
                     })

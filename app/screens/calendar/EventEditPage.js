@@ -7,9 +7,11 @@ import {
 
 import Moment from 'moment';
 
-import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity, ActivityIndicator, Alert, Modal, Button } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import CalendarPicker from 'react-native-calendar-picker';
+
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import * as Progress from 'react-native-progress';
 import firebase from '../../../database/firebase';
@@ -17,6 +19,7 @@ import { firestore } from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
 export default class EventEditPage extends Component {
+    calendarDate = new Date();
     constructor(props) {
         super(props);
 
@@ -27,6 +30,7 @@ export default class EventEditPage extends Component {
                 isLoading: false,                        
                 name: '',      
                 date: new Date(),
+                time: new Date(),
                 host: '',
                 location: '',
                 detail: '',
@@ -34,7 +38,8 @@ export default class EventEditPage extends Component {
                 video_conf_link: '',
                 phone: '',
                 datepicker_show: false,
-                picker_mode: 'time'
+                picker_mode: 'time',
+                calendar_modal_visible: false
             }
         }
         else
@@ -43,6 +48,7 @@ export default class EventEditPage extends Component {
                 isLoading: false,                        
                 name: event.name,      
                 date: new Date(Moment(event.event_time)),
+                time: new Date(Moment(event.event_time)),
                 host: event.host,
                 location: event.location,
                 detail: event.detail,
@@ -50,9 +56,12 @@ export default class EventEditPage extends Component {
                 video_conf_link: event.video_conf_link,
                 phone: event.phone,
                 datepicker_show: false,
-                picker_mode: 'time'
+                picker_mode: 'time',
+                calendar_modal_visible: false
             }
         }
+
+        this.onDateChange = this.onDateChange.bind(this);
     }
 
     componentDidMount() {
@@ -66,40 +75,36 @@ export default class EventEditPage extends Component {
     }
 
     showDatePicker() {
-        this.setState({datepicker_show: true, picker_mode: 'date'});
+        this.setState({calendar_modal_visible: true, picker_mode: 'date'});
+
     }
 
     showTimePicker() {
         this.setState({datepicker_show: true, picker_mode: 'time'});
     }
 
-    onChangeEventDate(selectedDate) 
+    onDateChange(date) {
+        console.log("Selected_Date", date);
+
+        this.calendarDate = date;
+    }
+
+    onChangeEventDate() 
+    {
+        console.log("onChangeEventDate", this.calendarDate);
+        this.setState({date: this.calendarDate, calendar_modal_visible: false});
+        console.log("onChangeEventDate", this.state.date);
+    }
+
+    onChangeEventTime(selectedDate) 
     {
         console.log("selectedDate", selectedDate);
-        const currentDate = selectedDate || this.state.date;
-
-        this.setState({date: currentDate, datepicker_show: false});
-
-        console.log("currentDate", currentDate);
-        console.log("setDate", this.state.date);
-
-        if( this.state.picker_mode == 'date' )
-        {
-            var date_str = Moment(currentDate).format('D MMM Y');            
-            this.setState({date_str: date_str});
-        }
-        if( this.state.picker_mode == 'time' )
-        {
-            var time_str = Moment(currentDate).format('HH:mm');
-            this.setState({time_str: time_str});
-        }
-
-        var event_time = Moment(this.state.date).format('YYYY-MM-DD HH:mm:ss');
-        console.log("Event Time", event_time);
+        const currentDate = selectedDate || this.state.time;
+        this.setState({time: currentDate, datepicker_show: false});
     }
 
     onCancelEventDate() {
-        this.setState({datepicker_show: false});
+        this.setState({datepicker_show: false, calendar_modal_visible: false});
     }
 
     onSaveEvent = () => {
@@ -112,7 +117,7 @@ export default class EventEditPage extends Component {
         var group = this.props.route.params.group;
         var event = this.props.route.params.event;
         var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
-        var event_time = Moment(this.state.date).format('YYYY-MM-DD HH:mm:ss');
+        var event_time = Moment(this.state.date).format('YYYY-MM-DD') + ' ' + Moment(this.state.time).format("HH:mm:ss");
 
         var event_data = {
             name: this.state.name,      
@@ -225,17 +230,42 @@ export default class EventEditPage extends Component {
                         onPress = {() => this.showTimePicker()}
                         >
                             <FontAwesome5 name="clock"  size={22} color={stylesGlobal.back_color} />
-                            <Text style={{flex:1, color: '#383838B2', fontSize: 18, marginLeft: 20}}>{Moment(this.state.date).format('HH:mm')}</Text>                            
+                            <Text style={{flex:1, color: '#383838B2', fontSize: 18, marginLeft: 20}}>{Moment(this.state.time).format('hh:mm A')}</Text>                            
                         </TouchableOpacity>                        
                     </View>
 
                     <DateTimePickerModal
                         isVisible={this.state.datepicker_show}
                         mode={this.state.picker_mode}
-                        date={this.state.date}
-                        onConfirm = {(date) => this.onChangeEventDate(date)}
+                        date={this.state.time}
+                        onConfirm = {(date) => this.onChangeEventTime(date)}
                         onCancel = {() =>this.onCancelEventDate()}
                     />
+
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={this.state.calendar_modal_visible}                        
+                        >
+                        <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                <CalendarPicker 
+                                    onDateChange={this.onDateChange}
+                                    />
+                                <View style={{flexDirection: 'row', width: '100%', justifyContent: 'flex-end'}}>
+                                    <TouchableOpacity style = {{justifyContent: 'center', alignItems: 'center'}} 
+                                        onPress = {() => this.onChangeEventDate()}>
+                                        <Text style = {[stylesGlobal.general_font_style, {color: stylesGlobal.back_color, fontSize: 16}]}>Confirm</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity style = {{justifyContent: 'center', alignItems: 'center', marginLeft: 20}} 
+                                        onPress = {() => this.onCancelEventDate()}>
+                                        <Text style = {[stylesGlobal.general_font_style, {color: stylesGlobal.back_color, fontSize: 16}]}>Cancel</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
                     <TextInput
                             style={[stylesGlobal.inputStyle, {marginTop: 35}]}
                             placeholder="Event Host"
@@ -327,5 +357,26 @@ const styles = StyleSheet.create({
         borderRadius:8, 
         borderColor: '#383838B2', 
         borderWidth: 1,        
+    },
+
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+    },
+    modalView: {
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5
     },
 });
