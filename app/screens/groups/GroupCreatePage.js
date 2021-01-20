@@ -19,6 +19,8 @@ import * as Progress from 'react-native-progress';
 // import firestore from '@react-native-firebase/firestore'
 import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
 
+import LeaderListComponent from './LeaderListComponent';
+
 //import RNFetchBlob from 'rn-fetch-blob';
 
 // // Prepare Blob support
@@ -42,11 +44,13 @@ import { firestore} from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 import storage from '@react-native-firebase/storage';
 
-export default class GroupCreatePage extends Component {
+export default class GroupCreatePage extends Component {  
     constructor(props) {
         super(props);
 
         var group = this.props.route.params.group;
+
+        
 
         if( group == null )
         {
@@ -71,6 +75,7 @@ export default class GroupCreatePage extends Component {
                 created_by: '',     
                 isUploading: false, 
                 upload_progress: 0, 
+                leader_list: []
             }
         }
         else
@@ -96,6 +101,7 @@ export default class GroupCreatePage extends Component {
                 created_by: group.created_by,     
                 isUploading: false, 
                 upload_progress: 0, 
+                leader_list: group.leader_list
             }
         }
     }
@@ -275,7 +281,21 @@ export default class GroupCreatePage extends Component {
     }
 
     onAddLeader() {
+        var leader_list = [... this.state.leader_list];
 
+        leader_list.push({
+            name: this.state.leader_name,
+            phone: this.state.leader_phone,
+            email: this.state.leader_email,
+        });
+
+        this.setState({leader_list: leader_list});
+
+        this.setState({
+            leader_name: '',
+            leader_phone: '',
+            leader_email: '',
+        });
     }
 
     onPressCreateGroup () {
@@ -345,6 +365,7 @@ export default class GroupCreatePage extends Component {
             leader_name: this.state.leader_name,
             leader_phone: this.state.leader_phone,
             leader_email: this.state.leader_email, 
+            leader_list: this.state.leader_list,
             created_by: firebase.auth().currentUser.uid,
             created_at: cur_time,
             threadId,
@@ -381,6 +402,7 @@ export default class GroupCreatePage extends Component {
             leader_name: this.state.leader_name,
             leader_phone: this.state.leader_phone,
             leader_email: this.state.leader_email,
+            leader_list: this.state.leader_list,
             updated_at: cur_time,            
         };
 
@@ -560,8 +582,11 @@ export default class GroupCreatePage extends Component {
                         >
                         Leader Information
                     </Text>         
+
+                    <LeaderListComponent leader_list={this.state.leader_list} />
+
                     <Text
-                        style={styles.paraText2}
+                        style={[styles.paraText2, {marginTop:10}]}
                         >
                         Information about the event reader
                     </Text>

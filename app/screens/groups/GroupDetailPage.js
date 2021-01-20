@@ -17,6 +17,8 @@ import {
     useFocusEffect
    } from '@react-navigation/native';
   
+import LeaderListComponent from './LeaderListComponent';
+
 
 export default function GroupDetailPage(props) {
 
@@ -238,6 +240,9 @@ export default function GroupDetailPage(props) {
                     <Text style={{fontSize: 15, color: '#383838B2'}}>                            
                         {Moment(group.meeting_time).format('dddd LT')}
                     </Text>
+
+                    <LeaderListComponent leader_list={group.leader_list} />
+
                 </View>
 
                 {/* Overview */}
