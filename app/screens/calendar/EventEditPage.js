@@ -28,13 +28,17 @@ export default class EventEditPage extends Component {
 
         if( event == null )
         {
+            var host = '';
+            if( group.leader_list && group.leader_list.length > 0 )
+                host = group.leader_list[0].name;
+
             this.state = {
                 isLoading: false,                        
                 name: '',      
                 date: new Date(Moment(group.meeting_time)),
                 time: new Date(Moment(group.meeting_time)),
-                host: '',
-                location: '',
+                host: host,
+                location: group.location,
                 detail: '',
                 food: '',      
                 video_conf_link: '',
