@@ -24,13 +24,15 @@ export default class EventEditPage extends Component {
         super(props);
 
         var event = this.props.route.params.event;
+        var group = this.props.route.params.group;
+
         if( event == null )
         {
             this.state = {
                 isLoading: false,                        
                 name: '',      
-                date: new Date(),
-                time: new Date(),
+                date: new Date(Moment(group.meeting_time)),
+                time: new Date(Moment(group.meeting_time)),
                 host: '',
                 location: '',
                 detail: '',
@@ -251,6 +253,7 @@ export default class EventEditPage extends Component {
                             <View style={styles.modalView}>
                                 <CalendarPicker 
                                     onDateChange={this.onDateChange}
+                                    selectedStartDate={this.state.date}
                                     />
                                 <View style={{flexDirection: 'row', width: '100%', justifyContent: 'flex-end'}}>
                                     <TouchableOpacity style = {{justifyContent: 'center', alignItems: 'center'}} 
