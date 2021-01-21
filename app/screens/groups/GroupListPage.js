@@ -42,7 +42,7 @@ export default function GroupListPage(props) {
                 var group_list = [];
 
                 querySnapshot.forEach((doc) => {
-                    console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
+                    // console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
                     var data = doc.data();
                     data.id = doc.id;
 
@@ -75,7 +75,7 @@ export default function GroupListPage(props) {
                 var group_list = [];
 
                 querySnapshot.forEach((doc) => {
-                    console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
+                    // console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
                     var data = doc.data();
                     data.id = doc.id;
 
@@ -203,7 +203,9 @@ export default function GroupListPage(props) {
                 groupRef.set(data).then(function(doc) {
 
                     joinChatRoom(data);
-                    renderRefreshControl();
+                    onCancelSearch();
+
+                    console.log("onCancelSearch => renderRefreshControl");                    
 
                 }).catch(function(error) {
                     console.log("Error setting group:", error);
@@ -218,10 +220,17 @@ export default function GroupListPage(props) {
       
     }
 
+    const onGotoDetailPage = (item) => {
+        if( isSearchVisible )
+            return;
+
+        props.navigation.navigate('GroupDetail', {group: item, onRefresh: onRefresh})
+    }
+
     const renderRow = (item) => {
 		return (			
             <Card style={{container:{borderRadius: 6}}}>
-                <TouchableOpacity style={{flexDirection: 'row'}} onPress={() => props.navigation.navigate('GroupDetail', {group: item, onRefresh: onRefresh})}>
+                <TouchableOpacity style={{flexDirection: 'row'}} onPress={() => onGotoDetailPage(item)}>
                     <View style={{justifyContent: "center"}}>
                         <FastImage style = {{flex:1, width: 100 }}                                                     
                             source = {{uri: item.group_image}}
