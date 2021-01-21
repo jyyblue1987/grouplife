@@ -135,7 +135,7 @@ export default class MyProfielPage extends Component {
                                     Address
                                 </Text>
                                 <Text style={{fontSize: 17}}>
-                                    {user.address}, {user.city}
+                                    {user.address} {user.address && user.city ? ",," : ""} {user.city}
                                 </Text>
                                 <Text style={{fontSize: 17}}>
                                     {user.state} {user.country}                                    
