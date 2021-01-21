@@ -136,6 +136,13 @@ export default class MemberCreatePage extends Component {
             .add(data);
 
         this.goBackPage();
+
+        const { navigation, route } = this.props;
+        var group = this.props.route.params.group;
+
+        var data = {};
+        data.member_list = group.member_list;
+        route.params.onCreated({ data:  data});
     }
 
     updateCandidateList(member)
@@ -170,6 +177,8 @@ export default class MemberCreatePage extends Component {
     clearInputData(member_list)
     {
         this.goBackPage();  
+
+        const { navigation, route } = this.props;
 
         var data = {};
         data.member_list = member_list;

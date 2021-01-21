@@ -42,8 +42,9 @@ export default class MemberListPage extends Component {
         });
 
 
-        var ref = await firestore.collection("member_list")
-                        .where("user_id", "in", this.state.group.member_list)
+        var ref = await firestore.collection("member_list")                        
+                        .where("user_id", "in", this.state.group.member_list)                        
+                        // .orderBy("first_name", "desc")
                         .get();
 
         var list = [];
