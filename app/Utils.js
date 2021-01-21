@@ -8,3 +8,10 @@ export function linkify(text) {
         return '<a href="' + url + '">' + url + '</a>';
     });
 }
+
+export function getNextDate(date, occurence) {
+    // {label: 'Twice a week', value: '1'},
+    // {label: 'Once a week', value: '2'},
+    // {label: 'Every 2 weeks', value: '3'},
+    // {label: 'Once a month', value: '4'},
+}

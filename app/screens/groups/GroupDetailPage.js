@@ -60,7 +60,7 @@ export default function GroupDetailPage(props) {
     //     this.initListener = this.props.navigation.addListener('focus', this.init_data.bind(this));
     // }
 
-    const init_data = () => {
+    const init_data = async() => {
         console.log("Group Detail Init Data", JSON.stringify(group));
         
         let uid = firebase.auth().currentUser.uid;
@@ -79,6 +79,13 @@ export default function GroupDetailPage(props) {
                 }
             });
         }
+
+        var ref = await firestore.collection("group_list")
+            .doc(group.id)
+            .collection("candidate_list")
+            .get();
+
+        member_count += ref.docs.length;
 
         // getUnreadMessageCount()   // only when enter from grup page not but chat page
 
@@ -129,12 +136,20 @@ export default function GroupDetailPage(props) {
         console.log("onCreated");
     }
 
-    const onUpdated = (data) => {
+    const onUpdated = async(data) => {
         var new_data = {... group, ...data.data};
         console.log("Updated Detail", JSON.stringify(new_data));
         setGroup(new_data);
 
         let member_count = new_data.member_list.length;
+
+        var ref = await firestore.collection("group_list")
+            .doc(group.id)
+            .collection("candidate_list")
+            .get();
+
+        member_count += ref.docs.length;
+
         console.log("New Member Count", member_count);
         setMemberCount(member_count);
     }

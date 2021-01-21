@@ -23,7 +23,7 @@ export default class MemberListPage extends Component {
         this.state = {
             isLoading: false,
             group: this.props.route.params.group,
-            member_list: [],
+            member_list: [],            
             swipeToClose: true,
             group_message: '',
             send_mode: 'Email',
@@ -35,30 +35,41 @@ export default class MemberListPage extends Component {
         this.renderRefreshControl();
     }
 
-    getMemberList() {
+    async getMemberList() {
         this.setState({
             member_list: [],
             isLoading: true
         });
 
-        firestore.collection("member_list")
-            .where("user_id", "in", this.state.group.member_list)
-            .get().then((querySnapshot) => {
-                var list = [];
 
-                querySnapshot.forEach((doc) => {
-                    console.log("Data is feteched", doc.id, JSON.stringify(doc.data()));                
-                    var data = doc.data();
-                    data.id = doc.id;
-                    list.push(data);
-                    
-                });
+        var ref = await firestore.collection("member_list")
+                        .where("user_id", "in", this.state.group.member_list)
+                        .get();
 
-                this.setState({
-                    member_list: list,
-                    isLoading: false,
-                });
-            }); 
+        var list = [];
+        for(const doc of ref.docs)
+        {
+            var data = doc.data();
+            data.id = doc.id;            
+            list.push(data);
+        }
+
+        var ref = await firestore.collection("group_list")
+                .doc(this.state.group.id)
+                .collection("candidate_list")
+                .get();
+
+        for(const doc of ref.docs)
+        {
+            var data = doc.data();
+            data.id = doc.id;            
+            list.push(data);
+        }
+
+        this.setState({
+            member_list: list,            
+            isLoading: false,
+        });
     }
 
     renderRefreshControl() {
@@ -82,42 +93,47 @@ export default class MemberListPage extends Component {
             );
     }
 
-    removeMember(item) {
+    async removeMember(item) {
         this.setState({            
             isLoading: true
         });
         
         var group = this.props.route.params.group;
+
         var member_list = this.state.member_list.filter(row => {
-            return item.user_id != row.user_id;
+            return item.id != row.id;
         });
 
         member_list = [... member_list];
-        
-        var user_ids = member_list.map(row => {
-            return row.user_id;
-        });
-
-        console.log("User IDs", JSON.stringify(user_ids));
-
-        var vm = this;
-
-        firestore.collection("group_list")
-            .doc(group.id)
-            .update({member_list: user_ids})
-            .then(function() {
-                vm.onUpdatedMember(member_list, user_ids);
-            }).catch(function(error) {
-                Alert.alert("Failed to delete member", JSON.stringify(error));
+      
+        if( item.user_id )  // Already exist user
+        {
+            var user_ids = member_list.map(row => {
+                return row.user_id;
             });
-    }
 
-    onUpdatedMember(member_list, user_ids) {
-        console.log("onUpdatedMember", JSON.stringify(member_list));
-        this.setState({
-            isLoading: false,
-            member_list: member_list
-        });
+            console.log("User IDs", JSON.stringify(user_ids));
+
+            await firestore.collection("group_list")
+                .doc(group.id)
+                .update({member_list: user_ids});
+
+            var group = {... this.state.group};
+            group.member_list = user_ids;
+
+            this.setState({group: group});
+        }
+        else
+        {
+            await firestore.collection("group_list")
+                .doc(group.id)
+                .collection("candidate_list")
+                .doc(item.id)
+                .delete();
+        }
+
+        
+        await this.getMemberList();
 
         const { navigation, route } = this.props;    
         var data = {};
@@ -233,7 +249,8 @@ export default class MemberListPage extends Component {
                     onRefresh={() => this.renderRefreshControl()}
                     refreshing={this.state.isLoading}
                     initialNumToRender={8}
-                />      
+                />  
+
                 {
                     this.state.edit_flag &&          
                     <TouchableOpacity
