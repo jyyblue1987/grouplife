@@ -33,6 +33,7 @@ import MaterialDetailPage from './app/screens/materials/MaterialDetailPage';
 import MaterialEditPage from './app/screens/materials/MaterialEditPage';
 import PrayerRequestPage from './app/screens/prayer/PrayerRequestPage';
 import TestimonyListPage from './app/screens/testimony/TestimonyListPage';
+import { LogBox } from 'react-native';
 
 const Stack = createStackNavigator();
 
@@ -168,3 +169,5 @@ export default class App extends Component {
         )
     }
 }
+
+// console.disableYellowBox = false;

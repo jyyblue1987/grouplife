@@ -53,7 +53,7 @@ export default function GroupDetailPage(props) {
     
         return () => subscriber()
 
-      }, [])
+      })
   
       
     // componentDidMount() {

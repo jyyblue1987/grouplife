@@ -11,7 +11,8 @@ import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity,
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
 import { Button } from 'react-native-elements';
-import ImagePicker from 'react-native-image-picker';
+// import ImagePicker from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import * as Progress from 'react-native-progress';
 import storage from '@react-native-firebase/storage';
@@ -70,46 +71,56 @@ export default class MyProfileEditPage extends Component {
     }
 
     showImagePicker = async() => {
-        var options = {
-            title: 'Select Image',
-            mediaType: 'photo',
-            quality: 1.0,
-            allowsEditing: true,
-            noData: true,
-            storageOptions: {
-                skipBackup: true,
-                path: 'images'
-            }
-        };
+        // var options = {
+        //     title: 'Select Image',
+        //     mediaType: 'photo',
+        //     quality: 1.0,
+        //     allowsEditing: true,
+        //     noData: true,
+        //     storageOptions: {
+        //         skipBackup: true,
+        //         path: 'images'
+        //     }
+        // };
 
-        ImagePicker.showImagePicker(options, (response) => {
+        // ImagePicker.showImagePicker(options, (response) => {
 
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            } else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-            } else {
-                var uri = response.uri;
-                console.log(uri);
-                this.setState({
-                    isUploading: true,                    
-                    picture: uri,                    
-                });
+        //     if (response.didCancel) {
+        //         console.log('User cancelled image picker');
+        //     } else if (response.error) {
+        //         console.log('ImagePicker Error: ', response.error);
+        //     } else if (response.customButton) {
+        //         console.log('User tapped custom button: ', response.customButton);
+        //     } else {
+        //         var uri = response.uri;
+        //         console.log(uri);
+        //         this.setState({
+        //             isUploading: true,                    
+        //             picture: uri,                    
+        //         });
                 
-                this.uploadImage(uri)
-                    // .then(url => { 
-                    //     this.setState({picture: url, isUploading: false});
-                    //     console.log("Upload URL = ", url);
+        //         this.uploadImage(uri)
+        //             // .then(url => { 
+        //             //     this.setState({picture: url, isUploading: false});
+        //             //     console.log("Upload URL = ", url);
 
-                    // })
-                    // .catch(error => {
-                    //     this.setState({picture: '', isUploading: false});
-                    //     console.log(error)
-                    // });
-            }
+        //             // })
+        //             // .catch(error => {
+        //             //     this.setState({picture: '', isUploading: false});
+        //             //     console.log(error)
+        //             // });
+        //     }
             
+        // });
+
+        ImagePicker.openPicker({
+            width: 300,
+            height: 300,
+            cropping: true
+        }).then(image => {
+            // console.log(image);
+            console.log("Image is picked");
+            this.uploadImage(image.sourceURL);
         });
     }
 
