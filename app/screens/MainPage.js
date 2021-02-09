@@ -9,6 +9,8 @@ import { stylesGlobal } from '../styles/stylesGlobal';
 
 import GroupListPage from './groups/GroupListPage';
 import MyProfilePage from './profile/MyProfilePage';
+import SettingPage from './settings/SettingPage';
+
 const Tab = createBottomTabNavigator();
   
 function NewsPage() {
@@ -35,13 +37,6 @@ function NotificationPage() {
     );
 }
 
-function SettingPage() {
-    return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Setting Page!</Text>
-        </View>
-    );
-}
 
 export default class MainPage extends Component {
     constructor(props) {

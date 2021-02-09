@@ -2,6 +2,8 @@ import * as React from 'react';
 import {Component} from 'react';
 
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { CommonActions } from '@react-navigation/native';
+
 import firebase from '../../database/firebase';
 import { stylesGlobal } from '../styles/stylesGlobal';
 
@@ -28,7 +30,7 @@ export default class SignInScreen extends Component {
         this.setState(state);
     }
 
-    userLogin = () => {
+    userLogin = async() => {
         if( this.state.email === '' && this.state.password === '' ) {
             Alert.alert("Enter details to signin!");
         }
@@ -39,28 +41,32 @@ export default class SignInScreen extends Component {
             });
         }
 
-        firebase.auth()
-            .signInWithEmailAndPassword(this.state.email, this.state.password)
-            .then( (res) => {   
-                console.log(res);
-                console.log('User logged-in successfully!');                
-                
-                this.setState({
-                    isLoading: false,
-                    email: '',
-                    password: ''
-                });
+        try {
+            await firebase.auth()
+                .signInWithEmailAndPassword(this.state.email, this.state.password);
 
-                this.props.navigation.navigate('Main');
-            })
-            .catch(error => {
-                this.setState({
-                    isLoading: false,                   
-                });
+            this.setState({
+                isLoading: false,
+                email: '',
+                password: ''
+            });
+    
+            const action = CommonActions.reset({
+                index: 0,
+                routes: [{ name: "Main" }]
+            });
 
-                this.setState({errorMessage: error.message});
-                Alert.alert(error.message);
-            }); 
+            this.props.navigation.dispatch(action);
+
+        } catch(e) {
+            this.setState({
+                isLoading: false,                   
+            });
+
+            this.setState({errorMessage: e.message});
+            Alert.alert(e.message);
+        }
+        
     }
 
     render() {
