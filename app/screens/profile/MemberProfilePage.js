@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Ionicons from 'react-native-vector-icons/Ionicons'; 
@@ -13,13 +13,19 @@ export default class MemberProfilePage extends Component {
 
         this.state = {
             isLoading: false,
-            user: this.props.route.params.user
+            user: this.props.route.params.user,
+            image_modal_visible: false
         }
 
         console.log(this.state.user);
     }
 
     componentDidMount() {
+    }
+
+    onShowProfileImage() {
+        console.log("onShowProfileImage");
+        this.setState({image_modal_visible: true});
     }
 
 
@@ -34,9 +40,11 @@ export default class MemberProfilePage extends Component {
                 }
                 <ScrollView style={{width:'100%', paddingHorizontal: 20}}>
                     <View style={{flex:1, flexDirection: 'row', alignItems: 'center', paddingVertical: 10}}>
-                        <View style={{justifyContent: "center"}}>
+                        <TouchableOpacity style={{justifyContent: "center"}}
+                        onPress = {() => this.onShowProfileImage()}
+                        >
                             <FastImage style = {{width: 90, height: 90, borderRadius: 45, borderColor: stylesGlobal.back_color, borderWidth: 2}} source = {{uri:user.picture}}/>
-                        </View>
+                        </TouchableOpacity>
                         <View style={{width:'100%', marginLeft: 10, paddingVertical: 9}}>
                             <Text style={{fontSize: 20, fontWeight: 'bold'}}>
                                 {this.state.user.first_name} {user.last_name}
@@ -59,6 +67,7 @@ export default class MemberProfilePage extends Component {
                     </Text>                      
 
                     <View style={{container: {borderRadius: 10}, marginTop: 30}}>
+
                         <Text style={{fontWeight: 'bold', fontSize: 18, marginTop: 10}}>
                             Contact Info
                         </Text>
@@ -109,7 +118,22 @@ export default class MemberProfilePage extends Component {
                                 </Text>
                             </View>    
                         </View>
-                    </View>                 
+                    </View>       
+
+                    
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={this.state.image_modal_visible}                                                
+                        >          
+                        <TouchableOpacity
+                            onPress={() => {
+                                this.setState({image_modal_visible: false})
+                            } }>
+                            <FastImage style = {{width: '100%', height: '100%'}} source = {{uri:user.picture}}/>
+                        </TouchableOpacity>
+                        
+                    </Modal>
                 </ScrollView>
             </View>
         );
