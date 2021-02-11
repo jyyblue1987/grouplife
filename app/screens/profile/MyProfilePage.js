@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Component} from 'react';
 
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator, Modal } from 'react-native';
 import {Button, Icon} from 'react-native-elements';
 import FastImage from 'react-native-fast-image';
 import Fontisto from 'react-native-vector-icons/Fontisto';
@@ -19,6 +19,7 @@ export default class MyProfielPage extends Component {
         this.state = {
             isLoading: false,  
             user: {},
+            image_modal_visible: false,
         }
 
     }
@@ -59,6 +60,12 @@ export default class MyProfielPage extends Component {
         }
     }
 
+    onShowProfileImage() {
+        console.log("onShowProfileImage");
+        this.setState({image_modal_visible: true});
+    }
+
+
 
     render() {
         var user = this.state.user;
@@ -66,9 +73,11 @@ export default class MyProfielPage extends Component {
             <View style={styles.container}>
                 <ScrollView style={{width:'100%', paddingHorizontal: 20}}>
                     <View style={{flex:1, flexDirection: 'row', alignItems: 'center', paddingVertical: 10}}>
-                        <View style={{justifyContent: "center"}}>
+                        <TouchableOpacity style={{justifyContent: "center"}}
+                            onPress = {() => this.onShowProfileImage()}
+                            >
                             <FastImage style = {{width: 90, height: 90, borderRadius: 45, borderColor: stylesGlobal.back_color, borderWidth: 2}} source = {{uri:user.picture}}/>
-                        </View>
+                        </TouchableOpacity>
                         <View style={{width:'100%', marginLeft: 10, paddingVertical: 9}}>
                             <Text style={{fontSize: 20, fontWeight: 'bold'}}>
                                 {this.state.user.first_name} {user.last_name}
@@ -142,7 +151,20 @@ export default class MyProfielPage extends Component {
                                 </Text>
                             </View>    
                         </View>                        
-                    </View>                 
+                    </View>              
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={this.state.image_modal_visible}                                                
+                        >          
+                        <TouchableOpacity
+                            onPress={() => {
+                                this.setState({image_modal_visible: false})
+                            } }>
+                            <FastImage style = {{width: '100%', height: '100%'}} source = {{uri:user.picture}}/>
+                        </TouchableOpacity>
+                        
+                    </Modal>   
                 </ScrollView>
                 <TouchableOpacity
                     style={{
