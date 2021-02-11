@@ -321,14 +321,6 @@ export default function GroupDetailPage(props) {
                     </TouchableOpacity>
                 </Card>
 
-                {/* Freedback */}
-                <Card style={{container: {borderRadius: 10}}}>
-                    <TouchableOpacity style={styles.cardButtonStyle}>
-                        <MaterialIcons name="schedule" size={22} style={styles.iconStyle} />
-                        <Text style={styles.textStyle}>Freedback</Text>
-                    </TouchableOpacity>
-                </Card>
-
                 {/* Leave Group Button */}
                 {
                     isMember && 
