@@ -7,7 +7,7 @@ import {
 
 import Moment from 'moment';
 
-import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity, ActivityIndicator, Alert, Modal, Button } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, Image, TouchableOpacity, ActivityIndicator, Alert, Modal, TouchableWithoutFeedback } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import CalendarPicker from 'react-native-calendar-picker';
@@ -19,7 +19,6 @@ import { firestore } from '../../../database/firebase';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
 export default class EventEditPage extends Component {
-    calendarDate = new Date();
     constructor(props) {
         super(props);
 
@@ -92,14 +91,7 @@ export default class EventEditPage extends Component {
     onDateChange(date) {
         console.log("Selected_Date", date);
 
-        this.calendarDate = date;
-    }
-
-    onChangeEventDate() 
-    {
-        console.log("onChangeEventDate", this.calendarDate);
-        this.setState({date: this.calendarDate, calendar_modal_visible: false});
-        console.log("onChangeEventDate", this.state.date);
+        this.setState({date: date, calendar_modal_visible: false});
     }
 
     onChangeEventTime(selectedDate) 
@@ -251,25 +243,18 @@ export default class EventEditPage extends Component {
                     <Modal
                         animationType="slide"
                         transparent={true}
-                        visible={this.state.calendar_modal_visible}                        
+                        visible={this.state.calendar_modal_visible}      
+                        onBackdropPress={() => {
+                            console.log("onBackdropPress")
+                            this.setState({calendar_modal_visible: false})
+                        }}                  
                         >
                         <View style={styles.centeredView}>
-                            <View style={styles.modalView}>
+                            <View style={styles.modalView} >
                                 <CalendarPicker 
                                     onDateChange={this.onDateChange}
                                     selectedStartDate={this.state.date}
-                                    />
-                                <View style={{flexDirection: 'row', width: '100%', justifyContent: 'flex-end'}}>
-                                    <TouchableOpacity style = {{justifyContent: 'center', alignItems: 'center'}} 
-                                        onPress = {() => this.onChangeEventDate()}>
-                                        <Text style = {[stylesGlobal.general_font_style, {color: stylesGlobal.back_color, fontSize: 16}]}>Confirm</Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity style = {{justifyContent: 'center', alignItems: 'center', marginLeft: 20}} 
-                                        onPress = {() => this.onCancelEventDate()}>
-                                        <Text style = {[stylesGlobal.general_font_style, {color: stylesGlobal.back_color, fontSize: 16}]}>Cancel</Text>
-                                    </TouchableOpacity>
-                                </View>
+                                    />                               
                             </View>
                         </View>
                     </Modal>
