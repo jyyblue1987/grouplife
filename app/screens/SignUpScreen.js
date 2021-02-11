@@ -11,7 +11,8 @@ export default class SignUpScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            displayName: '',
+            first_name: '',
+            last_name: '',
             email: '', 
             password: '',
             isLoading: false
@@ -46,7 +47,8 @@ export default class SignUpScreen extends Component {
             .createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then( (res) => {   
                 res.user.updateProfile({
-                    displayName: this.state.displayName
+                    first_name: this.state.first_name,
+                    last_name: this.state.last_name,
                 });
 
                 vm.user_id = res.user.uid;
@@ -85,8 +87,8 @@ export default class SignUpScreen extends Component {
         var cur_time = Moment().format('YYYY-MM-DD HH:mm:ss');
         var data = {
             user_id: this.user_id,
-            first_name: this.state.displayName,
-            last_name: '',
+            first_name: this.state.first_name,
+            last_name: this.state.last_name,
             picture: '',
             email: this.state.email,
             phone: '',
@@ -141,7 +143,8 @@ export default class SignUpScreen extends Component {
 
         vm.setState({
             isLoading: false,
-            displayName: '',
+            first_name: '',
+            last_name: '',
             email: '',
             password: ''
         });
@@ -214,11 +217,18 @@ export default class SignUpScreen extends Component {
                 }
                 <TextInput
                     style={stylesGlobal.inputStyle}
-                    placeholder="Name"
+                    placeholder="First Name"
                     autoCapitalize = 'none'
-                    value={this.state.displayName}
-                    onChangeText={(val) => this.updateInputVal(val, 'displayName')}
+                    value={this.state.first_name}
+                    onChangeText={(val) => this.updateInputVal(val, 'first_name')}
                     />      
+                <TextInput
+                    style={stylesGlobal.inputStyle}
+                    placeholder="Last Name"
+                    autoCapitalize = 'none'
+                    value={this.state.last_name}
+                    onChangeText={(val) => this.updateInputVal(val, 'last_name')}
+                    />   
                 <TextInput
                     style={stylesGlobal.inputStyle}
                     placeholder="Email"
