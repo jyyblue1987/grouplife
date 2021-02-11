@@ -108,9 +108,7 @@ export default class SignUpScreen extends Component {
             console.log("Member is created with ID:", docRef.id);
 
             data.id = docRef.id;
-            vm.joinMemberOnGroupList(data);
-
-            vm.props.navigation.navigate('Signin');                    
+            vm.joinMemberOnGroupList(data);                    
         }).catch(function(error) {
             vm.setState({
                 isLoading: false,                       
@@ -148,7 +146,16 @@ export default class SignUpScreen extends Component {
             password: ''
         });
 
-        vm.props.navigation.navigate('Signin');                    
+        Alert.alert(
+            'Account Creation',
+            'Account has been created.  Please login',
+            [              
+                { text: 'Yes', onPress: () => vm.props.navigation.navigate('Signin') }
+            ],
+            { cancelable: false }
+        );
+
+                         
     }
 
     joinMemberOnGroup(group, member)
@@ -238,7 +245,7 @@ export default class SignUpScreen extends Component {
                 
                 <Text
                     style={styles.loginText}
-                    onPress={() => this.props.navigation.navigate('Signup')}>
+                    onPress={() => this.props.navigation.navigate('Signin')}>
                     Already Registered? Click here to login
                 </Text>                
             </View>
