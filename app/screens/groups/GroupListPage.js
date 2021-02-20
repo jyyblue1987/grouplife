@@ -205,8 +205,9 @@ export default function GroupListPage(props) {
                     joinChatRoom(data);
                     onCancelSearch();
 
-                    console.log("onCancelSearch => renderRefreshControl");                    
+                    console.log("onCancelSearch => renderRefreshControl");    
 
+                    renderRefreshControl();
                 }).catch(function(error) {
                     console.log("Error setting group:", error);
                 });                    
