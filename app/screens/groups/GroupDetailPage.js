@@ -25,6 +25,7 @@ export default function GroupDetailPage(props) {
     const [initialize, setInitialize] = useState(false)
     const [isLoading, setLoading] = useState(false)
     const [member_count, setMemberCount] = useState(0)
+    const [member_list, setMemberList] = useState([])
     const [group, setGroup] = useState(props.route.params.group)
     const [isMember, setIsMember] = useState(false)
     const [unreadMessage, setUnreadMessage] = useState(0)
@@ -240,19 +241,20 @@ export default function GroupDetailPage(props) {
                     <Text style={{fontWeight: 'bold', fontSize: 22}}>
                         {group.group_name}
                     </Text>
-                    <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
-                        <Text style={{flex:2, fontSize: 16}}>{group.group_desc}</Text>
-                        <View style={{flex:1, flexDirection: 'row', alignItems: 'center', fontSize: 16}}>
-                            <FontAwesome5 name="user" size={18} color={stylesGlobal.back_color} style={{marginLeft: 15}} />
-                            <Text style={{marginLeft: 15, fontSize: 16}}
-                            onPress={() => props.navigation.navigate('MemberList', {group: group, onUpdated: onUpdated})}
-                            >
-                            {member_count}   Members
-                            </Text>
-                        </View>                        
+                    <View style={{ marginTop: 10}}>
+                        <Text style={{fontSize: 16}}>{group.group_desc}</Text>                      
                     </View>
 
-                    <Text style={{fontSize: 15, color: '#383838B2'}}>                            
+                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', fontSize: 16, marginTop: 15}}>
+                        <FontAwesome5 name="user" size={18} color={stylesGlobal.back_color} />
+                        <Text style={{marginLeft: 15, fontSize: 16}}
+                        onPress={() => props.navigation.navigate('MemberList', {group: group, onUpdated: onUpdated})}
+                        >
+                        {member_count}   Members
+                        </Text>
+                    </View>                        
+
+                    <Text style={{fontSize: 15, color: '#383838B2', marginTop: 15}}>                            
                         {Moment(group.meeting_time).format('dddd LT')}
                     </Text>
 
