@@ -268,17 +268,13 @@ export default function GroupDetailPage(props) {
                     </TouchableOpacity>
                 </Card>
 
-                {/* Group Chat */}
+                {/* Schedule */}
                 <Card style={{container: {borderRadius: 10}}}>
-                    <TouchableOpacity style={styles.cardButtonStyle} onPress={()=> onPressGroupChat()}>
-                        <Entypo name="chat" size={22} style={styles.iconStyle} />
-                        <Text style={styles.textStyle}>Group Chat</Text>
-
-                        {unreadMessage != 0 &&
-                            <View style={{width: 28, height: 28, borderRadius: 14, position: 'absolute', justifyContent: 'center', alignItems: 'center', right: 10, backgroundColor:'#0AB97A'}}>
-                                <Text style={{color:'white', fontSize: 17}}>{unreadMessage}</Text>
-                            </View>                        
-                        }
+                    <TouchableOpacity style={styles.cardButtonStyle}
+                        onPress={() => props.navigation.navigate('EventList', {group: group})}
+                        >
+                        <FontAwesome name="calendar" size={22} style={styles.iconStyle} />
+                        <Text style={styles.textStyle}>Calendar</Text>
                     </TouchableOpacity>
                 </Card>
 
@@ -290,13 +286,17 @@ export default function GroupDetailPage(props) {
                     </TouchableOpacity>
                 </Card>
 
-                {/* Schedule */}
+                {/* Group Chat */}
                 <Card style={{container: {borderRadius: 10}}}>
-                    <TouchableOpacity style={styles.cardButtonStyle}
-                        onPress={() => props.navigation.navigate('EventList', {group: group})}
-                        >
-                        <FontAwesome name="calendar" size={22} style={styles.iconStyle} />
-                        <Text style={styles.textStyle}>Calendar</Text>
+                    <TouchableOpacity style={styles.cardButtonStyle} onPress={()=> onPressGroupChat()}>
+                        <Entypo name="chat" size={22} style={styles.iconStyle} />
+                        <Text style={styles.textStyle}>Group Chat</Text>
+
+                        {unreadMessage != 0 &&
+                            <View style={{width: 28, height: 28, borderRadius: 14, position: 'absolute', justifyContent: 'center', alignItems: 'center', right: 10, backgroundColor:'#0AB97A'}}>
+                                <Text style={{color:'white', fontSize: 17}}>{unreadMessage}</Text>
+                            </View>                        
+                        }
                     </TouchableOpacity>
                 </Card>
 
