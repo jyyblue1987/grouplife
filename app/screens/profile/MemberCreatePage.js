@@ -234,22 +234,6 @@ export default class MemberCreatePage extends Component {
                     keyboardShouldPersistTaps="handled"
                     >                 
                     <TextInput
-                            style={[stylesGlobal.inputStyle, {marginTop: 35}]}
-                            placeholder="First Name"
-                            autoCapitalize = 'none'
-                            value={this.state.first_name}
-                            onChangeText={(val) => this.updateInputVal(val, 'first_name')}
-                        />
-
-                    <TextInput
-                            style={[stylesGlobal.inputStyle, {marginTop: 20}]}
-                            placeholder="Last Name"
-                            autoCapitalize = 'none'
-                            value={this.state.last_name}
-                            onChangeText={(val) => this.updateInputVal(val, 'last_name')}
-                        />
-
-                    <TextInput
                             style={[stylesGlobal.inputStyle, {marginTop: 20}]}
                             placeholder="Email"
                             autoCapitalize = 'none'
@@ -257,13 +241,6 @@ export default class MemberCreatePage extends Component {
                             onChangeText={(val) => this.updateInputVal(val, 'email')}
                         />
 
-                    <TextInput
-                            style={[stylesGlobal.inputStyle, {marginTop: 20}]}
-                            placeholder="Phone Number"
-                            autoCapitalize = 'none'
-                            value={this.state.phone}
-                            onChangeText={(val) => this.updateInputVal(val, 'phone')}
-                        />
                     <View style = {{width: '100%', alignItems: 'center', marginTop: 50}}>
                         <TouchableOpacity style = {{width: '90%', height: 40, backgroundColor: stylesGlobal.back_color, justifyContent: 'center', alignItems: 'center'}} 
                             onPress = {() => this.onAddMember()}>

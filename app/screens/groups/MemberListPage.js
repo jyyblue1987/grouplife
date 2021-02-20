@@ -217,7 +217,7 @@ export default class MemberListPage extends Component {
                     <View style={{flex:1, marginLeft: 7, paddingVertical: 9}}>
                         <View style={{flexDirection:'row', width:'100%', alignItems:'center'}}>
                             <Text style={{flex:1, fontSize: 20, fontWeight: 'bold'}}>
-                                {item.first_name}
+                                {item.first_name ? item.first_name : item.email }
                             </Text>
                             {
                                 this.state.edit_flag &&
