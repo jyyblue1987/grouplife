@@ -69,6 +69,10 @@ export default class GroupCreatePage extends Component {
                 meeting_time: 'Meeting Time',
                 occurence: '2',
                 location: '',
+                event_title: '',
+                event_desc: '',
+                video_conf_link: '',
+                phone_conf_link: '',
                 leader_name: '',
                 leader_phone: '',
                 leader_email: '',      
@@ -95,6 +99,10 @@ export default class GroupCreatePage extends Component {
                 meeting_time: group.meeting_time,
                 occurence: group.occurence,
                 location: group.location,
+                event_title: group.event_title,
+                event_desc: group.event_desc,
+                video_conf_link: group.video_conf_link,
+                phone_conf_link: group.phone_conf_link,
                 leader_name: group.leader_name,
                 leader_phone: group.leader_phone,
                 leader_email: group.leader_email,      
@@ -362,10 +370,14 @@ export default class GroupCreatePage extends Component {
             meeting_time: this.state.meeting_time,
             occurence: this.state.occurence,
             location: this.state.location,
+            event_title: !this.state.event_title ? '' : this.state.event_title,
+            event_desc: !this.state.event_desc ? '' : this.state.event_title,
+            video_conf_link: !this.state.video_conf_link ? '' : this.state.video_conf_link,
+            phone_conf_link: !this.state.phone_conf_link ? '' : this.state.phone_conf_link,
             leader_name: this.state.leader_name,
             leader_phone: this.state.leader_phone,
             leader_email: this.state.leader_email, 
-            leader_list: this.state.leader_list,
+            leader_list: !this.state.leader_list ? [] : this.state.leader_list,
             created_by: firebase.auth().currentUser.uid,
             created_at: cur_time,
             threadId,
@@ -399,10 +411,14 @@ export default class GroupCreatePage extends Component {
             meeting_time: this.state.meeting_time,
             occurence: this.state.occurence,
             location: this.state.location,
+            event_title: !this.state.event_title ? '' : this.state.event_title,
+            event_desc: !this.state.event_desc ? '' : this.state.event_title,
+            video_conf_link: !this.state.video_conf_link ? '' : this.state.video_conf_link,
+            phone_conf_link: !this.state.phone_conf_link ? '' : this.state.phone_conf_link,
             leader_name: this.state.leader_name,
             leader_phone: this.state.leader_phone,
-            leader_email: this.state.leader_email,
-            leader_list: this.state.leader_list,
+            leader_email: this.state.leader_email,            
+            leader_list: !this.state.leader_list ? [] : this.state.leader_list,
             updated_at: cur_time,            
         };
 
@@ -575,6 +591,38 @@ export default class GroupCreatePage extends Component {
                             autoCapitalize = 'none'
                             value={this.state.location}
                             onChangeText={(val) => this.updateInputVal(val, 'location')}
+                        />
+
+                    <TextInput
+                            style={[stylesGlobal.inputStyle, {marginTop: 35}]}
+                            placeholder="Event Title"
+                            autoCapitalize = 'none'
+                            value={this.state.event_title}
+                            onChangeText={(val) => this.updateInputVal(val, 'event_title')}
+                        />
+
+                    <TextInput
+                            style={[stylesGlobal.inputStyle, {height:80, marginTop: 15}]}
+                            placeholder={"Event Details \n(Topics, reading materials, questions for discussion)"}                            
+                            multiline
+                            autoCapitalize = 'none'
+                            value={this.state.event_desc}
+                            onChangeText={(val) => this.updateInputVal(val, 'event_desc')}
+                        />
+
+                    <TextInput
+                            style={[stylesGlobal.inputStyle, {marginTop: 15}]}
+                            placeholder="Video Conference Link"
+                            autoCapitalize = 'none'
+                            value={this.state.video_conf_link}
+                            onChangeText={(val) => this.updateInputVal(val, 'video_conf_link')}
+                        />
+                    <TextInput
+                            style={[stylesGlobal.inputStyle, {marginTop: 15}]}
+                            placeholder="Phone Conference Link"
+                            autoCapitalize = 'none'
+                            value={this.state.phone_conf_link}
+                            onChangeText={(val) => this.updateInputVal(val, 'phone_conf_link')}
                         />
 
                     <Text
