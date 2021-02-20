@@ -33,15 +33,15 @@ export default class EventEditPage extends Component {
 
             this.state = {
                 isLoading: false,                        
-                name: '',      
+                name: group.event_title,      
                 date: new Date(Moment(group.meeting_time)),
                 time: new Date(Moment(group.meeting_time)),
                 host: host,
                 location: group.location,
-                detail: '',
+                detail: group.event_desc,
                 food: '',      
-                video_conf_link: '',
-                phone: '',
+                video_conf_link: group.video_conf_link,
+                phone: group.phone_conf_link,
                 datepicker_show: false,
                 picker_mode: 'time',
                 calendar_modal_visible: false
