@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 
 import { StyleSheet, View, TextInput, TouchableOpacity, Text, Button } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { WebView } from 'react-native-webview';
 import { Card } from 'react-native-material-ui';
 import * as Progress from 'react-native-progress';
-
+import {RichEditor} from 'react-native-pell-rich-editor';
 import { stylesGlobal } from '../../styles/stylesGlobal';
 
 import RNFS from 'react-native-fs';
@@ -23,6 +22,9 @@ export default function MaterialDetailPage(props) {
 
     const group = props.route.params.group;    
     const isAdmin = firebase.auth().currentUser.uid == group.created_by;
+
+    const richText = React.createRef();
+    const initHTML = material.content;
 
     useEffect(() => {
         console.log("MaterialDetailPage Enter");
@@ -89,11 +91,12 @@ export default function MaterialDetailPage(props) {
                 </Text>
                 {
                     material.type == 1 &&  
-                    <View style={{height: '100%'}}>                        
-                        <WebView 
-                            originWhitelist={['*']}
-                            source={{ html: material.content }}                                         
-                        />
+                    <View style={{width: '100%', height: '100%'}}>                                            
+                        <RichEditor
+                            ref={richText}
+                            initialContentHTML={initHTML}     
+                            showSoftInputOnFocus={false}                           
+                            />
                     </View> 
                 }
                 
