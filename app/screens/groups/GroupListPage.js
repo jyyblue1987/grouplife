@@ -242,7 +242,9 @@ export default function GroupListPage(props) {
                             {item.group_name}
                         </Text>
 
-                        <Text style={{fontSize: 17}}>
+                        <Text style={{fontSize: 17}}
+                            numberOfLines={3}
+                            >
                             {item.group_desc}
                         </Text>
 
