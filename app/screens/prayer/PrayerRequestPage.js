@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { StyleSheet, View, TouchableOpacity, Text, TextInput, ActivityIndicator, FlatList, Alert } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, TextInput, ActivityIndicator, FlatList, Alert, Image } from 'react-native';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import { Card } from 'react-native-material-ui';
 import FastImage from 'react-native-fast-image';
@@ -361,7 +361,7 @@ export default function PrayerRequestPage(props) {
                         <TouchableOpacity style={{flex:1, flexDirection: 'row', paddingLeft: 40, alignItems: 'center'}}
                             onPress={() => onPressPraying(item)}
                             >
-                            <FontAwesome5 name="praying-hands" size={30} style={{color: item.prayer_self_count > 0 ? stylesGlobal.back_color : 'gray'}} />                            
+                            <Image style = {{width: 30, height: 28, tintColor: item.prayer_self_count > 0 ? stylesGlobal.back_color : 'gray'}} source = {require("../../assets/images/pray_selected.png")}/>
                             <Text style={{marginLeft: 10, fontSize: 17, color: item.prayer_self_count > 0 ? stylesGlobal.back_color : 'black'}}>{item.prayer_count}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={{flex:1, flexDirection: 'row', paddingLeft: 40, alignItems: 'center'}}
